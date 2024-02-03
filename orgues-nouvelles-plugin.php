@@ -21,6 +21,6 @@
 
 require_once('orgues-nouvelles.php');
 require_once('export-import.php');
+require_once('admin-membership.php');
 require_once('shortcode.php');
 require_once('mon-compte.php');
-require_once('admin.php');
