@@ -75,6 +75,17 @@ $numeros = array(
     71 => "2025-12",
 );
 
+// Pour les tests
+if (!function_exists('get_option')) {
+    function get_option($name)
+    {
+        if ('configuration_orgues-nouvelles_numeros_on' === $name) {
+            return $GLOBALS['numeros'];
+        }
+        return null;
+    }
+}
+
 if (!function_exists('on_date_magazine_to_numero')) {
     /**
      * Prend une date au format aaaa-mm-jj et la transforme en numéro de magazine
@@ -83,7 +94,7 @@ if (!function_exists('on_date_magazine_to_numero')) {
      */
     function on_date_magazine_to_numero($date)
     {
-        global $numeros;
+        $numeros = get_option('configuration_orgues-nouvelles_numeros_on');
         $numero = 0;
         $date = new DateTime($date . (strlen($date) == 7 ? '-15' : ''));
         $date->setTime(0, 0, 0);
@@ -117,7 +128,7 @@ if (!function_exists('on_numero_to_date_magazine')) {
      */
     function on_numero_to_date_magazine($numero, )
     {
-        global $numeros;
+        $numeros = get_option('configuration_orgues-nouvelles_numeros_on');
         if ($numero < 0)
             return $numeros[0];
         if ($numero >= count($numeros)) {
