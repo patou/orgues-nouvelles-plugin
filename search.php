@@ -13,11 +13,11 @@ function on_pre_get_posts( $query ) {
         return;
     }
 
-    // edit the query only when post type is 'accommodation'
+    // edit the query only when post type is 'ressource'
     // if it isn't, return
-    if ( !is_post_type_archive( 'ressource' ) ){
+    /*if ( !is_post_type_archive( 'ressource' ) ){
         return;
-    }
+    }*/
 
     $meta_query = array();
 
