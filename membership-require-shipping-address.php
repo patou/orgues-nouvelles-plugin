@@ -118,5 +118,47 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
     }
     add_action( 'wc_memberships_csv_import_user_membership', 'on_wc_memberships_use_import_data', 10, 3 );
 
-    
+    /**
+     * Affiche l'adresse de livraison dans les détails d'une adhésion
+     */
+    function on_user_membership_screen_columns_shipping($user_membership) {
+        $membership_plan = $user_membership->get_plan();
+        if (get_post_meta($membership_plan->get_id(), 'require_shipping_address', true) == 'yes') {
+            $user_id = $user_membership->get_user_id();
+            $user = get_user_by( 'id', (int) $user_id );
+            
+            ?>
+            <h4>Adresse de livraison</h4>
+            <address>
+			<?php
+
+			// prepare the address
+			$address_parts = array(
+				'first_name'  => get_user_meta( $user->ID, 'shipping_first_name', true ),
+				'last_name'   => get_user_meta( $user->ID, 'shipping_last_name', true ),
+				'company'     => get_user_meta( $user->ID, 'shipping_company', true ),
+				'address_1'   => get_user_meta( $user->ID, 'shipping_address_1', true ),
+				'address_2'   => get_user_meta( $user->ID, 'shipping_address_2', true ),
+				'city'        => get_user_meta( $user->ID, 'shipping_city', true ),
+				'state'       => get_user_meta( $user->ID, 'shipping_state', true ),
+				'postcode'    => get_user_meta( $user->ID, 'shipping_postcode', true ),
+				'country'     => get_user_meta( $user->ID, 'shipping_country', true )
+			);
+
+			// format the address with WooCommerce
+			$address           = apply_filters( 'woocommerce_my_account_my_address_formatted_address', $address_parts, $user->ID, 'shipping' );
+			$formatted_address = WC()->countries->get_formatted_address( $address );
+
+			if ( ! $formatted_address ) {
+				esc_html_e( 'User has not set up their shipping address yet.', 'woocommerce-memberships' );
+			} else {
+				echo $formatted_address;
+			}
+
+			?>
+        </address>
+            <?php
+        }
+    }
+    add_action('wc_memberships_after_user_membership_billing_details', 'on_user_membership_screen_columns_shipping', 5, 2);
 }
