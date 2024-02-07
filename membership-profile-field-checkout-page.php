@@ -74,5 +74,5 @@ if (!function_exists('on_add_visibility_options')) {
         </div>
 <?php
     }
-    add_action('woocommerce_checkout_after_customer_details', 'on_woocommerce_checkout_after_customer_details');
+    add_action('woocommerce_after_order_notes', 'on_woocommerce_checkout_after_customer_details');
 }
