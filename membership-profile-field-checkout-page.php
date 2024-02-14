@@ -2,6 +2,7 @@
 
 use SkyVerge\WooCommerce\Memberships\Profile_Fields as Profile_Fields_Handler;
 use SkyVerge\WooCommerce\Memberships\Profile_Fields\Profile_Field;
+use SkyVerge\WooCommerce\Memberships\Profile_Fields\Exceptions\Invalid_Field;
 
 if (!function_exists('on_add_visibility_options')) {
 
@@ -75,4 +76,75 @@ if (!function_exists('on_add_visibility_options')) {
 <?php
     }
     add_action('woocommerce_after_order_notes', 'on_woocommerce_checkout_after_customer_details');
+
+    // Enregistre les champs de profil sur la page de commande
+    function on_woocommerce_checkout_update_order_meta($order)
+    {
+        $applicable_plans = explode(',', $_POST['member_profile_fields_membership_plans']);
+        $profile_field_definitions = Profile_Fields_Handler::get_profile_field_definitions([
+            'membership_plan_ids' => $applicable_plans,
+            'visibility'          => ['checkout-page'],
+            'editable_by'         => Profile_Fields_Handler\Profile_Field_Definition::EDITABLE_BY_CUSTOMER,
+        ]);
+        if (empty($profile_field_definitions)) {
+            return;
+        }
+        $user_id = get_current_user_id();
+        $values = $_POST['member_profile_fields'];
+        $data = [];
+        $errors = new \WP_Error();
+        foreach ($profile_field_definitions as $definition) {
+            $profile_field = new Profile_Field();
+            $profile_field->set_user_id($user_id);
+            $profile_field->set_slug($definition->get_slug());
+            $profile_field->set_value(isset($_POST['member_profile_fields'][$profile_field->get_slug()]) ? $_POST['member_profile_fields'][$profile_field->get_slug()] : '');
+            $field_errors = $profile_field->validate();
+
+			if ( $message = $field_errors->get_error_message( Invalid_Field::ERROR_REQUIRED_VALUE ) ) {
+				$errors->add( $profile_field->get_slug(), $message );
+				continue;
+			}
+
+			if ( $message = $field_errors->get_error_message( Invalid_Field::ERROR_INVALID_VALUE ) ) {
+				$errors->add( $profile_field->get_slug(), $message );
+				continue;
+			}
+
+			$data[ $profile_field->get_slug() ] = $profile_field->get_value();
+        }
+        if ( $errors->has_errors() ) {
+            throw new \Exception( $errors->get_error_message() );
+            return;
+        }
+        $order->update_meta_data( Profile_Fields_Handler::ORDER_ITEM_PROFILE_FIELDS_META, $data );
+    }
+    add_action('woocommerce_checkout_create_order', 'on_woocommerce_checkout_update_order_meta');
+
+    function on_wc_memberships_grant_membership_access_from_purchase($plan, $args)
+    {
+        if ( ! isset( $args['order_id'], $args['user_membership_id'] ) || ! $order = wc_get_order( $args['order_id'] ) ) {
+			return;
+		}
+        $data = $order->get_meta(Profile_Fields_Handler::ORDER_ITEM_PROFILE_FIELDS_META);
+        if (empty($data)) {
+            return;
+        }
+        $user_id = $order->get_user_id();
+        $profile_fields = Profile_Fields_Handler::get_profile_field_definitions([
+            'membership_plan_ids' => [$plan->get_id()],
+            'visibility'          => ['checkout-page'],
+            'editable_by'         => Profile_Fields_Handler\Profile_Field_Definition::EDITABLE_BY_CUSTOMER,
+        ]);
+        foreach ($profile_fields as $profile_field) {
+            if (isset($data[$profile_field->get_slug()])) {
+                $value = $data[$profile_field->get_slug()];
+                $field = new Profile_Field();
+                $field->set_user_id($user_id);
+                $field->set_slug($profile_field->get_slug());
+                $field->set_value($value);
+                $field->save();
+            }
+        }
+    }
+    add_action('wc_memberships_grant_membership_access_from_purchase', 'on_wc_memberships_grant_membership_access_from_purchase', 10, 2);
 }
