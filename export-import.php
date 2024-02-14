@@ -49,11 +49,11 @@ function on_wc_memberships_modify_import_data( $import_data, $action, $columns, 
 
 	if ( isset( $columns['numero_since'] ) ) {
         $numero_since = $row[ $columns['numero_since'] ];
-		$import_data['member_since'] = on_numero_to_date_magazine($numero_since);
+		$import_data['member_since'] = on_numero_to_date_magazine($numero_since) . '-01';
 	}
     if ( isset( $columns['numero_end'] ) ) {
         $numero_end = $row[ $columns['numero_end'] ];
-        $import_data['membership_expiration'] = on_numero_to_date_magazine($numero_end);
+        $import_data['membership_expiration'] = on_numero_to_date_magazine($numero_end) . '-28';
     }
 	
 	return $import_data;
