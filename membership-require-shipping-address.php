@@ -102,7 +102,7 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
         
         return $import_data;
     }
-    add_filter( 'wc_memberships_csv_import_user_memberships_data', 'on_wc_memberships_modify_import_data', 10, 4 );
+    add_filter( 'wc_memberships_csv_import_user_memberships_data', 'on_wc_memberships_modify_import_data_require_shipping', 10, 4 );
 
 
     /**
@@ -116,7 +116,7 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
             }
         }
     }
-    add_action( 'wc_memberships_csv_import_user_membership', 'on_wc_memberships_use_import_data', 10, 3 );
+    add_action( 'wc_memberships_csv_import_user_membership', 'on_wc_memberships_use_import_data_require_shipping', 10, 3 );
 
     /**
      * Affiche l'adresse de livraison dans les détails d'une adhésion

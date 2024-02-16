@@ -131,6 +131,8 @@ if (!function_exists('on_numero_to_date_magazine')) {
         $numeros = get_option('configuration_orgues-nouvelles_numeros_on');
         if ($numero < 0)
             return $numeros[0];
+        if ($numero > 600)
+            return '';
         if ($numero >= count($numeros)) {
             $start = new DateTime($numeros[count($numeros) - 1]);
             $start->add(new DateInterval('P3M'));
