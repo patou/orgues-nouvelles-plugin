@@ -54,15 +54,15 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
 
 
     define("SHIPPING_COLUMNS", [
-'shipping_first_name',
-'shipping_last_name',
-'shipping_company',
-'shipping_address_1',
-'shipping_address_2',
-'shipping_city',
-'shipping_postcode',
-'shipping_country',
-'shipping_state'
+        'shipping_first_name',
+        'shipping_last_name',
+        'shipping_company',
+        'shipping_address_1',
+        'shipping_address_2',
+        'shipping_city',
+        'shipping_postcode',
+        'shipping_country',
+        'shipping_state'
     ]);
     function on_wc_memberships_modify_member_export_headers_require_shipping($headers, $export_instance, $job)
     {
@@ -73,7 +73,7 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
                 $require_shipping = true;
             }
         }
-        
+
         if ($require_shipping) {
             foreach (SHIPPING_COLUMNS as $column) {
                 $headers[$column] = $column;
@@ -82,33 +82,36 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
         return $headers;
     }
     add_filter('wc_memberships_csv_export_user_memberships_headers', 'on_wc_memberships_modify_member_export_headers_require_shipping', 50, 3);
-    function on_wc_memberships_csv_export_user_memberships_shipping_column( $data, $key, $user_membership ) {
-       $user_id = $user_membership->get_user_id();
-       return get_user_meta($user_id, $key, true);
+    function on_wc_memberships_csv_export_user_memberships_shipping_column($data, $key, $user_membership)
+    {
+        $user_id = $user_membership->get_user_id();
+        return get_user_meta($user_id, $key, true);
     }
     foreach (SHIPPING_COLUMNS as $column) {
-        add_filter( "wc_memberships_csv_export_user_memberships_{$column}_column", 'on_wc_memberships_csv_export_user_memberships_shipping_column', 10, 3 );
+        add_filter("wc_memberships_csv_export_user_memberships_{$column}_column", 'on_wc_memberships_csv_export_user_memberships_shipping_column', 10, 3);
     }
     /**
      * Importe les colonnes shipping dans du fichier CSV
      */
-    function on_wc_memberships_modify_import_data_require_shipping( $import_data, $action, $columns, $row ) {
+    function on_wc_memberships_modify_import_data_require_shipping($import_data, $action, $columns, $row)
+    {
 
         foreach (SHIPPING_COLUMNS as $column) {
-            if ( isset( $columns[$column] ) ) {
-                $import_data[$column] = trim($row[ $columns[$column] ]);
+            if (isset($columns[$column])) {
+                $import_data[$column] = trim($row[$columns[$column]]);
             }
         }
-        
+
         return $import_data;
     }
-    add_filter( 'wc_memberships_csv_import_user_memberships_data', 'on_wc_memberships_modify_import_data_require_shipping', 10, 4 );
+    add_filter('wc_memberships_csv_import_user_memberships_data', 'on_wc_memberships_modify_import_data_require_shipping', 10, 4);
 
 
     /**
      * Ajoute les colonnes shipping dans les données de l'utilisateurs.
      */
-    function on_wc_memberships_use_import_data_require_shipping( $user_membership, $action, $import_data ) {
+    function on_wc_memberships_use_import_data_require_shipping($user_membership, $action, $import_data)
+    {
 
         foreach (SHIPPING_COLUMNS as $column) {
             if (isset($import_data[$column])) {
@@ -116,49 +119,101 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
             }
         }
     }
-    add_action( 'wc_memberships_csv_import_user_membership', 'on_wc_memberships_use_import_data_require_shipping', 10, 3 );
+    add_action('wc_memberships_csv_import_user_membership', 'on_wc_memberships_use_import_data_require_shipping', 10, 3);
 
     /**
      * Affiche l'adresse de livraison dans les détails d'une adhésion
      */
-    function on_user_membership_screen_columns_shipping($user_membership) {
+    function on_user_membership_screen_columns_shipping($user_membership)
+    {
         $membership_plan = $user_membership->get_plan();
         if (get_post_meta($membership_plan->get_id(), 'require_shipping_address', true) == 'yes') {
             $user_id = $user_membership->get_user_id();
-            $user = get_user_by( 'id', (int) $user_id );
-            
-            ?>
+            $user = get_user_by('id', (int) $user_id);
+
+?>
             <h4>Adresse de livraison</h4>
             <address>
-			<?php
+                <?php
 
-			// prepare the address
-			$address_parts = array(
-				'first_name'  => get_user_meta( $user->ID, 'shipping_first_name', true ),
-				'last_name'   => get_user_meta( $user->ID, 'shipping_last_name', true ),
-				'company'     => get_user_meta( $user->ID, 'shipping_company', true ),
-				'address_1'   => get_user_meta( $user->ID, 'shipping_address_1', true ),
-				'address_2'   => get_user_meta( $user->ID, 'shipping_address_2', true ),
-				'city'        => get_user_meta( $user->ID, 'shipping_city', true ),
-				'state'       => get_user_meta( $user->ID, 'shipping_state', true ),
-				'postcode'    => get_user_meta( $user->ID, 'shipping_postcode', true ),
-				'country'     => get_user_meta( $user->ID, 'shipping_country', true )
-			);
+                // prepare the address
+                $address_parts = array(
+                    'first_name'  => get_user_meta($user->ID, 'shipping_first_name', true),
+                    'last_name'   => get_user_meta($user->ID, 'shipping_last_name', true),
+                    'company'     => get_user_meta($user->ID, 'shipping_company', true),
+                    'address_1'   => get_user_meta($user->ID, 'shipping_address_1', true),
+                    'address_2'   => get_user_meta($user->ID, 'shipping_address_2', true),
+                    'city'        => get_user_meta($user->ID, 'shipping_city', true),
+                    'state'       => get_user_meta($user->ID, 'shipping_state', true),
+                    'postcode'    => get_user_meta($user->ID, 'shipping_postcode', true),
+                    'country'     => get_user_meta($user->ID, 'shipping_country', true)
+                );
 
-			// format the address with WooCommerce
-			$address           = apply_filters( 'woocommerce_my_account_my_address_formatted_address', $address_parts, $user->ID, 'shipping' );
-			$formatted_address = WC()->countries->get_formatted_address( $address );
+                // format the address with WooCommerce
+                $address           = apply_filters('woocommerce_my_account_my_address_formatted_address', $address_parts, $user->ID, 'shipping');
+                $formatted_address = WC()->countries->get_formatted_address($address);
 
-			if ( ! $formatted_address ) {
-				esc_html_e( 'User has not set up their shipping address yet.', 'woocommerce-memberships' );
-			} else {
-				echo $formatted_address;
-			}
+                if (!$formatted_address) {
+                    esc_html_e('User has not set up their shipping address yet.', 'woocommerce-memberships');
+                } else {
+                    echo $formatted_address;
+                }
 
-			?>
-        </address>
-            <?php
+                ?>
+            </address>
+<?php
         }
     }
     add_action('wc_memberships_after_user_membership_billing_details', 'on_user_membership_screen_columns_shipping', 5, 2);
 }
+
+/**
+ * Ajoute une colonne avec l'adresse de livraison dans la liste des adhérents
+ */
+
+function on_wc_memberships_members_list_table_columns_shipping($columns)
+{
+    $columns['shipping'] = 'Adresse de livraison';
+    return $columns;
+}
+add_filter('manage_edit-wc_user_membership_columns', 'on_wc_memberships_members_list_table_columns_shipping', 90);
+
+function on_wc_memberships_members_list_table_column_shipping($column, $post_id)
+{
+    if ('shipping' === $column) {
+        $user_membership = wc_memberships_get_user_membership($post_id);
+        $membership_plan = $user_membership->get_plan();
+        if (get_post_meta($membership_plan->get_id(), 'require_shipping_address', true) == 'yes') {
+            $user_id = $user_membership->get_user_id();
+            $user = get_user_by('id', (int) $user_id);
+
+            // prepare the address
+            $address_parts = array(
+                'first_name'  => get_user_meta($user->ID, 'shipping_first_name', true),
+                'last_name'   => get_user_meta($user->ID, 'shipping_last_name', true),
+                'company'     => get_user_meta($user->ID, 'shipping_company', true),
+                'address_1'   => get_user_meta($user->ID, 'shipping_address_1', true),
+                'address_2'   => get_user_meta($user->ID, 'shipping_address_2', true),
+                'city'        => get_user_meta($user->ID, 'shipping_city', true),
+                'state'       => get_user_meta($user->ID, 'shipping_state', true),
+                'postcode'    => get_user_meta($user->ID, 'shipping_postcode', true),
+                'country'     => get_user_meta($user->ID, 'shipping_country', true)
+            );
+
+            // format the address with WooCommerce
+            $address           = apply_filters('woocommerce_my_account_my_address_formatted_address', $address_parts, $user->ID, 'shipping');
+            $formatted_address = WC()->countries->get_formatted_address($address);
+
+            if (!$formatted_address) {
+                echo 'Non renseignée';
+            } else {
+                echo $formatted_address;
+            }
+        }
+        else {
+            echo '<span class="na">&ndash;</span>';
+        }
+    }
+}
+
+add_filter('manage_wc_user_membership_posts_custom_column', 'on_wc_memberships_members_list_table_column_shipping', 10, 2);
