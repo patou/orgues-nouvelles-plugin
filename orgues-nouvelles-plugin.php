@@ -27,3 +27,4 @@ require_once('mon-compte.php');
 require_once('membership-require-shipping-address.php');
 require_once('membership-profile-field-checkout-page.php');
 require_once('search.php');
+require_once('url-ressources.php');
