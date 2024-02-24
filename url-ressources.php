@@ -43,9 +43,10 @@ if ( !function_exists( 'on_lien_ressources' ) ) {
      * @return string le lien
      */
     function on_lien_ressources() {
-        if (pods_field('lien')) {
-            return pods_field('lien');
+        $lien = pods_field('lien', true);
+        if (!empty($lien)) {
+            return wp_kses_post( $lien );
         }
-        return get_permalink();
+        return wp_kses_post( get_permalink() );
     }
 }
