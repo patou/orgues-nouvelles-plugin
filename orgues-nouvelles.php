@@ -145,3 +145,25 @@ if (!function_exists('on_numero_to_date_magazine')) {
         return $numeros[$numero];
     }
 }
+
+if (!function_exists('on_magazine_title')) {
+    /**
+     * Retourne le titre d'un numéro de magazine
+     * 
+     * @param int $numero Numéro de magazine
+     */
+    function on_magazine_title($type, $numero)
+    {
+        switch ($type) {
+            case 'partition':
+                return 'Cahier de Partitions n°' . $numero;
+            case 'cd':
+                return 'CD n°' . $numero;
+            case 'magazine':
+                return 'Orgues Nouvelles n°' . $numero;;
+            default:
+                return '';
+        }
+    }
+
+}
