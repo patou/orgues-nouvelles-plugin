@@ -155,7 +155,7 @@ if (!function_exists('on_magazine_title')) {
     function on_magazine_title()
     {
         $type = get_post_type();
-        $numero = get_field('numero');
+        $numero = pods_field('numero', true);
         switch ($type) {
             case 'partition':
                 return 'Cahier de Partitions n°' . $numero;
