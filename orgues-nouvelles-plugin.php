@@ -31,3 +31,4 @@ require_once('url-ressources.php');
 require_once('membership-restricted-message.php');
 require_once('on-admin.php');
 require_once('on-last-magazine.php');
+require_once('last-post-menu-item.php');
