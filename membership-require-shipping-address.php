@@ -127,6 +127,9 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
     function on_user_membership_screen_columns_shipping($user_membership)
     {
         $membership_plan = $user_membership->get_plan();
+        if (!$membership_plan) {
+            return;
+        }
         if (get_post_meta($membership_plan->get_id(), 'require_shipping_address', true) == 'yes') {
             $user_id = $user_membership->get_user_id();
             $user = get_user_by('id', (int) $user_id);
@@ -161,6 +164,9 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
 
                 ?>
             </address>
+            <a class="edit-member" href="<?php echo esc_url( get_edit_user_link( $user->ID ) ); ?>">
+				<span class="dashicons dashicons-edit"></span><?php echo esc_html_e('Edit shipping address.', 'woocommerce-memberships'); ?>
+			</a>
 <?php
         }
     }
