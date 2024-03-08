@@ -19,16 +19,28 @@
  * Domain Path:       /languages
  */
 
-require_once('orgues-nouvelles.php');
-require_once('export-import.php');
-require_once('membership-numero-on.php');
-require_once('shortcode.php');
-require_once('mon-compte.php');
-require_once('membership-require-shipping-address.php');
-require_once('membership-profile-field-checkout-page.php');
-require_once('search.php');
-require_once('url-ressources.php');
-require_once('membership-restricted-message.php');
-require_once('on-admin.php');
-require_once('on-last-magazine.php');
-require_once('last-post-menu-item.php');
+function on_load_plugin() {
+    load_plugin_textdomain( 'orgues-nouvelles', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+    require_once('orgues-nouvelles.php');
+    require_once('export-import.php');
+    require_once('membership-numero-on.php');
+    require_once('shortcode.php');
+    require_once('mon-compte.php');
+    require_once('membership-require-shipping-address.php');
+    require_once('membership-profile-field-checkout-page.php');
+    require_once('search.php');
+    require_once('url-ressources.php');
+    require_once('membership-restricted-message.php');
+    require_once('on-admin.php');
+    require_once('on-last-magazine.php');
+    require_once('last-post-menu-item.php');
+     
+    add_action( 'elementor/widgets/register', 'on_register_search_form_url_widget' );   
+}
+
+function on_register_search_form_url_widget( $widgets_manager ) {
+    require_once('search-form-url.php');
+	$widgets_manager->register( new \Search_Form_URL() );
+}
+
+add_action( 'plugins_loaded', 'on_load_plugin' );
