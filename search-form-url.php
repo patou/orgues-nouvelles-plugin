@@ -770,7 +770,7 @@ class Search_Form_URL extends Base {
 		$this->add_render_attribute(
 			'form',
 			[
-				'class' => 'elementor-search-form',
+				'class' => 'elementor-search-form on-elementor-search-form-url',
 				'action' => $settings['search_url'],
 				'method' => 'get',
 			]
