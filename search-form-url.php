@@ -771,7 +771,7 @@ class Search_Form_URL extends Base {
 			'form',
 			[
 				'class' => 'elementor-search-form on-elementor-search-form-url',
-				'action' => $settings['search_url'],
+				'action' => $settings['search_url']['url'],
 				'method' => 'get',
 			]
 		);
@@ -901,7 +901,7 @@ class Search_Form_URL extends Base {
 			'form',
 			{
 				'class': 'elementor-search-form',
-				'action': settings.search_url,
+				'action': settings.search_url.url,
 				'method': 'get',
 			}
 		);
