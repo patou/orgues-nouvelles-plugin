@@ -74,7 +74,7 @@ class Search_Form_URL extends Base {
 			[
 				'label' => esc_html__( 'Url', 'elementor-pro' ),
 				'type' => Controls_Manager::URL,
-				'default' => [home_url()],
+				'default' => ['url' => home_url()],
 				'dynamic' => [
 					'active' => true,
 				],
