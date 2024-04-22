@@ -13,7 +13,7 @@ function on_get_latest_permalink_by_menu_order( $post_type ) {
         if ( $query->have_posts() ) {
             while ( $query->have_posts() ) {
                 $query->the_post();
-                return get_permalink();
+                return wp_kses_post( get_permalink() );
             }
         }
     } finally {
