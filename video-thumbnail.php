@@ -22,7 +22,7 @@ function extract_thumbnail_from_embed_block( $post_id, $post, $update ) {
         return;
     }
 
-    $content = get_the_content(null, false, $post); // Obtenir le contenu du post
+    $content = $post->post_content; // Obtenir le contenu du post
 
     // Vérifier si le bloc Embed est présent
     if ( ! has_block( 'core/embed', $content ) ) {
