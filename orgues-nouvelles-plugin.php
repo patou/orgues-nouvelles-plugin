@@ -36,6 +36,7 @@ function on_load_plugin() {
     require_once('last-post-menu-item.php');
     require_once('check-abonnement-france.php');
     require_once('video-thumbnail.php');
+    require_once('complete-order.php');
      
     add_action( 'elementor/widgets/register', 'on_register_search_form_url_widget' );   
 }
