@@ -62,7 +62,8 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
         'shipping_city',
         'shipping_postcode',
         'shipping_country',
-        'shipping_state'
+        'shipping_state',
+        'shipping_phone'
     ]);
     function on_wc_memberships_modify_member_export_headers_require_shipping($headers, $export_instance, $job)
     {
