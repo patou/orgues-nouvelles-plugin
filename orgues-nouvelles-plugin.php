@@ -38,6 +38,7 @@ function on_load_plugin() {
     require_once('video-thumbnail.php');
     require_once('complete-order.php');
     require_once('membership-import-semicolon.php');
+    require_once('edit-compte-gestionnaire.php');
      
     add_action( 'elementor/widgets/register', 'on_register_search_form_url_widget' );   
 }
