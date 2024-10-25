@@ -65,6 +65,19 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
         'shipping_state',
         'shipping_phone'
     ]);
+    define("BILLING_COLUMNS", [
+        'billing_first_name',
+        'billing_last_name',
+        'billing_company',
+        'billing_address_1',
+        'billing_address_2',
+        'billing_city',
+        'billing_postcode',
+        'billing_country',
+        'billing_state',
+        'billing_phone',
+        'billing_email'
+    ]);
     function on_wc_memberships_modify_member_export_headers_require_shipping($headers, $export_instance, $job)
     {
         $require_shipping = false;
@@ -102,6 +115,11 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
                 $import_data[$column] = trim($row[$columns[$column]]);
             }
         }
+        foreach (BILLING_COLUMNS as $column) {
+            if (isset($columns[$column])) {
+                $import_data[$column] = trim($row[$columns[$column]]);
+            }
+        }
 
         return $import_data;
     }
@@ -115,6 +133,11 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
     {
 
         foreach (SHIPPING_COLUMNS as $column) {
+            if (isset($import_data[$column])) {
+                update_user_meta($user_membership->get_user_id(), $column, $import_data[$column]);
+            }
+        }
+        foreach (BILLING_COLUMNS as $column) {
             if (isset($import_data[$column])) {
                 update_user_meta($user_membership->get_user_id(), $column, $import_data[$column]);
             }
