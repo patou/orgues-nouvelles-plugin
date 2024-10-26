@@ -40,8 +40,20 @@ function on_load_plugin() {
     require_once('membership-import-semicolon.php');
     require_once('edit-compte-gestionnaire.php');
     require_once('update-subscriptions-price.php');
-     
+
+    add_action('admin_enqueue_scripts', 'on_admin_script');
     add_action( 'elementor/widgets/register', 'on_register_search_form_url_widget' );   
+}
+
+function on_admin_script($hook)
+{
+    wp_enqueue_style('on-style', plugin_dir_url(__FILE__) . 'admin.css');
+    if ($hook == 'user-edit.php') {
+        wp_enqueue_style('on-edit-user-style', plugin_dir_url(__FILE__) . 'edit-user/style.css');
+
+        // Enqueue le script
+        wp_enqueue_script('on-edit-user-script', plugin_dir_url(__FILE__) . 'edit-user/script.js', array(), null, true);
+    }
 }
 
 function on_register_search_form_url_widget( $widgets_manager ) {

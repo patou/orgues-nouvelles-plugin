@@ -1,0 +1,18 @@
+.pods-form-ui-row-name-numeros-on {
+    counter-reset: numero -1;
+}
+
+.pods-form-ui-row-name-numeros-on .pods-field-wrapper__controls {
+    flex: 0 1 auto;
+    display: flex;
+    align-items: center;
+}
+
+.pods-form-ui-row-name-numeros-on .pods-field-wrapper__controls.pods-field-wrapper__controls--start::after {
+    content: "ON-" counter(numero);
+    counter-increment: numero;
+    line-height: 1.5em;
+    font-size: 12px;
+    margin: 5px 0;
+    display: inline-block;
+}
