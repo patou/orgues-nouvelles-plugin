@@ -48,12 +48,12 @@ function on_load_plugin() {
 function on_admin_script($hook)
 {
     wp_enqueue_style('on-style', plugin_dir_url(__FILE__) . 'admin.css');
-    if ($hook == 'user-edit.php') {
+    /**if ($hook == 'user-edit.php') {
         wp_enqueue_style('on-edit-user-style', plugin_dir_url(__FILE__) . 'edit-user/style.css');
 
         // Enqueue le script
         wp_enqueue_script('on-edit-user-script', plugin_dir_url(__FILE__) . 'edit-user/script.js', array(), null, true);
-    }
+    }*/
 }
 
 function on_register_search_form_url_widget( $widgets_manager ) {
