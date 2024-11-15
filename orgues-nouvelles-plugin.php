@@ -41,6 +41,7 @@ function on_load_plugin() {
     require_once('edit-compte-gestionnaire.php');
     require_once('update-subscriptions-price.php');
     require_once('phone-orders.php');
+    require_once('advanced-order-export.php');
 
     add_action('admin_enqueue_scripts', 'on_admin_script');
     add_action( 'elementor/widgets/register', 'on_register_search_form_url_widget' );   

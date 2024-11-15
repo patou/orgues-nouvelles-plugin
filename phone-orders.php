@@ -5,6 +5,7 @@ add_filter('wpo_autocomplete_product_custom_output', 'on_autocomplete_product_cu
 function on_autocomplete_product_custom_output($output, $product) {
     $data = array();
     $data['name'] = '<b>' .rawurldecode($product->get_name()) .'</b>';
+    $data['sku'] = $product->get_sku();
     $data['price'] = $product->get_price_html();
     if ($product->is_type('variation')) {
         // Afficher les variations data du produit : taille, couleur, ...
