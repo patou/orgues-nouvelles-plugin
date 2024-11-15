@@ -16,3 +16,10 @@
     margin: 5px 0;
     display: inline-block;
 }
+
+#woocommerce-order-items .find-results-full-screen-mode .multiselect__element .multiselect__option .option__block.option__element__full-screen-mode,
+#woocommerce-order-items .multiselect__element .multiselect__option .option__block.option__element__default {
+	display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
