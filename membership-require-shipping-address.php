@@ -52,6 +52,28 @@ if (!function_exists('on_wc_membership_plan_options_membership_plan_data_general
 
     add_filter('woocommerce_cart_needs_shipping_address', 'on_woocommerce_cart_needs_shipping_address');
 
+    // Check if the order needs a shipping address
+    // if any of the products in the order require a shipping address
+    // then the order needs a shipping address
+    function on_woocommerce_order_needs_shipping_address($need_shipping_address, $hide, $order)
+    {
+        if ($need_shipping_address) {
+            return $need_shipping_address;
+        }
+        $items = $order->get_items();
+        foreach ($items as $item => $values) {
+            $_product =  $values->get_product();
+            foreach (wc_memberships()->get_plans_instance()->get_membership_plans_for_product($_product) as $membership_plan) {
+                if (get_post_meta($membership_plan->get_id(), 'require_shipping_address', true) == 'yes') {
+                    return true;
+                    break;
+                }
+            }
+        }
+        return $need_shipping_address;
+    }
+    add_filter('woocommerce_order_needs_shipping_address', 'on_woocommerce_order_needs_shipping_address', 10, 3);
+
 
     define("SHIPPING_COLUMNS", [
         'shipping_first_name',
