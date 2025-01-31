@@ -37,6 +37,7 @@ function on_load_plugin() {
     require_once('check-abonnement-france.php');
     require_once('video-thumbnail.php');
     require_once('complete-order.php');
+    require_once('justificatif-etudiant.php');
     require_once('membership-import-semicolon.php');
     require_once('edit-compte-gestionnaire.php');
     require_once('update-subscriptions-price.php');
