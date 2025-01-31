@@ -151,7 +151,7 @@ if (!class_exists('WC_Email_Justificatif_Etudiant')):
              * @param string $body email body content
              * @param \WC_Email_Justificatif_Etudiant current email instance
              */
-            $body = (string) apply_filters("{$email_id}_email_body", $this->format_string($this->body), $this->object);
+            $body = (string) apply_filters("{$email_id}_email_body", $this->format_string($this->get_option('admin_recipient')), $this->object);
 
             if (empty($body) || !is_string($body) || '' === trim($body)) {
                 $body = $this->get_default_body();
