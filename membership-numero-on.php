@@ -48,7 +48,10 @@ if (!function_exists('on_membership_customize_columns')) {
             $membership = wc_memberships_get_user_membership($post_id);
             if ($membership) {
                 $end_date = $membership->get_end_date();
-                if ($end_date) {
+                $next_payment_date = on_next_payment_date_membership($membership);
+                if ($next_payment_date) {
+                    echo "ON-", on_date_magazine_to_numero($next_payment_date);
+                } elseif ($end_date) {
                     echo "ON-", on_date_magazine_to_numero($end_date);
                 } else {
                     echo '<span class="na">&ndash;</span>';
@@ -63,6 +66,7 @@ if (!function_exists('on_membership_customize_columns')) {
     {
         $start_date = $user_membership->get_start_date();
         $end_date = $user_membership->get_end_date();
+        $next_payment_date = on_next_payment_date_membership($user_membership);
         if ($start_date) {
 ?>
             <p class="form-field billing-detail">
@@ -71,7 +75,14 @@ if (!function_exists('on_membership_customize_columns')) {
             </p>
         <?php
         }
-        if ($end_date) {
+        if ($next_payment_date) {
+            ?>
+            <p class="form-field billing-detail">
+                <label>Numero fin :</label>
+                <?php echo "ON-", on_date_magazine_to_numero($next_payment_date); ?>
+            </p>
+<?php
+        } elseif ($end_date) {
         ?>
             <p class="form-field billing-detail">
                 <label>Numero fin :</label>

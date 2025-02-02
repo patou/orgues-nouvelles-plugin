@@ -169,3 +169,22 @@ if (!function_exists('on_magazine_title')) {
     }
 
 }
+
+if (!function_exists('on_next_payment_date_membership')) {
+    /**
+     * Retourne la date du prochain paiement d'un abonnement
+     * 
+     * @param \WC_Memberships_Integration_Subscriptions_User_Membership $membership
+     */
+    function on_next_payment_date_membership($membership)
+    {
+        if ($membership instanceof \WC_Memberships_Integration_Subscriptions_User_Membership) {
+            $subscription = $membership->get_subscription();
+            if ($subscription) {
+                $next_payment_date = $subscription->get_date('next_payment');
+                return $next_payment_date;
+            }
+        }
+        return null;
+    }
+}

@@ -33,7 +33,13 @@ add_filter( 'wc_memberships_csv_export_user_memberships_headers', 'on_wc_members
  */
 function on_wc_memberships_csv_export_user_memberships_numero_column( $data, $key, $user_membership ) {
     $date = $key == 'numero_since' ? $user_membership->get_start_date() : $user_membership->get_end_date();
-    if (empty($date)) {
+    if ($key == 'numero_end') {
+		$next_payment_date = on_next_payment_date_membership($user_membership);
+		if ($next_payment_date) {
+			$date = $next_payment_date;
+		}
+	}
+	if (empty($date)) {
         return '';
     }
     $numero_since = on_date_magazine_to_numero($date);

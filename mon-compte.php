@@ -44,8 +44,13 @@ if (!function_exists('on_wc_memberships_my_memberships_column_names')) {
     add_action( 'wc_memberships_my_memberships_column_numero_since', 'on_wc_memberships_my_memberships_column_numero_since', 10, 1 );
     function on_wc_memberships_my_memberships_column_numero_end( $user_membership ) {
         $date = $user_membership->get_end_date();
-        if (empty($date)) {
+        $membership = wc_memberships_get_user_membership($user_membership);
+        $next_payment_date = on_next_payment_date_membership($membership);
+        if (empty($date) && empty($next_payment_date)) {
             return '';
+        }
+        if ($next_payment_date) {
+            $date = $next_payment_date;
         }
         $numero_end = on_date_magazine_to_numero($date);
         echo "ON-", $numero_end;
