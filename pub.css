@@ -1,0 +1,23 @@
+.elementor-grid {
+    display: grid;
+    grid-auto-flow: dense;
+    grid-template-columns: repeat(3, 1fr);
+}
+.format_pub-baniere-horiz {
+    grid-column-end: span 2;
+    grid-row-end: span 1;
+}
+.format_pub-baniere-vert {
+    grid-column-end: span 1;
+    grid-row-end: span 5;
+}
+
+.format_pub-pub-horiz {
+    grid-column-end: span 2;
+    grid-row-end: span 3;
+}
+
+.format_pub-pub-vert {
+    grid-column-end: span 2;
+    grid-row-end: span 4;
+}

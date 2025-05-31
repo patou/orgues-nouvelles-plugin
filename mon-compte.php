@@ -57,4 +57,83 @@ if (!function_exists('on_wc_memberships_my_memberships_column_names')) {
     }
     add_action( 'wc_memberships_my_memberships_column_numero_end', 'on_wc_memberships_my_memberships_column_numero_end', 10, 1 );
 }
+function on_register_new_item_endpoint()
+{
+    add_rewrite_endpoint('mes-magazines', EP_PAGES);
+}
+add_action('init', 'on_register_new_item_endpoint');
+// Enable endpoint
+add_filter('query_vars', 'on_mes_magazines_query_var', 0);
+function on_mes_magazines_query_var($query_vars)
+{
+    $query_vars[] = 'mes-magazines';
 
+    return $query_vars;
+}
+
+function on_ajouter_menu_mes_magazines($items)
+{
+    $nouveaux_items = array(
+        'mes-magazines' => __('Mes magazines', 'orgues-nouvelles'),
+    );
+
+    // Insérer le nouvel élément avant "Commandes"
+    $position = array_search('orders', array_keys($items));
+    $items = array_slice($items, 0, $position, true) + $nouveaux_items + array_slice($items, $position, count($items) - $position, true);
+
+    return $items;
+}
+add_filter('woocommerce_account_menu_items', 'on_ajouter_menu_mes_magazines');
+
+function on_ajouter_mes_magazines_code()
+{
+    if (isset($_POST['magazine_code'])) {
+        $code_saisi = sanitize_text_field($_POST['magazine_code']);
+        $user_id = get_current_user_id();
+
+        // Récupérer tous les magazines
+        $magazines = pods('magazine')->find();
+
+        while ($magazines->fetch()) {
+            $magazine_id = $magazines->field('ID');
+            $magazine_code = $magazines->field('code');
+
+            if ($magazine_code === $code_saisi) {
+                // Ajouter le magazine à la liste de l'utilisateur
+                $user_pods = pods('user', $user_id);
+                $user_magazines = $user_pods->get_field('magazines');
+
+                if (empty($user_magazines)) {
+                    $user_magazines = array();
+                }
+
+                // Vérifier si le magazine n'est pas déjà dans la liste
+                $magazine_exists = false;
+                foreach ($user_magazines as $user_magazine) {
+                    if ($user_magazine['ID'] == $magazine_id) {
+                        $magazine_exists = true;
+                        break;
+                    }
+                }
+
+                if (!$magazine_exists) {// Ajouter un tableau associatif avec l'ID
+                    $user_pods->add_to('magazines', $magazine_id);
+                    echo '<p style="color: green;">' . esc_html__('Magazine ajouté avec succès !', 'orgues-nouvelles') . '</p>';
+                } else {
+                    echo '<p style="color: orange;">' . esc_html__('Ce magazine est déjà dans votre liste.', 'orgues-nouvelles') . '</p>';
+                }
+                return; // Arrêter la boucle
+            }
+        }
+
+        echo '<p style="color: red;">' . esc_html__('Code invalide.', 'orgues-nouvelles') . '</p>';
+    }
+}
+
+function on_ajouter_contenu_mes_magazines()
+{
+    on_ajouter_mes_magazines_code();
+    $numeros = on_liste_numeros();
+    include plugin_dir_path(__FILE__) . 'templates/mon-compte-mes-magazines.php'; // Chemin vers votre modèle
+}
+add_action('woocommerce_account_mes-magazines_endpoint', 'on_ajouter_contenu_mes_magazines');

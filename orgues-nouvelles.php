@@ -188,3 +188,41 @@ if (!function_exists('on_next_payment_date_membership')) {
         return null;
     }
 }
+
+if (!function_exists('on_liste_numeros')) {
+    /**
+     * Retourne la liste des numéros de magazine que l'utilisateur peut consulter
+     * 
+     * @return array Liste des numéros de magazine
+     */
+    function on_liste_numeros()
+    {
+        $liste = array();
+        // Numéros individuels achetés par l'utilisateur
+        $user_id = get_current_user_id();
+        $user_pods = pods('user', $user_id);
+        $magazines = $user_pods->get_field('magazines');
+        if (!empty($magazines)) {
+            foreach ($magazines as $magazine) {
+                $magazine_id = $magazine['ID'];
+                $numero = pods('magazine', $magazine_id)->get_field('numero');
+                $liste[] = $numero;
+            }
+        }
+        // Numéros accessibles via les abonnements de l'utilisateur
+        $memberships = wc_memberships_get_user_memberships();
+        foreach ($memberships as $membership) {
+            $start_date = $membership->get_start_date();
+            $end_date = $membership->get_end_date();
+            $numero_start = on_date_magazine_to_numero($start_date);
+            $next_payment_date = on_next_payment_date_membership($membership);
+            $numero_end = min(on_date_magazine_to_numero($next_payment_date),on_date_magazine_to_numero($end_date));
+            for ($numero = $numero_start; $numero <= $numero_end; $numero++) {
+                $liste[] = $numero;
+            }
+        }
+        $liste = array_unique($liste);
+        sort($liste);
+        return $liste;
+    }
+}

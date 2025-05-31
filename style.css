@@ -1,0 +1,85 @@
+
+.magazines-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(200px, 1fr)); /* Crée une grille responsive */
+    gap: 20px; /* Espacement entre les éléments */
+    list-style: none; /* Supprime les puces de la liste */
+    padding: 0; /* Supprime le padding de la liste */
+}
+
+.magazine-item {
+    display: flex;
+    flex-direction: column; /* Organise la miniature et les détails en colonne */
+    align-items: center; /* Centre les éléments horizontalement */
+    text-align: center; /* Centre le texte */
+}
+
+.magazine-item img {
+    width: 800px;
+    aspect-ratio: auto 800 / 1009;
+}
+
+.magazine-details {
+    margin-top: 10px; /* Espacement entre la miniature et les détails */
+}
+
+.magazines-form {
+    display: flex;
+    gap: 20px;
+}
+
+.on-restricted-message {
+    padding: 1em 2em 1em 3.5em;
+    margin: 0 0 2em;
+    position: relative;
+    background-color: #f6f5f8;
+    color: #515151;
+    border-top: 3px solid #ff542e;
+    list-style: none outside;
+    width: auto;
+    word-wrap: break-word;
+}
+
+div.on-restricted-message a, div.on-restricted-message a:visited {
+    color: #ff542e;
+    text-decoration: none;
+}
+div.on-restricted-message a:hover {
+    text-decoration: underline;
+    color: #ff542e;
+}
+.on-restricted-message a:focus {
+    outline: 2px solid #ff542e;
+    outline-offset: 2px;
+}
+.on-restricted-message a:focus:not(:focus-visible) {
+    outline: none;
+}
+.on-restricted-message a:focus-visible {
+    outline: 2px solid #ff542e;
+    outline-offset: 2px;
+}
+.on-restricted-message a:focus-visible:not(:focus) {
+    outline: none;
+}
+.on-restricted-message::before {
+    font-family: WooCommerce;
+    content: "\e028";
+    content: "\e028" / "";
+    display: inline-block;
+    position: absolute;
+    top: 1em;
+    left: 1.5em;
+    color: #ff542e;
+}
+.on-restricted-message h5 {
+    font-size: 1rem;
+    line-height: 1em;
+    margin: 0;
+    font-weight: 700;
+    color: #ff542e;
+}
+.search-highlight {
+    background: #ffff94;
+    padding: 0 2px;
+}
