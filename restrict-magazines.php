@@ -94,7 +94,7 @@ function on_retrict_magazines_elementor_should_render_element($should_render, $w
     }
 
     $magazines = on_liste_numeros();
-    $magazine_allowed = array_search($numero, $magazines);
+    $magazine_allowed = array_search($numero, $magazines) !== false;
     if ($widget->get_settings(ON_VISIBILITY_CONDITION) === 'visible_only_subscribers') {
         $display_message = $widget->get_settings(ON_VISIBILITY_MESSAGE) === 'yes';
         return $magazine_allowed || $display_message;
@@ -120,7 +120,7 @@ function on_retrict_magazines_elementor_maybe_render_content_restricted_message_
     $display_message = $widget->get_settings(ON_VISIBILITY_MESSAGE) === 'yes';
 
     $magazines = on_liste_numeros();
-    $magazine_allowed = array_search($numero, $magazines);
+    $magazine_allowed = array_search($numero, $magazines) !== false;
     switch($widget->get_settings(ON_VISIBILITY_CONDITION)) {
         case 'visible_only_subscribers':
             if (!$magazine_allowed) {
@@ -139,7 +139,7 @@ function message_restricted() {
     ob_start();
     ?>
     <div class="on-restricted-message">
-        <h5><?php _e("Vous n'avez pas accès à ce contenu", 'orgues-nouvelles'); ?><?php echo 'ON n°', pods_field('numero', true); ?></h5>
+        <h5><?php _e("Vous n'avez pas accès à ce contenu", 'orgues-nouvelles'); ?><?php echo ' ON n°', pods_field('numero', true); ?></h5>
     <?php
     if (!is_user_logged_in()):
         ?>
