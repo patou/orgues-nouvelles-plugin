@@ -101,7 +101,7 @@ class Search_Result_Content extends Widget_Base {
         $words_around = intval( $settings['words_around_search'] );
         $highlight_tag = esc_attr( $settings['highlight_tag'] );
         $excerpt_length = intval($settings['excerpt_length']);
-        $highlight_class = 'span' === $highlight_tag && ! empty( $settings['highlight_class'] ) ? ' class="' . esc_attr( $settings['highlight_class'] ) . '"' : '';
+        $highlight_class = ! empty( $settings['highlight_class'] ) ? ' class="' . esc_attr( $settings['highlight_class'] ) . '"' : '';
 
         if ( $post_id ) {
             $post = get_post( $post_id );

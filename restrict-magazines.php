@@ -139,7 +139,7 @@ function message_restricted() {
     ob_start();
     ?>
     <div class="on-restricted-message">
-        <h5><?php _e("Vous n'avez pas accès à ce contenu", 'orgues-nouvelles'); ?></h5>
+        <h5><?php _e("Vous n'avez pas accès à ce contenu", 'orgues-nouvelles'); ?><?php echo 'ON n°', pods_field('numero', true); ?></h5>
     <?php
     if (!is_user_logged_in()):
         ?>
