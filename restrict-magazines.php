@@ -84,7 +84,7 @@ add_action('woocommerce_order_status_completed', 'on_ajouter_numero_apres_achat'
 
 function on_retrict_magazines_elementor_should_render_element($should_render, $widget)
 {
-    if ($widget->get_settings(ON_VISIBILITY_CONDITION) === 'visible_to_everyone') {
+    if ($widget->get_settings(ON_VISIBILITY_CONDITION) === 'visible_to_everyone' || is_preview()) {
         return $should_render;
     }
 
@@ -111,6 +111,10 @@ function on_retrict_magazines_elementor_maybe_render_content_restricted_message_
 {
     if ($widget->get_settings(ON_VISIBILITY_CONDITION) === 'visible_to_everyone') {
         return $content;
+    }
+
+    if (is_preview()) {
+        return '<div class="restrict-preview '.($widget->get_settings(ON_VISIBILITY_CONDITION) === 'hidden_for_subscribers' ? 'hidden' : 'visible').'">' . $content . '</div>';
     }
 
     $numero = pods_field('numero', true);

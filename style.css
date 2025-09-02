@@ -83,3 +83,9 @@ div.on-restricted-message a:hover {
     background: #ffff94;
     padding: 0 2px;
 }
+.restrict-preview.hidden {
+    outline: 1px dashed #ff542e;
+}
+.restrict-preview.visible {
+    outline: 1px dashed #4caf50;
+}
