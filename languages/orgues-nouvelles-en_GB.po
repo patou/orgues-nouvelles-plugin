@@ -1,0 +1,272 @@
+# Copyright (C) 2025 Patrice de Saint Steban
+# This file is distributed under the Apache-2.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: Orgues-Nouvelles Plugin 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/orgues-nouvelles-plugin\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-09-11T21:30:48+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: orgues-nouvelles\n"
+
+#. Plugin Name of the plugin
+#: orgues-nouvelles-plugin.php
+msgid "Orgues-Nouvelles Plugin"
+msgstr "Orgues-Nouvelles Plugin"
+
+#. Plugin URI of the plugin
+#: orgues-nouvelles-plugin.php
+msgid "https://github.com/patou/orgues-nouvelles-plugin/"
+msgstr "https://github.com/patou/orgues-nouvelles-plugin/"
+
+#. Description of the plugin
+#: orgues-nouvelles-plugin.php
+msgid "Plugin pour ajouter des fonctionnalités au site orgues nouvelles."
+msgstr "Plugin to add features to the Orgues Nouvelles website."
+
+#. Author of the plugin
+#: orgues-nouvelles-plugin.php
+msgid "Patrice de Saint Steban"
+msgstr "Patrice de Saint Steban"
+
+#. Author URI of the plugin
+#: orgues-nouvelles-plugin.php
+msgid "https://patou.dev"
+msgstr "https://patou.dev"
+
+#: check-abonnement-france.php:23
+msgid "Vous devez selectionner la livraison Monde pour une livraison en dehors de la France lors de votre abonnement à Orgues-Nouvelles"
+msgstr "You must select World delivery for a delivery outside France when subscribing to Orgues-Nouvelles"
+
+#: justificatif-etudiant.php:11
+msgid "Demande de justificatif étudiants"
+msgstr "Student proof request"
+
+#: justificatif-etudiant.php:13
+msgid "Cet email est envoyé lorsqu'un abonné choisit le tarif étudiant pour lui demander d'envoyer un justificatif."
+msgstr "This email is sent when a subscriber chooses the student rate to ask them to send proof."
+
+#: justificatif-etudiant.php:79
+msgid "[{site_title}]: Demande de justificatif pour votre commande"
+msgstr "[{site_title}]: Request for proof for your order"
+
+#: justificatif-etudiant.php:90
+msgid "Demande de justificatif pour votre Abonnement"
+msgstr "Request for proof for your subscription"
+
+#: justificatif-etudiant.php:110
+#: justificatif-etudiant.php:121
+msgid "Contenu de l'email"
+msgstr "Email content"
+
+#: justificatif-etudiant.php:113
+#: justificatif-etudiant.php:123
+msgid "Texte de l'email envoyé aux clients lorsqu'ils choisissent le tarif étudiant pour leur demander un justificatif."
+msgstr "Text of the email sent to customers when they choose the student rate to request proof."
+
+#: justificatif-etudiant.php:131
+msgid "Nous vous demandons de bien vouloir nous fournir un justificatif de votre statut étudiant pour valider votre abonnement."
+msgstr "We kindly ask you to provide proof of your student status to validate your subscription."
+
+#: justificatif-etudiant.php:254
+msgid "Demande de justificatif"
+msgstr "Request for proof"
+
+#: justificatif-etudiant.php:255
+msgid "Cochez cette case pour demander un justificatif pour cette variation."
+msgstr "Check this box to request proof for this variation."
+
+#: last-post-menu-item.php:4
+msgid "Last post"
+msgstr "Last post"
+
+#: last-post-menu-item.php:59
+msgid "Last"
+msgstr "Last"
+
+#: mon-compte.php:27
+msgid "Numero début"
+msgstr "Start number"
+
+#: mon-compte.php:30
+msgid "Numero fin"
+msgstr "End number"
+
+#: mon-compte.php:78
+msgid "Mes magazines"
+msgstr "My magazines"
+
+#: mon-compte.php:122
+msgid "Magazine ajouté avec succès !"
+msgstr "Magazine added successfully!"
+
+#: mon-compte.php:124
+msgid "Ce magazine est déjà dans votre liste."
+msgstr "This magazine is already in your list."
+
+#: mon-compte.php:130
+msgid "Code invalide."
+msgstr "Invalid code."
+
+#: restrict-magazines.php:11
+msgid "Abonnés Magazines"
+msgstr "Magazine Subscribers"
+
+#: restrict-magazines.php:20
+msgid "Visibilité aux magazines"
+msgstr "Magazine visibility"
+
+#: restrict-magazines.php:24
+msgid "Visible pour tous"
+msgstr "Visible to all"
+
+#: restrict-magazines.php:25
+msgid "Seulement les abonnés"
+msgstr "Subscribers only"
+
+#: restrict-magazines.php:26
+msgid "Seulement les non abonnés"
+msgstr "Non-subscribers only"
+
+#: restrict-magazines.php:31
+msgid "Choisissez qui peut voir ce contenu pour les abonnés comprenant le numéro en cours"
+msgstr "Choose who can see this content for subscribers including the current issue"
+
+#: restrict-magazines.php:37
+msgid "Actif pour les abonnés aux plans:"
+msgstr "Active for subscribers to the following plans:"
+
+#: restrict-magazines.php:42
+msgid "Choisissez quels plans d'adhésion sont requis pour accéder à ce contenu."
+msgstr "Choose which membership plans are required to access this content."
+
+#: restrict-magazines.php:47
+msgid "Affiche le message de restriction"
+msgstr "Show restriction message"
+
+#: restrict-magazines.php:171
+msgid "Vous n'avez pas accès à ce contenu"
+msgstr "You do not have access to this content"
+
+#: restrict-magazines.php:175
+msgid "Vous devez être connecté pour accéder à ce contenu."
+msgstr "You must be logged in to access this content."
+
+#: restrict-magazines.php:176
+msgid "Se connecter"
+msgstr "Log in"
+
+#: restrict-magazines.php:180
+msgid "Vous n'êtes pas abonné à ce magazine."
+msgstr "You are not subscribed to this magazine."
+
+#: restrict-magazines.php:181
+msgid "Abonnez-vous"
+msgstr "Subscribe"
+
+#: restrict-magazines.php:182
+msgid "ou saisissez"
+msgstr "or enter"
+
+#: restrict-magazines.php:183
+msgid "le code de l'espace privé"
+msgstr "the private area code"
+
+#: templates/mon-compte-mes-magazines.php:13
+msgid "Vos magazines abonnés :"
+msgstr "Your subscribed magazines:"
+
+#: templates/mon-compte-mes-magazines.php:57
+#, php-format
+msgid "Orgues nouvelles n°%s"
+msgstr "Orgues nouvelles No.%s"
+
+#: templates/mon-compte-mes-magazines.php:66
+msgid "Aucun magazine publié."
+msgstr "No magazine published."
+
+#: templates/mon-compte-mes-magazines.php:71
+#, php-format
+msgid "Vous n'êtes abonné à aucun magazine pour le moment. %1$sAbonnez-vous à Orgues-nouvelles%2$s ou ajoutez le code de l'espace client dans le formulaire ci-dessous"
+msgstr "You are not subscribed to any magazine at the moment. %1$sSubscribe to Orgues-nouvelles%2$s or add the client area code in the form below"
+
+#: templates/mon-compte-mes-magazines.php:78
+msgid "Ajouter un magazine avec un code :"
+msgstr "Add a magazine with a code:"
+
+#: templates/mon-compte-mes-magazines.php:79
+msgid "Retrouvez le code à saisir dans votre magazine pour accéder à l'espace privé."
+msgstr "Find the code in your magazine to access the private area."
+
+#: templates/mon-compte-mes-magazines.php:81
+msgid "Code du magazine"
+msgstr "Magazine code"
+
+#: templates/mon-compte-mes-magazines.php:82
+msgid "Ajouter"
+msgstr "Add"
+
+#: widget/search-result-content.php:17
+msgid "Contenu du Résultat de Recherche"
+msgstr "Search Result Content"
+
+#: widget/search-result-content.php:32
+msgid "Paramètres du Contenu"
+msgstr "Content Settings"
+
+#: widget/search-result-content.php:40
+msgid "ID du Post"
+msgstr "Post ID"
+
+#: widget/search-result-content.php:42
+msgid "Laissez vide pour le post actuel (dans une boucle de recherche). Entrez un ID de post spécifique."
+msgstr "Leave empty for the current post (in a search loop). Enter a specific post ID."
+
+#: widget/search-result-content.php:50
+msgid "Mots avant/après le terme de recherche"
+msgstr "Words before/after the search term"
+
+#: widget/search-result-content.php:54
+msgid "Nombre de mots à afficher avant et après chaque occurrence du terme de recherche."
+msgstr "Number of words to display before and after each occurrence of the search term."
+
+#: widget/search-result-content.php:72
+msgid "Balise de mise en évidence"
+msgstr "Highlight tag"
+
+#: widget/search-result-content.php:75
+msgid "Strong (Gras)"
+msgstr "Strong (Bold)"
+
+#: widget/search-result-content.php:76
+msgid "Em (Italique)"
+msgstr "Em (Italic)"
+
+#: widget/search-result-content.php:77
+msgid "Mark (Surligné)"
+msgstr "Mark (Highlighted)"
+
+#: widget/search-result-content.php:78
+msgid "Span (Personnalisé)"
+msgstr "Span (Custom)"
+
+#: widget/search-result-content.php:87
+msgid "Classe CSS pour la mise en évidence"
+msgstr "CSS class for highlighting"
+
+#: widget/search-result-content.php:90
+msgid "Ajoutez une classe CSS personnalisée si vous utilisez une balise <span>."
+msgstr "Add a custom CSS class if you use a <span> tag."
+
+#: widget/search-result-content.php:205
+msgid "Post non trouvé."
+msgstr "Post not found."
+
+#: widget/search-result-content.php:208
+msgid "Aucun ID de post spécifié ou post actuel introuvable."
+msgstr "No post ID specified or current post not found."
