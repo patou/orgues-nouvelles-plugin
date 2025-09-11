@@ -1,6 +1,7 @@
 <?php
 define('ON_VISIBILITY_SECTION', 'on_visibility_section');
 define('ON_VISIBILITY_CONDITION', 'on_visibility_condition');
+define('ON_VISIBILITY_PLANS', 'on_visibility_plans');
 define('ON_VISIBILITY_MESSAGE', 'on_visibility_message');
 function on_register_visibility_section($element_section)
 {
@@ -31,6 +32,17 @@ function on_register_visibility_controls($element) {
         'section' => ON_VISIBILITY_SECTION,
     ]);
 
+    $element->add_control(ON_VISIBILITY_PLANS, [
+        'type' => \Elementor\Controls_Manager::SELECT2,
+        'label' => __('Actif pour les abonnés aux plans:', 'orgues-nouvelles'),
+        'options' => get_membership_plans_options(),
+        'default' => [],
+        'multiple' => true,
+        'show_label' => true,
+        'description' => __('Choisissez quels plans d\'adhésion sont requis pour accéder à ce contenu.', 'orgues-nouvelles'),
+        'label_block' => true,
+    ]);
+
     $element->add_control(ON_VISIBILITY_MESSAGE, [
         'label' => __('Affiche le message de restriction', 'orgues-nouvelles'),
         'type' => \Elementor\Controls_Manager::SWITCHER,
@@ -39,6 +51,18 @@ function on_register_visibility_controls($element) {
         'default' => 'yes',
         'section' => ON_VISIBILITY_SECTION,
     ]);
+}
+
+function get_membership_plans_options() {
+
+    $available_plans_list = [];
+    $membership_plans = wc_memberships_get_membership_plans();
+
+    // build the options list
+    foreach ( $membership_plans as $plan ) {
+        $available_plans_list[$plan->get_slug()] = $plan->get_name();
+    }
+    return $available_plans_list;
 }
 
 // register section controls
@@ -92,8 +116,8 @@ function on_retrict_magazines_elementor_should_render_element($should_render, $w
     if (!$numero) {
         return $should_render;
     }
-
-    $magazines = on_liste_numeros();
+    $allowed_plans = $widget->get_settings(ON_VISIBILITY_PLANS);
+    $magazines = on_liste_numeros($allowed_plans);
     $magazine_allowed = array_search($numero, $magazines) !== false;
     if ($widget->get_settings(ON_VISIBILITY_CONDITION) === 'visible_only_subscribers') {
         $display_message = $widget->get_settings(ON_VISIBILITY_MESSAGE) === 'yes';
@@ -123,7 +147,8 @@ function on_retrict_magazines_elementor_maybe_render_content_restricted_message_
     }
     $display_message = $widget->get_settings(ON_VISIBILITY_MESSAGE) === 'yes';
 
-    $magazines = on_liste_numeros();
+    $allowed_plans = $widget->get_settings(ON_VISIBILITY_PLANS);
+    $magazines = on_liste_numeros($allowed_plans);
     $magazine_allowed = array_search($numero, $magazines) !== false;
     switch($widget->get_settings(ON_VISIBILITY_CONDITION)) {
         case 'visible_only_subscribers':

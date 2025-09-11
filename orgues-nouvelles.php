@@ -195,7 +195,7 @@ if (!function_exists('on_liste_numeros')) {
      * 
      * @return array Liste des numéros de magazine
      */
-    function on_liste_numeros()
+    function on_liste_numeros($memberships_plan = array())
     {
         $liste = array();
         // Numéros individuels achetés par l'utilisateur
@@ -212,11 +212,22 @@ if (!function_exists('on_liste_numeros')) {
         // Numéros accessibles via les abonnements de l'utilisateur
         $memberships = wc_memberships_get_user_memberships();
         foreach ($memberships as $membership) {
+            // Filtrer par slug si le paramètre est fourni
+            if (!empty($memberships_plan)) {
+                $plan = $membership->get_plan();
+                if (!$plan) {
+                    continue;
+                }
+                $slug = is_callable(array($plan, 'get_slug')) ? $plan->get_slug() : '';
+                if (!in_array($slug, $memberships_plan)) {
+                    continue;
+                }
+            }
             $start_date = $membership->get_start_date();
             $end_date = $membership->get_end_date();
             $numero_start = on_date_magazine_to_numero($start_date);
             $next_payment_date = on_next_payment_date_membership($membership);
-            $numero_end = min(on_date_magazine_to_numero($next_payment_date),on_date_magazine_to_numero($end_date));
+            $numero_end = min(on_date_magazine_to_numero($next_payment_date), on_date_magazine_to_numero($end_date));
             for ($numero = $numero_start; $numero <= $numero_end; $numero++) {
                 $liste[] = $numero;
             }
