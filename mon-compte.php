@@ -5,7 +5,8 @@ if (!function_exists('on_account_dashboard')) {
     function on_account_dashboard() {
         $page = get_option('configuration_orgues-nouvelles_mon_compte_dashboard');
         if (isset($page[0])) {
-            echo get_the_content(null, false, $page[0]);
+            $pageId = pll_get_post( $page[0] );
+            echo get_the_content(null, false, $pageId);
         }
     }
 
@@ -23,10 +24,10 @@ if (!function_exists('on_wc_memberships_my_memberships_column_names')) {
             $new_headers[$key] = $name;
 
             if ('membership-start-date' == $key) {
-                $new_headers['numero_since'] = 'Numero début';
+                $new_headers['numero_since'] = __('Numero début', 'orgues-nouvelles');
             }
             if ('membership-end-date' == $key) {
-                $new_headers['numero_end'] = 'Numero fin';
+                $new_headers['numero_end'] = __('Numero fin', 'orgues-nouvelles');
             }
         }
 
