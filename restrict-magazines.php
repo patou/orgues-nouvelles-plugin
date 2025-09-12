@@ -210,6 +210,15 @@ function custom_pods_labels_in_pick_field_ajax($items, $name, $value, $options, 
             }
         }
     }
+    else {
+        // Ajouter la langue pour les autres types d'item si possible
+        foreach ($items as $key => &$data) {
+            if (isset($data['id']) && isset($data['text'])) {
+                $data['text'] = add_language($data['id'], $data['text']);
+                $data['name'] = $data['text'];
+            }
+        }
+    }
     return $items;
 }
 function custom_pods_labels_in_pick_field_data($items, $name, $value, $options, $pod, $id)
@@ -227,8 +236,27 @@ function custom_pods_labels_in_pick_field_data($items, $name, $value, $options, 
             }
         }
     }
+    else {
+        // Ajouter la langue pour les autres types d'item si possible
+        foreach ($items as $key => $data) {
+            if (isset($data['id']) ?? isset($data['text'])) {
+                $data['text'] = add_language($data['id'], $data['text']);
+                $data['name'] = $data['text'];
+            }
+        }
+    }
 
     return $items;
+}
+
+function add_language($id, $label) {
+    $lang_code = '';
+    // Récupérer le slug de la langue via Polylang
+    if (function_exists('pll_get_post_language')) {
+        $lang_code = pll_get_post_language($id);
+    }
+    $label .= $lang_code == 'fr' ? ' 🇫🇷': ' 🇬🇧';
+    return $label;
 }
 function custom_pods_select_field_label($id)
 {
@@ -236,5 +264,5 @@ function custom_pods_select_field_label($id)
     $numero = $pod->field('numero');
     $date = $pod->field('date');
     $date = date_i18n('F Y', strtotime($date));
-    return 'Orgues Nouvelles n°' . $numero . ' - ' . $date;
+    return add_language($id, 'Orgues Nouvelles n°' . $numero . ' - ' . $date);
 }
