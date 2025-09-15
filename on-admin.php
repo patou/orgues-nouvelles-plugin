@@ -15,3 +15,13 @@ function on_modify_admin_bar( WP_Admin_Bar $wp_admin_bar ){
 }
 
 add_action( 'admin_bar_menu', 'on_modify_admin_bar', 400 );
+
+// Bypass reCaptcha Woo extension on admin pages
+function on_bypass_recaptcha_pour_admin()
+{
+  if (is_admin()) {
+    // Supprime la fonction de l'extension du hook
+    remove_action('woocommerce_register_post', 'rcfwc_woo_register_check', 10, 3);
+  }
+}
+add_action('admin_init', 'on_bypass_recaptcha_pour_admin');
