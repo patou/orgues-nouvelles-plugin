@@ -39,6 +39,14 @@ function on_pre_get_posts( $query ) {
                 'compare' => 'IN'
             );
         }
+        // Obtenir la langue actuelle de Polylang
+        $current_lang = pll_current_language();
+
+        // Si la langue actuelle est l'anglais (ou une autre langue que le français)
+        if ($current_lang !== 'fr') {
+            // Ajouter l'argument 'lang' à la requête pour afficher toutes les langues
+            $query->set('lang', 'fr,'.$current_lang);
+        }
     }
 
     if( count( $meta_query ) > 0 ){
