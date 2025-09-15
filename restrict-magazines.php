@@ -198,51 +198,48 @@ add_filter('elementor/frontend/repeater/should_render', 'on_retrict_magazines_el
 // determine whether to replace widget's content with "Content Restricted" alert message or not
 add_filter('elementor/widget/render_content', 'on_retrict_magazines_elementor_maybe_render_content_restricted_message_instead', 10, 2);
 
-add_filter('pods_field_pick_data_ajax_items', 'custom_pods_labels_in_pick_field_ajax', 1, 6);
+add_filter('pods_field_pick_data_ajax_items', 'custom_pods_labels_in_pick_field_data', 1, 6);
 add_filter('pods_field_pick_data', 'custom_pods_labels_in_pick_field_data', 1, 6);
-function custom_pods_labels_in_pick_field_ajax($items, $name, $value, $options, $pod, $id)
-{
-    if ('magazines' === $name || 'magazine' === $name) {
-        foreach ($items as $key => &$data) {
-            if (isset($data['id'])) {
-                $data['text'] = custom_pods_select_field_label($data['id']);
-                $data['name'] = $data['text'];
-            }
-        }
-    }
-    else {
-        // Ajouter la langue pour les autres types d'item si possible
-        foreach ($items as $key => &$data) {
-            if (isset($data['id']) && isset($data['text'])) {
-                $data['text'] = add_language($data['id'], $data['text']);
-                $data['name'] = $data['text'];
-            }
-        }
-    }
-    return $items;
-}
+
+
 function custom_pods_labels_in_pick_field_data($items, $name, $value, $options, $pod, $id)
 {
-    // pods_meta_ prefix for Pods backend, pods_field_ prefix for front-facing Pods form
-    if ('magazines' === $name || 'magazine' === $name) {
-        if (!empty($items) && is_array($items)) {
-            foreach ($items as $key => $item) {
-                if (isset($item['id'])) {
-                    $data['text'] = custom_pods_select_field_label($data['id']);
-                    $data['name'] = $data['text'];
-                } elseif (is_numeric($key) && !is_array($item)) {
-                    $items[$key] = custom_pods_select_field_label($key);
-                }
+    if (!empty($items) && is_array($items)) {
+        // pods_meta_ prefix for Pods backend, pods_field_ prefix for front-facing Pods form
+        // Définir les types de pods et leurs labels personnalisés
+        $pods_types = [
+            'magazine'   => ['magazines', 'magazine', 'page_magazine'],
+            'cd'         => ['cd', 'cds', 'page_cd'],
+            'partition'  => ['partitions', 'partition', 'page_partition'],
+        ];
+
+        $found_type = null;
+        foreach ($pods_types as $type => $names) {
+            if (in_array($name, $names)) {
+            $found_type = $type;
+            break;
             }
         }
-    }
-    else {
-        // Ajouter la langue pour les autres types d'item si possible
-        foreach ($items as $key => $data) {
-            if (isset($data['id']) ?? isset($data['text'])) {
-                $data['text'] = add_language($data['id'], $data['text']);
-                $data['name'] = $data['text'];
+
+        if ($found_type) {
+            foreach ($items as $key => &$data) {
+                if (isset($data['id'])) {
+                    $data['text'] = custom_pods_select_field_label($data['id'], $found_type);
+                    $data['name'] = $data['text'];
+                } elseif (is_numeric($key) && !is_array($data)) {
+                    $items[$key] = custom_pods_select_field_label($key, $found_type);
+                }
             }
+            unset($data);
+        } else {
+            // Ajouter la langue pour les autres types d'item si possible
+            foreach ($items as $key => &$data) {
+                if (isset($data['id']) && isset($data['text'])) {
+                    $data['text'] = add_language($data['id'], $data['text']);
+                    $data['name'] = $data['text'];
+                }
+            }
+            unset($data);
         }
     }
 
@@ -253,16 +250,33 @@ function add_language($id, $label) {
     $lang_code = '';
     // Récupérer le slug de la langue via Polylang
     if (function_exists('pll_get_post_language')) {
-        $lang_code = pll_get_post_language($id);
+        $lang_code = pll_get_post_language($id, 'slug');
     }
-    $label .= $lang_code == 'fr' ? ' 🇫🇷': ' 🇬🇧';
+    if ($lang_code) {
+        $label .= $lang_code == 'fr' ? ' 🇫🇷': ' 🇬🇧';
+    }
     return $label;
 }
-function custom_pods_select_field_label($id)
+function custom_pods_select_field_label($id, $pods_name)
 {
-    $pod = pods('magazine', $id);
+    $pod = pods($pods_name, $id);
     $numero = $pod->field('numero');
     $date = $pod->field('date');
     $date = date_i18n('F Y', strtotime($date));
-    return add_language($id, 'Orgues Nouvelles n°' . $numero . ' - ' . $date);
+    // Définir les préfixes selon le type de pod
+    $prefixes = [
+        'magazine'   => '📖 Orgues Nouvelles',
+        'cd'         => '💿 CD',
+        'partitions' => '🎼 Cahier de partitions',
+    ];
+
+    $prefix = isset($prefixes[$pods_name]) ? $prefixes[$pods_name] : '';
+
+    $label = trim($prefix);
+    if ($label !== '') {
+        $label .= ' ';
+    }
+    $label .= 'n°' . $numero . ' - ' . $date;
+
+    return add_language($id, $label);
 }
