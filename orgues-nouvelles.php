@@ -197,9 +197,20 @@ if (!function_exists('on_liste_numeros')) {
      */
     function on_liste_numeros($memberships_plan = array())
     {
+        // Générer une clé de cache unique basée sur l'utilisateur et les paramètres
+        $user_id = get_current_user_id();
+        $cache_key = 'on_liste_numeros_' . $user_id . '_' . implode('_', (array)$memberships_plan);
+
+        // Tenter de récupérer depuis le cache mémoire
+        if (function_exists('wp_cache_get')) {
+            $cached = wp_cache_get($cache_key, 'orgues_nouvelles');
+            if ($cached !== false) {
+                return $cached;
+            }
+        }
+
         $liste = array();
         // Numéros individuels achetés par l'utilisateur
-        $user_id = get_current_user_id();
         $user_pods = pods('user', $user_id);
         $magazines = $user_pods->get_field('magazines');
         if (!empty($magazines)) {
@@ -234,6 +245,12 @@ if (!function_exists('on_liste_numeros')) {
         }
         $liste = array_unique($liste);
         sort($liste);
+
+        // Stocker le résultat en cache mémoire
+        if (function_exists('wp_cache_set')) {
+            wp_cache_set($cache_key, $liste, 'orgues_nouvelles', 300); // 5 minutes
+        }
+
         return $liste;
     }
 }
