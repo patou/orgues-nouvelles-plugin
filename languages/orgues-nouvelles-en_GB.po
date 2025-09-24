@@ -1,5 +1,3 @@
-# Copyright (C) 2025 Patrice de Saint Steban
-# This file is distributed under the Apache-2.0.
 msgid ""
 msgstr ""
 "Project-Id-Version: Orgues-Nouvelles Plugin 1.0.0\n"
@@ -11,6 +9,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-09-11T21:30:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: orgues-nouvelles\n"
 
@@ -60,24 +59,22 @@ msgid "Demande de justificatif pour votre Abonnement"
 msgstr "Request for proof for your subscription"
 
 #: justificatif-etudiant.php:110
-#: justificatif-etudiant.php:121
 msgid "Contenu de l'email"
 msgstr "Email content"
 
 #: justificatif-etudiant.php:113
-#: justificatif-etudiant.php:123
 msgid "Texte de l'email envoyé aux clients lorsqu'ils choisissent le tarif étudiant pour leur demander un justificatif."
 msgstr "Text of the email sent to customers when they choose the student rate to request proof."
 
-#: justificatif-etudiant.php:131
+#: justificatif-etudiant.php:124
 msgid "Nous vous demandons de bien vouloir nous fournir un justificatif de votre statut étudiant pour valider votre abonnement."
 msgstr "We kindly ask you to provide proof of your student status to validate your subscription."
 
-#: justificatif-etudiant.php:254
+#: justificatif-etudiant.php:247
 msgid "Demande de justificatif"
 msgstr "Request for proof"
 
-#: justificatif-etudiant.php:255
+#: justificatif-etudiant.php:248
 msgid "Cochez cette case pour demander un justificatif pour cette variation."
 msgstr "Check this box to request proof for this variation."
 
@@ -270,3 +267,20 @@ msgstr "Post not found."
 #: widget/search-result-content.php:208
 msgid "Aucun ID de post spécifié ou post actuel introuvable."
 msgstr "No post ID specified or current post not found."
+
+#: membership-numero-on.php:73
+msgid "Numero début :"
+msgstr "Start number:"
+
+#: membership-numero-on.php:81
+#: membership-numero-on.php:88
+msgid "Numero fin :"
+msgstr "End number:"
+
+#: membership-profile-field-checkout-page.php:62
+msgid "Votre profil"
+msgstr "Your profil"
+
+#: membership-profile-field-checkout-page.php:63
+msgid "Merci de remplir ces informations pour mieux vous connaitre"
+msgstr "Please fill out this information to get to know you better."

@@ -59,8 +59,8 @@ if (!function_exists('on_add_visibility_options')) {
             $profile_fields[] = $profile_field;
         }
 ?>
-        <h3 id="order_review_heading">Votre commande</h3>
-        <p>Merci de remplir ces informations pour mieux vous connaitre</p>
+    <h3 id="order_review_heading"><?php _e( 'Votre profil', 'orgues-nouvelles' ); ?></h3>
+    <p><?php _e( 'Merci de remplir ces informations pour mieux vous connaitre', 'orgues-nouvelles' ); ?></p>
 
         <div class="wc-memberships-profile-fields-wrapper">
 

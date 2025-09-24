@@ -70,7 +70,7 @@ if (!function_exists('on_membership_customize_columns')) {
         if ($start_date) {
 ?>
             <p class="form-field billing-detail">
-                <label>Numero début :</label>
+                <label><?php _e( 'Numero début :', 'orgues-nouvelles' ); ?></label>
                 <?php echo "ON-", on_date_magazine_to_numero($start_date); ?>
             </p>
         <?php
@@ -78,14 +78,14 @@ if (!function_exists('on_membership_customize_columns')) {
         if ($next_payment_date) {
             ?>
             <p class="form-field billing-detail">
-                <label>Numero fin :</label>
+                <label><?php _e( 'Numero fin :', 'orgues-nouvelles' ); ?></label>
                 <?php echo "ON-", on_date_magazine_to_numero($next_payment_date); ?>
             </p>
 <?php
         } elseif ($end_date) {
         ?>
             <p class="form-field billing-detail">
-                <label>Numero fin :</label>
+                <label><?php _e( 'Numero fin :', 'orgues-nouvelles' ); ?></label>
                 <?php echo "ON-", on_date_magazine_to_numero($end_date); ?>
             </p>
 <?php

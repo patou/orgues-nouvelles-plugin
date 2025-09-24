@@ -117,13 +117,6 @@ if (!class_exists('WC_Email_Justificatif_Etudiant')):
                 }
                 $this->form_fields[$key] = $value;
             }
-            $this->form_fields['body'] = array(
-                'title' => __('Contenu de l\'email', 'orgues-nouvelles'),
-                'type' => 'textarea',
-                'description' => __('Texte de l\'email envoyé aux clients lorsqu\'ils choisissent le tarif étudiant pour leur demander un justificatif.', 'orgues-nouvelles'),
-                'default' => $this->get_default_body(),
-                'desc_tip' => true,
-            );
         }
 
         public function get_default_body()
@@ -151,7 +144,7 @@ if (!class_exists('WC_Email_Justificatif_Etudiant')):
              * @param string $body email body content
              * @param \WC_Email_Justificatif_Etudiant current email instance
              */
-            $body = (string) apply_filters("{$email_id}_email_body", $this->format_string($this->get_option('admin_recipient')), $this->object);
+            $body = (string) apply_filters("{$email_id}_email_body", $this->format_string($this->get_option('body')), $this->object);
 
             if (empty($body) || !is_string($body) || '' === trim($body)) {
                 $body = $this->get_default_body();
