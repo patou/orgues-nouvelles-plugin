@@ -279,8 +279,8 @@ msgstr "End number:"
 
 #: membership-profile-field-checkout-page.php:62
 msgid "Votre profil"
-msgstr "Your profil"
+msgstr "Your profile"
 
 #: membership-profile-field-checkout-page.php:63
 msgid "Merci de remplir ces informations pour mieux vous connaitre"
-msgstr "Please fill out this information to get to know you better."
+msgstr "Please fill out this information for us to know you better."
