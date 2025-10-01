@@ -210,7 +210,7 @@ function custom_pods_labels_in_pick_field_data($items, $name, $value, $options, 
         $pods_types = [
             'magazine'   => ['magazines', 'magazine', 'page_magazine'],
             'cd'         => ['cd', 'cds', 'page_cd'],
-            'partition'  => ['partitions', 'partition', 'page_partition'],
+            'partition'  => ['partitions', 'partition', 'page_partition', 'page_partitions'],
         ];
 
         $found_type = null;
