@@ -2,9 +2,9 @@
 /**
  * Orgues-Nouvelles Plugin
  *
- * @link              https://www.rto.de
+ * @link              https://github.com/patou/orgues-nouvelles-plugin/
  * @since             1.0.0
- * @package           DynamicTags
+ * @package           Orgues-Nouvelles Plugin
  *
  * @wordpress-plugin
  * Plugin Name:       Orgues-Nouvelles Plugin
@@ -44,6 +44,7 @@ function on_load_plugin() {
     require_once(__DIR__ . '/phone-orders.php');
     require_once(__DIR__ . '/advanced-order-export.php');
     require_once(__DIR__ . '/restrict-magazines.php');
+    require_once(__DIR__ . '/product-free-for-plans.php');
 
     add_action('admin_enqueue_scripts', 'on_admin_script');
     add_action('wp_enqueue_scripts', 'on_css_script');

@@ -210,14 +210,16 @@ if (!function_exists('on_liste_numeros')) {
         }
 
         $liste = array();
-        // Numéros individuels achetés par l'utilisateur
-        $user_pods = pods('user', $user_id);
-        $magazines = $user_pods->get_field('magazines');
-        if (!empty($magazines)) {
-            foreach ($magazines as $magazine) {
-                $magazine_id = $magazine['ID'];
-                $numero = pods('magazine', $magazine_id)->get_field('numero');
-                $liste[] = $numero;
+        // Numéros individuels achetés par l'utilisateur (si memberships_plan vide ou contient ON/ONED)
+        if (empty($memberships_plan) || in_array('on', (array) $memberships_plan) || in_array('oned', (array) $memberships_plan)) {
+            $user_pods = pods('user', $user_id);
+            $magazines = $user_pods->get_field('magazines');
+            if (!empty($magazines)) {
+                foreach ($magazines as $magazine) {
+                    $magazine_id = $magazine['ID'];
+                    $numero = pods('magazine', $magazine_id)->get_field('numero');
+                    $liste[] = $numero;
+                }
             }
         }
         // Numéros accessibles via les abonnements de l'utilisateur
