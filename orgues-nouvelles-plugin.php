@@ -39,6 +39,7 @@ function on_load_plugin() {
     require_once(__DIR__ . '/complete-order.php');
     require_once(__DIR__ . '/justificatif-etudiant.php');
     require_once(__DIR__ . '/membership-import-semicolon.php');
+    require_once(__DIR__ . '/membership-export-members.php');
     require_once(__DIR__ . '/edit-compte-gestionnaire.php');
     require_once(__DIR__ . '/update-subscriptions-price.php');
     require_once(__DIR__ . '/phone-orders.php');
