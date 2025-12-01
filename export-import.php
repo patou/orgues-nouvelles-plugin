@@ -7,7 +7,7 @@
 function on_wc_memberships_modify_member_export_headers( $headers ) {
 
 	// remove any unwanted headers
-	unset( $headers['membership_plan_id'], $headers['has_access'] );
+	unset( $headers['membership_plan_id'] );
 
 	$new_headers = array();
 
@@ -71,12 +71,13 @@ add_filter( 'wc_memberships_csv_import_user_memberships_data', 'on_wc_membership
 /**
  * Filtre le champ personnalisé nombre_exemplaires pour retourner 1 si vide ou égal à 0
  */
-function on_wc_memberships_filter_nombre_exemplaires( $value, $key, $user_membership ) {
-	if ( $key === 'nombre_exemplaires' ) {
-		if ( empty( $value ) || $value == 0 ) {
-			return 1;
+function on_wc_memberships_filter_nombre_exemplaires( $row_data, $user_membership ) {
+	if ( isset( $row_data['nombre_exemplaires'] ) ) {
+		$value = trim($row_data['nombre_exemplaires']);
+		if ( empty( $value ) || $value == 0 || $value == "0" ) {
+			$row_data['nombre_exemplaires'] = 1;
 		}
 	}
-	return $value;
+	return $row_data;
 }
-add_filter( 'wc_memberships_csv_export_user_memberships_nombre_exemplaires_column', 'on_wc_memberships_filter_nombre_exemplaires', 10, 3 );
+add_filter( 'wc_memberships_csv_export_user_memberships_row', 'on_wc_memberships_filter_nombre_exemplaires', 10, 2 );
