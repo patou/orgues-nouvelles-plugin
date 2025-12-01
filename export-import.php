@@ -67,3 +67,16 @@ function on_wc_memberships_modify_import_data( $import_data, $action, $columns, 
 	return $import_data;
 }
 add_filter( 'wc_memberships_csv_import_user_memberships_data', 'on_wc_memberships_modify_import_data', 10, 4 );
+
+/**
+ * Filtre le champ personnalisé nombre_exemplaires pour retourner 1 si vide ou égal à 0
+ */
+function on_wc_memberships_filter_nombre_exemplaires( $value, $key, $user_membership ) {
+	if ( $key === 'nombre_exemplaires' ) {
+		if ( empty( $value ) || $value == 0 ) {
+			return 1;
+		}
+	}
+	return $value;
+}
+add_filter( 'wc_memberships_csv_export_user_memberships_nombre_exemplaires_column', 'on_wc_memberships_filter_nombre_exemplaires', 10, 3 );
