@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 /**
  * Affiche les numéros ON dans la metabox de détails d'un abonnement
  */
-add_action('woocommerce_subscription_details_after_subscription_table', 'on_display_subscription_numeros', 10, 1);
+add_action('wcs_subscription_schedule_after_billing_schedule', 'on_display_subscription_numeros', 10, 1);
 
 function on_display_subscription_numeros($subscription) {
     if (!$subscription) {
@@ -71,7 +71,7 @@ function on_add_subscription_columns($columns) {
     foreach ($columns as $key => $column) {
         $new_columns[$key] = $column;
         
-        if ($key === 'order_total') {
+        if ($key === 'last_payment_date') {
             $new_columns['on_numero_debut'] = __('N° Début', 'orgues-nouvelles');
             $new_columns['on_numero_fin'] = __('N° Fin', 'orgues-nouvelles');
         }
@@ -128,7 +128,7 @@ function on_fill_subscription_columns($column, $post_id) {
 add_filter('manage_edit-shop_subscription_sortable_columns', 'on_make_subscription_columns_sortable');
 
 function on_make_subscription_columns_sortable($columns) {
-    $columns['on_numero_debut'] = 'on_numero_debut';
-    $columns['on_numero_fin'] = 'on_numero_fin';
+    $columns['on_numero_debut'] = 'start_date';
+    $columns['on_numero_fin'] = 'next_payment_date';
     return $columns;
 }
