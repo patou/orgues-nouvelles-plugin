@@ -39,6 +39,20 @@ function on_display_subscription_numeros($subscription) {
     
     $numero_end = !empty($date_fin) ? on_date_magazine_to_numero($date_fin) : $numero_start;
 
+    // Récupérer le membership lié à cet abonnement
+    $user_memberships = wc_memberships_get_user_memberships($subscription->get_user_id());
+    $linked_membership = null;
+    
+    foreach ($user_memberships as $membership) {
+        if ($membership instanceof \WC_Memberships_Integration_Subscriptions_User_Membership) {
+            $membership_subscription = $membership->get_subscription();
+            if ($membership_subscription && $membership_subscription->get_id() == $subscription->get_id()) {
+                $linked_membership = $membership;
+                break;
+            }
+        }
+    }
+
     // Afficher les numéros
     ?>
     <div class="on-subscription-numeros">
@@ -55,8 +69,16 @@ function on_display_subscription_numeros($subscription) {
                 </tr>
             </tbody>
         </table>
+        <?php if ($linked_membership): ?>
+        <p style="margin-top: 10px;">
+            <a href="<?php echo esc_url(admin_url('post.php?post=' . $linked_membership->get_id() . '&action=edit')); ?>" class="button">
+                <?php _e('Voir l\'adhésion', 'orgues-nouvelles'); ?>
+            </a>
+        </p>
+        <?php endif; ?>
     </div>
     <?php
+
 }
 
 /**

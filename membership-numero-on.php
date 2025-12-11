@@ -67,6 +67,13 @@ if (!function_exists('on_membership_customize_columns')) {
         $start_date = $user_membership->get_start_date();
         $end_date = $user_membership->get_end_date();
         $next_payment_date = on_next_payment_date_membership($user_membership);
+        
+        // Récupérer l'abonnement lié à ce membership
+        $linked_subscription = null;
+        if ($user_membership instanceof \WC_Memberships_Integration_Subscriptions_User_Membership) {
+            $linked_subscription = $user_membership->get_subscription();
+        }
+        
         ?>
          <div class="on-subscription-numeros">
         <h3 style="margin-top: 0;"><?php _e('Numéros de Orgues-Nouvelles', 'orgues-nouvelles'); ?></h3>
@@ -94,8 +101,16 @@ if (!function_exists('on_membership_customize_columns')) {
                 ?>
             </tbody>
         </table>
+        <?php if ($linked_subscription): ?>
+        <p style="margin-top: 10px;">
+            <a href="<?php echo esc_url(admin_url('post.php?post=' . $linked_subscription->get_id() . '&action=edit')); ?>" class="button">
+                <?php _e('Voir l\'abonnement', 'orgues-nouvelles'); ?>
+            </a>
+        </p>
+        <?php endif; ?>
     </div>
         <?php
+
     }
     add_action('wc_memberships_after_user_membership_details', 'on_wc_memberships_after_user_membership_details', 10, 1);
 }
