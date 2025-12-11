@@ -46,6 +46,7 @@ function on_load_plugin() {
     require_once(__DIR__ . '/advanced-order-export.php');
     require_once(__DIR__ . '/restrict-magazines.php');
     require_once(__DIR__ . '/product-free-for-plans.php');
+    require_once(__DIR__ . '/subscription.php');
 
     add_action('admin_enqueue_scripts', 'on_admin_script');
     add_action('wp_enqueue_scripts', 'on_css_script');
