@@ -41,8 +41,8 @@ function on_display_subscription_numeros($subscription) {
 
     // Afficher les numéros
     ?>
-    <div class="on-subscription-numeros" style="margin-top: 20px; padding: 15px; background: #f8f8f8; border: 1px solid #ddd; border-radius: 4px;">
-        <h3 style="margin-top: 0;"><?php _e('Numéros de magazines', 'orgues-nouvelles'); ?></h3>
+    <div class="on-subscription-numeros">
+        <h3 style="margin-top: 0;"><?php _e('Numéros de Orgues-Nouvelles', 'orgues-nouvelles'); ?></h3>
         <table class="shop_table">
             <tbody>
                 <tr>

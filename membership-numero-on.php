@@ -67,29 +67,35 @@ if (!function_exists('on_membership_customize_columns')) {
         $start_date = $user_membership->get_start_date();
         $end_date = $user_membership->get_end_date();
         $next_payment_date = on_next_payment_date_membership($user_membership);
-        if ($start_date) {
-?>
-            <p class="form-field billing-detail">
-                <label><?php _e( 'Numero début :', 'orgues-nouvelles' ); ?></label>
-                <?php echo "ON-", on_date_magazine_to_numero($start_date); ?>
-            </p>
-        <?php
-        }
-        if ($next_payment_date) {
-            ?>
-            <p class="form-field billing-detail">
-                <label><?php _e( 'Numero fin :', 'orgues-nouvelles' ); ?></label>
-                <?php echo "ON-", on_date_magazine_to_numero($next_payment_date); ?>
-            </p>
-<?php
-        } elseif ($end_date) {
         ?>
-            <p class="form-field billing-detail">
-                <label><?php _e( 'Numero fin :', 'orgues-nouvelles' ); ?></label>
-                <?php echo "ON-", on_date_magazine_to_numero($end_date); ?>
-            </p>
-<?php
-        }
+         <div class="on-subscription-numeros">
+        <h3 style="margin-top: 0;"><?php _e('Numéros de Orgues-Nouvelles', 'orgues-nouvelles'); ?></h3>
+        <table class="shop_table">
+            <tbody>
+                <?php
+                 if ($start_date) {
+                    $numero_debut = on_date_magazine_to_numero($start_date);
+                    ?>
+                <tr>
+                    <th><?php _e('Numéro de début:', 'orgues-nouvelles'); ?></th>
+                    <td><strong>ON-<?php echo esc_html($numero_debut); ?></strong></td>
+                </tr>
+                <?php
+                 }
+                 if ($next_payment_date || $end_date) {
+                    $numero_end = $next_payment_date ? on_date_magazine_to_numero($next_payment_date) : on_date_magazine_to_numero($end_date);
+                    ?>
+                <tr>
+                    <th><?php _e('Numéro de fin:', 'orgues-nouvelles'); ?></th>
+                    <td><strong>ON-<?php echo esc_html($numero_end); ?></strong></td>
+                </tr>
+                <?php
+                 }
+                ?>
+            </tbody>
+        </table>
+    </div>
+        <?php
     }
     add_action('wc_memberships_after_user_membership_details', 'on_wc_memberships_after_user_membership_details', 10, 1);
 }
