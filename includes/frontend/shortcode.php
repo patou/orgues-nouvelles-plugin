@@ -1,4 +1,4 @@
-<?
+<?php
 // Shortcode to output custom PHP in Elementor
 if (!function_exists('on_content_shortcode')) {
     function on_content_shortcode( $atts ) {
