@@ -1,5 +1,4 @@
 <?php 
-require_once('orgues-nouvelles.php');
 if (!function_exists('on_account_dashboard')) {
     // Affiche le contenu de la page "Mon compte" dans le dashboard
     function on_account_dashboard() {
