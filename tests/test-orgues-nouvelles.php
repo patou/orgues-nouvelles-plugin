@@ -1,23 +1,28 @@
-<?php 
+<?php
 
-require_once(__DIR__. '/../orgues-nouvelles.php');
+use PHPUnit\Framework\TestCase;
 
-function test_on_date_magazine_to_numero($expected, $date) {
-    echo "Test with $date n°$expected : ";
-    $actual = on_date_magazine_to_numero($date);
-    if ($expected === $actual) {
-        echo "OK\n";
-    } else {
-        echo "KO $actual != $expected\n";
+class OrguesNouvellesTest extends TestCase {
+
+    /**
+     * @dataProvider dateMagazineProvider
+     */
+    public function test_on_date_magazine_to_numero($expected, $date) {
+        $actual = on_date_magazine_to_numero($date);
+        $this->assertEquals($expected, $actual, "Failed for date: $date");
+    }
+
+    public function dateMagazineProvider() {
+        return [
+            [0, '2000-04'],
+            [0, '2008-04'],
+            [1, '2008-06'],
+            [1, '2008-09'],
+            [63, '2023-12'],
+        ];
     }
 }
 
-echo "Test on_date_magazine_to_numero\n";
-test_on_date_magazine_to_numero(0, '2000-04');
-test_on_date_magazine_to_numero(0, '2008-04');
-test_on_date_magazine_to_numero(1, '2008-06');
-test_on_date_magazine_to_numero(1, '2008-09');
-test_on_date_magazine_to_numero(63, '2023-12');
 test_on_date_magazine_to_numero(63, '2024-01');
 test_on_date_magazine_to_numero(64, '2024-03');
 test_on_date_magazine_to_numero(72, '2026-03');

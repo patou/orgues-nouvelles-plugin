@@ -1,0 +1,21 @@
+{
+    "name": "orgues-nouvelles/orgues-nouvelles-plugin",
+    "description": "Plugin pour ajouter des fonctionnalités au site orgues nouvelles.",
+    "type": "wordpress-plugin",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Patrice de Saint Steban",
+            "email": "patrice@desaintsteban.fr"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "OrguesNouvelles\\": "includes/"
+        }
+    }
+}
