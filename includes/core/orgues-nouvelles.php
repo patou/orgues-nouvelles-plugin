@@ -64,7 +64,6 @@ $numeros = array(
     61 => "2023-06",
     62 => "2023-10",
     63 => "2023-12",
-    // Future
     64 => "2024-03",
     65 => "2024-06",
     66 => "2024-10",
@@ -73,6 +72,15 @@ $numeros = array(
     69 => "2025-06",
     70 => "2025-10",
     71 => "2025-12",
+    72 => "2026-03",
+    73 => "2026-06",
+    74 => "2026-10",
+    75 => "2026-12",
+    76 => "2027-03",
+    77 => "2027-06",
+    78 => "2027-10",
+    79 => "2027-12",
+
 );
 
 // Pour les tests
@@ -95,28 +103,55 @@ if (!function_exists('on_date_magazine_to_numero')) {
     function on_date_magazine_to_numero($date)
     {
         $numeros = get_option('configuration_orgues-nouvelles_numeros_on');
-        $numero = 0;
-        $date = new DateTime($date . (strlen($date) == 7 ? '-15' : ''));
-        $date->setTime(0, 0, 0);
-        $yearmonth = $date->format('Y-m');
+        
+        $input_date = new DateTime($date . (strlen($date) == 7 ? '-15' : ''));
+        $input_date->setTime(0, 0, 0);
 
-        $numero = 0;
-        if ($yearmonth <= $numeros[0])
-            return $numero;
-        $numero_max = count($numeros);
-        while ($numero < $numero_max && $yearmonth >= $numeros[$numero]) {
-            $numero++;
-        }
-        if ($numero == $numero_max) {
-            $start = new DateTime($numeros[$numero_max - 1]);
-            $start->add(new DateInterval('P3M'));
-            while ($start->format('Y-m') <= $yearmonth) {
-                $start->add(new DateInterval('P3M'));
-                $numero++;
+        $found_numero = 0;
+        $last_pub_date = null;
+
+        foreach ($numeros as $num_idx => $pub_month) {
+            $pub_date = new DateTime($pub_month . '-01');
+            $last_pub_date = clone $pub_date;
+            
+            // Date de début = 15 du mois précédent la parution
+            $start_date = clone $pub_date;
+            $start_date->modify('first day of previous month');
+            $start_date->setDate($start_date->format('Y'), $start_date->format('m'), 15);
+            $start_date->setTime(0, 0, 0);
+
+            if ($input_date > $start_date) {
+                $found_numero = $num_idx;
+            } else {
+                return $found_numero;
             }
         }
 
-        return $numero - 1;
+        // Gestion du futur (après le tableau)
+        while (true) {
+            $month = (int)$last_pub_date->format('m');
+            
+            $add_months = 3;
+            if ($month == 3) $add_months = 3;      // 03 -> 06
+            elseif ($month == 6) $add_months = 4;  // 06 -> 10
+            elseif ($month == 10) $add_months = 2; // 10 -> 12
+            elseif ($month == 12) $add_months = 3; // 12 -> 03
+            
+            $last_pub_date->modify("+$add_months months");
+            
+            $start_date = clone $last_pub_date;
+            $start_date->modify('first day of previous month');
+            $start_date->setDate($start_date->format('Y'), $start_date->format('m'), 15);
+            $start_date->setTime(0, 0, 0);
+            
+            if ($input_date > $start_date) {
+                $found_numero++;
+            } else {
+                break;
+            }
+        }
+
+        return $found_numero;
     }
 }
 
@@ -126,23 +161,35 @@ if (!function_exists('on_numero_to_date_magazine')) {
      * 
      * @param int $numero Numéro de magazine
      */
-    function on_numero_to_date_magazine($numero, )
+    function on_numero_to_date_magazine($numero)
     {
         $numeros = get_option('configuration_orgues-nouvelles_numeros_on');
         if ($numero < 0)
             return $numeros[0];
-        if ($numero > 600)
-            return '';
-        if ($numero >= count($numeros)) {
-            $start = new DateTime($numeros[count($numeros) - 1]);
-            $start->add(new DateInterval('P3M'));
-            while ($numero > count($numeros)) {
-                $start->add(new DateInterval('P3M'));
-                $numero--;
-            }
-            return $start->format('Y-m');
+        
+        $count = count($numeros);
+        if ($numero < $count) {
+            return $numeros[$numero];
         }
-        return $numeros[$numero];
+
+        // Futur
+        $last_pub_date = new DateTime($numeros[$count - 1] . '-01');
+        $current_num = $count - 1;
+
+        while ($current_num < $numero) {
+            $month = (int)$last_pub_date->format('m');
+            
+            $add_months = 3;
+            if ($month == 3) $add_months = 3;
+            elseif ($month == 6) $add_months = 4;
+            elseif ($month == 10) $add_months = 2;
+            elseif ($month == 12) $add_months = 3;
+            
+            $last_pub_date->modify("+$add_months months");
+            $current_num++;
+        }
+        
+        return $last_pub_date->format('Y-m');
     }
 }
 
@@ -238,9 +285,31 @@ if (!function_exists('on_liste_numeros')) {
             }
             $start_date = $membership->get_start_date();
             $end_date = $membership->get_end_date();
-            $numero_start = on_date_magazine_to_numero($start_date);
             $next_payment_date = on_next_payment_date_membership($membership);
-            $numero_end = min(on_date_magazine_to_numero($next_payment_date), on_date_magazine_to_numero($end_date));
+            
+            // Determine effective end date
+            $effective_end_date = $end_date;
+            if (!empty($next_payment_date)) {
+                if (empty($end_date) || $next_payment_date < $end_date) {
+                    $effective_end_date = $next_payment_date;
+                }
+            }
+
+            $numero_start = on_date_magazine_to_numero($start_date);
+            $numero_end = on_date_magazine_to_numero($effective_end_date);
+
+            // Fix: Exclude issue if subscription ends before the 15th of the month following publication
+            $pub_date = on_numero_to_date_magazine($numero_end);
+            if ($pub_date) {
+                // pub_date is YYYY-MM
+                // We want YYYY-MM-15 + 1 month
+                $limit_date = date('Y-m-d', strtotime($pub_date . '-15 +1 month'));
+                
+                if (substr($effective_end_date, 0, 10) < $limit_date) {
+                    $numero_end--;
+                }
+            }
+
             for ($numero = $numero_start; $numero <= $numero_end; $numero++) {
                 $liste[] = $numero;
             }

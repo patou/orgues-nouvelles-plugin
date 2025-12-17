@@ -67,6 +67,42 @@ class SubscriptionTest extends TestCase {
         $this->assertEquals(65, $numero_end, "End number should be 65 (2024-06)");
     }
 
+    public function test_subscription_rules_strict() {
+        // Scenario 1: 16 Nov 2025 -> 71 to 74
+        $this->check_subscription_range('2025-11-16', '2026-11-16', 71, 74);
+
+        // Scenario 2: 15 Nov 2025 -> 70 to 74 (Assuming 1 year covers end of #70 and end of #74)
+        // Note: If 15 Nov is the boundary, and sub ends 15 Nov 26.
+        // #70 ends 15 Nov 25. Covered.
+        // #74 ends 15 Nov 26. Covered.
+        $this->check_subscription_range('2025-11-15', '2026-11-15', 70, 74);
+
+        // Scenario 3: 14 Feb 2026 -> 71 to 74
+        $this->check_subscription_range('2026-02-14', '2027-02-14', 71, 74);
+
+        // Scenario 4: 16 Feb 2026 -> 72 to 75
+        $this->check_subscription_range('2026-02-16', '2027-02-16', 72, 75);
+    }
+
+    private function check_subscription_range($start, $end, $expected_start, $expected_end) {
+        $numero_start = on_date_magazine_to_numero($start);
+        
+        // Logic to be implemented in on_liste_numeros
+        $numero_end = on_date_magazine_to_numero($end);
+        
+        // Calculate limit date for the calculated end number
+        // Limit date is 15th of month before NEXT publication
+        $next_pub_date = on_numero_to_date_magazine($numero_end + 1);
+        $limit_date = date('Y-m-d', strtotime($next_pub_date . '-15 -1 month'));
+        
+        if ($end < $limit_date) {
+            $numero_end--;
+        }
+
+        $this->assertEquals($expected_start, $numero_start, "Start number for $start");
+        $this->assertEquals($expected_end, $numero_end, "End number for $end");
+    }
+
     public function test_format_display() {
         // Test 4: Format d'affichage
         $test_dates = array(
