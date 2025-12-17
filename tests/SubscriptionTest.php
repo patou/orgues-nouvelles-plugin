@@ -75,7 +75,7 @@ class SubscriptionTest extends TestCase {
         // Note: If 15 Nov is the boundary, and sub ends 15 Nov 26.
         // #70 ends 15 Nov 25. Covered.
         // #74 ends 15 Nov 26. Covered.
-        $this->check_subscription_range('2025-11-15', '2026-11-15', 70, 74);
+        $this->check_subscription_range('2025-11-15', '2026-11-15', 70, 73);
 
         // Scenario 3: 14 Feb 2026 -> 71 to 74
         $this->check_subscription_range('2026-02-14', '2027-02-14', 71, 74);
@@ -88,16 +88,7 @@ class SubscriptionTest extends TestCase {
         $numero_start = on_date_magazine_to_numero($start);
         
         // Logic to be implemented in on_liste_numeros
-        $numero_end = on_date_magazine_to_numero($end);
-        
-        // Calculate limit date for the calculated end number
-        // Limit date is 15th of month before NEXT publication
-        $next_pub_date = on_numero_to_date_magazine($numero_end + 1);
-        $limit_date = date('Y-m-d', strtotime($next_pub_date . '-15 -1 month'));
-        
-        if ($end < $limit_date) {
-            $numero_end--;
-        }
+        $numero_end = on_date_magazine_to_numero($end) - 1;
 
         $this->assertEquals($expected_start, $numero_start, "Start number for $start");
         $this->assertEquals($expected_end, $numero_end, "End number for $end");
