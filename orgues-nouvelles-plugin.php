@@ -26,7 +26,7 @@ function on_load_plugin() {
     require_once(__DIR__ . '/includes/core/orgues-nouvelles.php');
     
     // Charger les modules WooCommerce Memberships (si le plugin est actif)
-    if (function_exists('wc_memberships')) {
+    if (class_exists('WC_Memberships')) {
         require_once(__DIR__ . '/includes/memberships/membership-numero-on.php');
         require_once(__DIR__ . '/includes/memberships/export-import.php');
         require_once(__DIR__ . '/includes/memberships/membership-export-members.php');
