@@ -50,6 +50,51 @@ class OrguesNouvellesTest extends TestCase {
             ['2027-03', 76],
         ];
     }
+
+    /**
+     * @dataProvider subscriptionInfoProvider
+     */
+    public function test_on_get_subscription_info($start, $end, $expected) {
+        $actual = on_get_subscription_info($start, $end);
+        $this->assertEquals($expected, $actual, "Failed for range: $start to $end");
+    }
+
+    public function subscriptionInfoProvider() {
+        return [
+            // 16 Nov 2025 -> 71 to 74
+            ['2025-11-16', '2026-11-16', [
+                'numero_debut' => 71,
+                'mois_debut' => '2025-12',
+                'numero_fin' => 74,
+                'mois_fin' => '2026-10',
+                'nombre_numeros' => 4
+            ]],
+            // 15 Nov 2025 -> 70 to 73
+            ['2025-11-15', '2026-11-15', [
+                'numero_debut' => 70,
+                'mois_debut' => '2025-10',
+                'numero_fin' => 73,
+                'mois_fin' => '2026-06',
+                'nombre_numeros' => 4
+            ]],
+            // 14 Feb 2026 -> 71 to 74
+            ['2026-02-14', '2027-02-14', [
+                'numero_debut' => 71,
+                'mois_debut' => '2025-12',
+                'numero_fin' => 74,
+                'mois_fin' => '2026-10',
+                'nombre_numeros' => 4
+            ]],
+            // 16 Feb 2026 -> 72 to 75
+            ['2026-02-16', '2027-02-16', [
+                'numero_debut' => 72,
+                'mois_debut' => '2026-03',
+                'numero_fin' => 75,
+                'mois_fin' => '2026-12',
+                'nombre_numeros' => 4
+            ]],
+        ];
+    }
 }
 
 
