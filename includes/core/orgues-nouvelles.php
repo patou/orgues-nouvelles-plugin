@@ -130,13 +130,16 @@ if (!function_exists('on_date_magazine_to_numero')) {
         // Gestion du futur (après le tableau)
         while (true) {
             $month = (int)$last_pub_date->format('m');
-            
-            $add_months = 3;
-            if ($month == 3) $add_months = 3;      // 03 -> 06
-            elseif ($month == 6) $add_months = 4;  // 06 -> 10
-            elseif ($month == 10) $add_months = 2; // 10 -> 12
-            elseif ($month == 12) $add_months = 3; // 12 -> 03
-            
+            switch ($month) {
+                case 6:
+                    $add_months = 4;  // 06 -> 10
+                    break;
+                case 10:
+                    $add_months = 2; // 10 -> 12
+                    break;
+                default: // For months 3 and 12
+                    $add_months = 3;
+            }
             $last_pub_date->modify("+$add_months months");
             
             $start_date = clone $last_pub_date;
@@ -178,13 +181,16 @@ if (!function_exists('on_numero_to_date_magazine')) {
 
         while ($current_num < $numero) {
             $month = (int)$last_pub_date->format('m');
-            
-            $add_months = 3;
-            if ($month == 3) $add_months = 3;
-            elseif ($month == 6) $add_months = 4;
-            elseif ($month == 10) $add_months = 2;
-            elseif ($month == 12) $add_months = 3;
-            
+            switch ($month) {
+                case 6:
+                    $add_months = 4;  // 06 -> 10
+                    break;
+                case 10:
+                    $add_months = 2; // 10 -> 12
+                    break;
+                default: // For months 3 and 12
+                    $add_months = 3;
+            }
             $last_pub_date->modify("+$add_months months");
             $current_num++;
         }
@@ -296,19 +302,7 @@ if (!function_exists('on_liste_numeros')) {
             }
 
             $numero_start = on_date_magazine_to_numero($start_date);
-            $numero_end = on_date_magazine_to_numero($effective_end_date);
-
-            // Fix: Exclude issue if subscription ends before the 15th of the month following publication
-            $pub_date = on_numero_to_date_magazine($numero_end);
-            if ($pub_date) {
-                // pub_date is YYYY-MM
-                // We want YYYY-MM-15 + 1 month
-                $limit_date = date('Y-m-d', strtotime($pub_date . '-15 +1 month'));
-                
-                if (substr($effective_end_date, 0, 10) < $limit_date) {
-                    $numero_end--;
-                }
-            }
+            $numero_end = on_date_magazine_to_numero($effective_end_date) - 1;
 
             for ($numero = $numero_start; $numero <= $numero_end; $numero++) {
                 $liste[] = $numero;
