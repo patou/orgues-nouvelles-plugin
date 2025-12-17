@@ -22,11 +22,15 @@
 function on_load_plugin() {
     load_plugin_textdomain( 'orgues-nouvelles', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
     
+    if ( ! function_exists( 'is_plugin_active' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+    }
+
     // Charger le fichier core (PRIORITÉ 1 - nécessaire pour tous les autres fichiers)
     require_once(__DIR__ . '/includes/core/orgues-nouvelles.php');
     
     // Charger les modules WooCommerce Memberships (si le plugin est actif)
-    if (class_exists('WC_Memberships')) {
+    if (is_plugin_active('woocommerce-memberships/woocommerce-memberships.php')) {
         require_once(__DIR__ . '/includes/memberships/membership-numero-on.php');
         require_once(__DIR__ . '/includes/memberships/export-import.php');
         require_once(__DIR__ . '/includes/memberships/membership-export-members.php');
@@ -37,13 +41,13 @@ function on_load_plugin() {
     }
     
     // Charger les modules WooCommerce Subscriptions (si le plugin est actif)
-    if (class_exists('WC_Subscriptions')) {
+    if (is_plugin_active('woocommerce-subscriptions/woocommerce-subscriptions.php')) {
         require_once(__DIR__ . '/includes/subscriptions/subscription.php');
         require_once(__DIR__ . '/includes/subscriptions/update-subscriptions-price.php');
     }
     
     // Charger les modules de gestion des commandes WooCommerce
-    if (class_exists('WooCommerce')) {
+    if (is_plugin_active('woocommerce/woocommerce.php')) {
         require_once(__DIR__ . '/includes/orders/complete-order.php');
         require_once(__DIR__ . '/includes/orders/check-abonnement-france.php');
         require_once(__DIR__ . '/includes/orders/justificatif-etudiant.php');
@@ -52,24 +56,24 @@ function on_load_plugin() {
     }
     
     // Charger les modules de gestion des produits
-    if (class_exists('WooCommerce') && function_exists('pods')) {
+    if (is_plugin_active('woocommerce/woocommerce.php') && is_plugin_active('pods/init.php')) {
         require_once(__DIR__ . '/includes/products/product-free-for-plans.php');
         require_once(__DIR__ . '/includes/products/restrict-magazines.php');
     }
     
     // Charger les modules frontend
     require_once(__DIR__ . '/includes/frontend/shortcode.php');
-    if (class_exists('WooCommerce') && function_exists('wc_memberships')) {
+    if (is_plugin_active('woocommerce/woocommerce.php') && is_plugin_active('woocommerce-memberships/woocommerce-memberships.php')) {
         require_once(__DIR__ . '/includes/frontend/mon-compte.php');
     }
-    if (function_exists('pll_current_language')) {
+    if (is_plugin_active('polylang-pro/polylang.php') || is_plugin_active('polylang/polylang.php')) {
         require_once(__DIR__ . '/includes/frontend/search.php');
         require_once(__DIR__ . '/includes/frontend/url-ressources.php');
     }
     
     // Charger les modules admin
     require_once(__DIR__ . '/includes/admin/on-admin.php');
-    if (class_exists('WooCommerce')) {
+    if (is_plugin_active('woocommerce/woocommerce.php')) {
         require_once(__DIR__ . '/includes/admin/edit-compte-gestionnaire.php');
     }
     
