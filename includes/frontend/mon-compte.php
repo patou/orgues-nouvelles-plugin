@@ -134,6 +134,6 @@ function on_ajouter_contenu_mes_magazines()
 {
     on_ajouter_mes_magazines_code();
     $numeros = on_liste_numeros();
-    include plugin_dir_path(__FILE__) . 'templates/mon-compte-mes-magazines.php'; // Chemin vers votre modèle
+    include ORGUES_NOUVELLES_PLUGIN_DIR . 'templates/mon-compte-mes-magazines.php'; // Chemin vers votre modèle
 }
 add_action('woocommerce_account_mes-magazines_endpoint', 'on_ajouter_contenu_mes_magazines');

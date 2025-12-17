@@ -19,6 +19,8 @@
  * Domain Path:       /languages
  */
 
+define( 'ORGUES_NOUVELLES_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+
 function on_load_plugin() {
     load_plugin_textdomain( 'orgues-nouvelles', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
     
