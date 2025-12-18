@@ -280,24 +280,48 @@ msgstr "Please fill out this information for us to know you better."
 msgid "Inclus"
 msgstr "Included"
 
-#: includes/memberships/membership-numero-on.php:79
-#: includes/subscriptions/subscription.php:59
+#: includes/memberships/membership-numero-on.php:101
+#: includes/subscriptions/subscription.php:57
 msgid "Numéros de Orgues-Nouvelles"
-msgstr "Orgues-Nouvelles Magazine"
+msgstr "Orgues-Nouvelles Number"
 
-#: includes/memberships/membership-numero-on.php:87
-#: includes/subscriptions/subscription.php:63
+#: includes/memberships/membership-numero-on.php:108
+#: includes/subscriptions/subscription.php:61
 msgid "Numéro de début:"
-msgstr "Starting number:"
+msgstr "Start number:"
 
-#: includes/memberships/membership-numero-on.php:96
-#: includes/subscriptions/subscription.php:67
+#: includes/memberships/membership-numero-on.php:116
+#: includes/subscriptions/subscription.php:65
 msgid "Numéro de fin:"
-msgstr "Ending number:"
+msgstr "End number:"
 
-#: includes/memberships/membership-numero-on.php:107
+#: includes/memberships/membership-numero-on.php:120
+#: includes/subscriptions/subscription.php:69
+msgid "Nombre de numéros:"
+msgstr "Number of magazine:"
+
+#: includes/memberships/membership-numero-on.php:131
 msgid "Voir l'abonnement"
 msgstr "View subscription"
+
+#: includes/orders/email-subscription-info.php:42
+msgid "Informations sur votre abonnement"
+msgstr "Subscription Information"
+
+#: includes/orders/email-subscription-info.php:45
+#, php-format
+msgid "Numéro de début : ON-%s (%s)"
+msgstr "Start number: ON-%s (%s)"
+
+#: includes/orders/email-subscription-info.php:50
+#, php-format
+msgid "Numéro de fin : ON-%s (%s)"
+msgstr "End number: ON-%s (%s)"
+
+#: includes/orders/email-subscription-info.php:55
+#, php-format
+msgid "Nombre de numéros : %s"
+msgstr "Number of magazine: %s"
 
 #: includes/products/direct-download-free.php:16
 msgid "Lien de téléchargement invalide ou expiré."
@@ -352,15 +376,15 @@ msgstr "Unable to generate the download link for this free product. Your order h
 msgid "Télécharger"
 msgstr "Download"
 
-#: includes/subscriptions/subscription.php:75
+#: includes/subscriptions/subscription.php:77
 msgid "Voir l'adhésion"
 msgstr "View membership"
 
-#: includes/subscriptions/subscription.php:97
+#: includes/subscriptions/subscription.php:99
 msgid "N° Début"
 msgstr "Start No."
 
-#: includes/subscriptions/subscription.php:98
+#: includes/subscriptions/subscription.php:100
 msgid "N° Fin"
 msgstr "End No."
 
