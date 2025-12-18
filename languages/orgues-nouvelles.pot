@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-24T22:46:20+00:00\n"
+"POT-Creation-Date: 2025-12-18T23:40:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: orgues-nouvelles\n"
@@ -39,157 +39,267 @@ msgstr ""
 msgid "https://patou.dev"
 msgstr ""
 
-#: check-abonnement-france.php:23
-msgid "Vous devez selectionner la livraison Monde pour une livraison en dehors de la France lors de votre abonnement à Orgues-Nouvelles"
-msgstr ""
-
-#: justificatif-etudiant.php:11
-msgid "Demande de justificatif étudiants"
-msgstr ""
-
-#: justificatif-etudiant.php:13
-msgid "Cet email est envoyé lorsqu'un abonné choisit le tarif étudiant pour lui demander d'envoyer un justificatif."
-msgstr ""
-
-#: justificatif-etudiant.php:79
-msgid "[{site_title}]: Demande de justificatif pour votre commande"
-msgstr ""
-
-#: justificatif-etudiant.php:90
-msgid "Demande de justificatif pour votre Abonnement"
-msgstr ""
-
-#: justificatif-etudiant.php:110
-msgid "Contenu de l'email"
-msgstr ""
-
-#: justificatif-etudiant.php:113
-msgid "Texte de l'email envoyé aux clients lorsqu'ils choisissent le tarif étudiant pour leur demander un justificatif."
-msgstr ""
-
-#: justificatif-etudiant.php:124
-msgid "Nous vous demandons de bien vouloir nous fournir un justificatif de votre statut étudiant pour valider votre abonnement."
-msgstr ""
-
-#: justificatif-etudiant.php:247
-msgid "Demande de justificatif"
-msgstr ""
-
-#: justificatif-etudiant.php:248
-msgid "Cochez cette case pour demander un justificatif pour cette variation."
-msgstr ""
-
-#: last-post-menu-item.php:4
+#: includes/content/last-post-menu-item.php:4
 msgid "Last post"
 msgstr ""
 
-#: last-post-menu-item.php:59
+#: includes/content/last-post-menu-item.php:59
 msgid "Last"
 msgstr ""
 
-#: membership-numero-on.php:73
-msgid "Numero début :"
+#: includes/elementor/widgets/search-result-content.php:17
+msgid "Contenu du Résultat de Recherche"
 msgstr ""
 
-#: membership-numero-on.php:81
-#: membership-numero-on.php:88
-msgid "Numero fin :"
+#: includes/elementor/widgets/search-result-content.php:32
+msgid "Paramètres du Contenu"
 msgstr ""
 
-#: membership-profile-field-checkout-page.php:62
-msgid "Votre profil"
+#: includes/elementor/widgets/search-result-content.php:40
+msgid "ID du Post"
 msgstr ""
 
-#: membership-profile-field-checkout-page.php:63
-msgid "Merci de remplir ces informations pour mieux vous connaitre"
+#: includes/elementor/widgets/search-result-content.php:42
+msgid "Laissez vide pour le post actuel (dans une boucle de recherche). Entrez un ID de post spécifique."
 msgstr ""
 
-#: mon-compte.php:27
+#: includes/elementor/widgets/search-result-content.php:50
+msgid "Mots avant/après le terme de recherche"
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:54
+msgid "Nombre de mots à afficher avant et après chaque occurrence du terme de recherche."
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:72
+msgid "Balise de mise en évidence"
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:75
+msgid "Strong (Gras)"
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:76
+msgid "Em (Italique)"
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:77
+msgid "Mark (Surligné)"
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:78
+msgid "Span (Personnalisé)"
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:87
+msgid "Classe CSS pour la mise en évidence"
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:90
+msgid "Ajoutez une classe CSS personnalisée si vous utilisez une balise <span>."
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:205
+msgid "Post non trouvé."
+msgstr ""
+
+#: includes/elementor/widgets/search-result-content.php:208
+msgid "Aucun ID de post spécifié ou post actuel introuvable."
+msgstr ""
+
+#: includes/frontend/mon-compte.php:26
 msgid "Numero début"
 msgstr ""
 
-#: mon-compte.php:30
+#: includes/frontend/mon-compte.php:29
 msgid "Numero fin"
 msgstr ""
 
-#: mon-compte.php:78
+#: includes/frontend/mon-compte.php:77
 msgid "Mes magazines"
 msgstr ""
 
-#: mon-compte.php:122
+#: includes/frontend/mon-compte.php:121
 msgid "Magazine ajouté avec succès !"
 msgstr ""
 
-#: mon-compte.php:124
+#: includes/frontend/mon-compte.php:123
 msgid "Ce magazine est déjà dans votre liste."
 msgstr ""
 
-#: mon-compte.php:130
+#: includes/frontend/mon-compte.php:129
 msgid "Code invalide."
 msgstr ""
 
-#: restrict-magazines.php:11
+#: includes/memberships/membership-numero-on.php:101
+#: includes/subscriptions/subscription.php:57
+msgid "Numéros de Orgues-Nouvelles"
+msgstr ""
+
+#: includes/memberships/membership-numero-on.php:108
+#: includes/subscriptions/subscription.php:61
+msgid "Numéro de début:"
+msgstr ""
+
+#: includes/memberships/membership-numero-on.php:116
+#: includes/subscriptions/subscription.php:65
+msgid "Numéro de fin:"
+msgstr ""
+
+#: includes/memberships/membership-numero-on.php:120
+#: includes/subscriptions/subscription.php:69
+msgid "Nombre de numéros:"
+msgstr ""
+
+#: includes/memberships/membership-numero-on.php:131
+msgid "Voir l'abonnement"
+msgstr ""
+
+#: includes/memberships/membership-profile-field-checkout-page.php:62
+msgid "Votre profil"
+msgstr ""
+
+#: includes/memberships/membership-profile-field-checkout-page.php:63
+msgid "Merci de remplir ces informations pour mieux vous connaitre"
+msgstr ""
+
+#: includes/orders/check-abonnement-france.php:23
+msgid "Vous devez selectionner la livraison Monde pour une livraison en dehors de la France lors de votre abonnement à Orgues-Nouvelles"
+msgstr ""
+
+#: includes/orders/email-subscription-info.php:42
+msgid "Informations sur votre abonnement"
+msgstr ""
+
+#: includes/orders/email-subscription-info.php:45
+#, php-format
+msgid "Numéro de début : ON-%s (%s)"
+msgstr ""
+
+#: includes/orders/email-subscription-info.php:50
+#, php-format
+msgid "Numéro de fin : ON-%s (%s)"
+msgstr ""
+
+#: includes/orders/email-subscription-info.php:55
+#, php-format
+msgid "Nombre de numéros : %s"
+msgstr ""
+
+#: includes/orders/justificatif-etudiant.php:11
+msgid "Demande de justificatif étudiants"
+msgstr ""
+
+#: includes/orders/justificatif-etudiant.php:13
+msgid "Cet email est envoyé lorsqu'un abonné choisit le tarif étudiant pour lui demander d'envoyer un justificatif."
+msgstr ""
+
+#: includes/orders/justificatif-etudiant.php:79
+msgid "[{site_title}]: Demande de justificatif pour votre commande"
+msgstr ""
+
+#: includes/orders/justificatif-etudiant.php:90
+msgid "Demande de justificatif pour votre Abonnement"
+msgstr ""
+
+#: includes/orders/justificatif-etudiant.php:110
+msgid "Contenu de l'email"
+msgstr ""
+
+#: includes/orders/justificatif-etudiant.php:113
+msgid "Texte de l'email envoyé aux clients lorsqu'ils choisissent le tarif étudiant pour leur demander un justificatif."
+msgstr ""
+
+#: includes/orders/justificatif-etudiant.php:124
+msgid "Nous vous demandons de bien vouloir nous fournir un justificatif de votre statut étudiant pour valider votre abonnement."
+msgstr ""
+
+#: includes/orders/justificatif-etudiant.php:247
+msgid "Demande de justificatif"
+msgstr ""
+
+#: includes/orders/justificatif-etudiant.php:248
+msgid "Cochez cette case pour demander un justificatif pour cette variation."
+msgstr ""
+
+#: includes/products/product-free-for-plans.php:82
+msgid "Inclus"
+msgstr ""
+
+#: includes/products/restrict-magazines.php:11
 msgid "Abonnés Magazines"
 msgstr ""
 
-#: restrict-magazines.php:20
+#: includes/products/restrict-magazines.php:20
 msgid "Visibilité aux magazines"
 msgstr ""
 
-#: restrict-magazines.php:24
+#: includes/products/restrict-magazines.php:24
 msgid "Visible pour tous"
 msgstr ""
 
-#: restrict-magazines.php:25
+#: includes/products/restrict-magazines.php:25
 msgid "Seulement les abonnés"
 msgstr ""
 
-#: restrict-magazines.php:26
+#: includes/products/restrict-magazines.php:26
 msgid "Seulement les non abonnés"
 msgstr ""
 
-#: restrict-magazines.php:31
+#: includes/products/restrict-magazines.php:31
 msgid "Choisissez qui peut voir ce contenu pour les abonnés comprenant le numéro en cours"
 msgstr ""
 
-#: restrict-magazines.php:37
+#: includes/products/restrict-magazines.php:37
 msgid "Actif pour les abonnés aux plans:"
 msgstr ""
 
-#: restrict-magazines.php:42
+#: includes/products/restrict-magazines.php:42
 msgid "Choisissez quels plans d'adhésion sont requis pour accéder à ce contenu."
 msgstr ""
 
-#: restrict-magazines.php:47
+#: includes/products/restrict-magazines.php:47
 msgid "Affiche le message de restriction"
 msgstr ""
 
-#: restrict-magazines.php:171
+#: includes/products/restrict-magazines.php:171
 msgid "Vous n'avez pas accès à ce contenu"
 msgstr ""
 
-#: restrict-magazines.php:175
+#: includes/products/restrict-magazines.php:175
 msgid "Vous devez être connecté pour accéder à ce contenu."
 msgstr ""
 
-#: restrict-magazines.php:176
+#: includes/products/restrict-magazines.php:176
 msgid "Se connecter"
 msgstr ""
 
-#: restrict-magazines.php:180
+#: includes/products/restrict-magazines.php:180
 msgid "Vous n'êtes pas abonné à ce magazine."
 msgstr ""
 
-#: restrict-magazines.php:181
+#: includes/products/restrict-magazines.php:181
 msgid "Abonnez-vous"
 msgstr ""
 
-#: restrict-magazines.php:182
+#: includes/products/restrict-magazines.php:182
 msgid "ou saisissez"
 msgstr ""
 
-#: restrict-magazines.php:183
+#: includes/products/restrict-magazines.php:183
 msgid "le code de l'espace privé"
+msgstr ""
+
+#: includes/subscriptions/subscription.php:77
+msgid "Voir l'adhésion"
+msgstr ""
+
+#: includes/subscriptions/subscription.php:99
+msgid "N° Début"
+msgstr ""
+
+#: includes/subscriptions/subscription.php:100
+msgid "N° Fin"
 msgstr ""
 
 #: templates/mon-compte-mes-magazines.php:13
@@ -224,64 +334,4 @@ msgstr ""
 
 #: templates/mon-compte-mes-magazines.php:82
 msgid "Ajouter"
-msgstr ""
-
-#: widget/search-result-content.php:17
-msgid "Contenu du Résultat de Recherche"
-msgstr ""
-
-#: widget/search-result-content.php:32
-msgid "Paramètres du Contenu"
-msgstr ""
-
-#: widget/search-result-content.php:40
-msgid "ID du Post"
-msgstr ""
-
-#: widget/search-result-content.php:42
-msgid "Laissez vide pour le post actuel (dans une boucle de recherche). Entrez un ID de post spécifique."
-msgstr ""
-
-#: widget/search-result-content.php:50
-msgid "Mots avant/après le terme de recherche"
-msgstr ""
-
-#: widget/search-result-content.php:54
-msgid "Nombre de mots à afficher avant et après chaque occurrence du terme de recherche."
-msgstr ""
-
-#: widget/search-result-content.php:72
-msgid "Balise de mise en évidence"
-msgstr ""
-
-#: widget/search-result-content.php:75
-msgid "Strong (Gras)"
-msgstr ""
-
-#: widget/search-result-content.php:76
-msgid "Em (Italique)"
-msgstr ""
-
-#: widget/search-result-content.php:77
-msgid "Mark (Surligné)"
-msgstr ""
-
-#: widget/search-result-content.php:78
-msgid "Span (Personnalisé)"
-msgstr ""
-
-#: widget/search-result-content.php:87
-msgid "Classe CSS pour la mise en évidence"
-msgstr ""
-
-#: widget/search-result-content.php:90
-msgid "Ajoutez une classe CSS personnalisée si vous utilisez une balise <span>."
-msgstr ""
-
-#: widget/search-result-content.php:205
-msgid "Post non trouvé."
-msgstr ""
-
-#: widget/search-result-content.php:208
-msgid "Aucun ID de post spécifié ou post actuel introuvable."
 msgstr ""
