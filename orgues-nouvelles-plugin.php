@@ -56,8 +56,13 @@ function on_load_plugin() {
         require_once(__DIR__ . '/includes/orders/phone-orders.php');
         require_once(__DIR__ . '/includes/orders/advanced-order-export.php');
     }
+
+    // Charger les modules de gestion des produits (WooCommerce seul)
+    if (is_plugin_active('woocommerce/woocommerce.php')) {
+        require_once(__DIR__ . '/includes/products/check-download-product.php');
+    }
     
-    // Charger les modules de gestion des produits
+    // Charger les modules de gestion des produits (WooCommerce + Pods)
     if (is_plugin_active('woocommerce/woocommerce.php') && is_plugin_active('pods/init.php')) {
         require_once(__DIR__ . '/includes/products/product-free-for-plans.php');
         require_once(__DIR__ . '/includes/products/restrict-magazines.php');
