@@ -55,6 +55,7 @@ function on_load_plugin() {
         require_once(__DIR__ . '/includes/orders/justificatif-etudiant.php');
         require_once(__DIR__ . '/includes/orders/phone-orders.php');
         require_once(__DIR__ . '/includes/orders/advanced-order-export.php');
+        require_once(__DIR__ . '/includes/orders/email-subscription-info.php');
     }
 
     // Charger les modules de gestion des produits (WooCommerce seul)

@@ -28,16 +28,14 @@ function on_display_subscription_numeros($subscription) {
         return;
     }
 
-    // Calculer les numéros
-    $numero_start = on_date_magazine_to_numero($start_date);
-    
     // Utiliser la date de prochain paiement ou de fin (la plus récente)
     $date_fin = $next_payment_date;
     if (!empty($end_date) && (!empty($next_payment_date) && $end_date < $next_payment_date || empty($next_payment_date))) {
         $date_fin = $end_date;
     }
-    
-    $numero_end = !empty($date_fin) ? on_date_magazine_to_numero($date_fin) : $numero_start;
+
+    // Calculer les numéros
+    $info = on_get_subscription_info($start_date, $date_fin ?: $start_date);
 
     // Récupérer le membership lié à cet abonnement
     $user_memberships = wc_memberships_get_user_memberships($subscription->get_user_id());
@@ -61,11 +59,15 @@ function on_display_subscription_numeros($subscription) {
             <tbody>
                 <tr>
                     <th><?php _e('Numéro de début:', 'orgues-nouvelles'); ?></th>
-                    <td><strong>ON-<?php echo esc_html($numero_start); ?></strong></td>
+                    <td><strong>ON-<?php echo esc_html($info['numero_debut']); ?></strong> (<?php echo date_i18n('F Y', strtotime($info['mois_debut'] . '-01')); ?>)</td>
                 </tr>
                 <tr>
                     <th><?php _e('Numéro de fin:', 'orgues-nouvelles'); ?></th>
-                    <td><strong>ON-<?php echo esc_html($numero_end); ?></strong></td>
+                    <td><strong>ON-<?php echo esc_html($info['numero_fin']); ?></strong> (<?php echo date_i18n('F Y', strtotime($info['mois_fin'] . '-01')); ?>)</td>
+                </tr>
+                <tr>
+                    <th><?php _e('Nombre de numéros:', 'orgues-nouvelles'); ?></th>
+                    <td><?php echo esc_html($info['nombre_numeros']); ?></td>
                 </tr>
             </tbody>
         </table>
@@ -127,8 +129,8 @@ function on_fill_subscription_columns($column, $post_id) {
         }
 
         if ($column === 'on_numero_debut') {
-            $numero_start = on_date_magazine_to_numero($start_date);
-            echo '<strong>ON-' . esc_html($numero_start) . '</strong>';
+            $info = on_get_subscription_info($start_date, $start_date);
+            echo '<strong>ON-' . esc_html($info['numero_debut']) . '</strong>';
         }
 
         if ($column === 'on_numero_fin') {
@@ -138,8 +140,8 @@ function on_fill_subscription_columns($column, $post_id) {
                 $date_fin = $end_date;
             }
             
-            $numero_end = !empty($date_fin) ? on_date_magazine_to_numero($date_fin) : on_date_magazine_to_numero($start_date);
-            echo '<strong>ON-' . esc_html($numero_end) . '</strong>';
+            $info = on_get_subscription_info($start_date, $date_fin ?: $start_date);
+            echo '<strong>ON-' . esc_html($info['numero_fin']) . '</strong>';
         }
     }
 }

@@ -34,28 +34,37 @@ if (!function_exists('on_membership_customize_columns')) {
     // Code pour afficher les numéros de magazine dans les colonnes "numero_since" et "numero_end"
     function on_user_membership_screen_columns($column, $post_id)
     {
-        if ('numero_since' === $column) {
-            $membership = wc_memberships_get_user_membership($post_id);
-            if ($membership) {
-                $start_date = $membership->get_start_date();
-                if ($start_date) {
-                    echo "ON-", on_date_magazine_to_numero($start_date);
-                } else {
-                    echo '<span class="na">&ndash;</span>';
-                }
+        $membership = wc_memberships_get_user_membership($post_id);
+        if (!$membership) {
+            return;
+        }
+
+        $start_date = $membership->get_start_date();
+        $end_date = $membership->get_end_date();
+        $next_payment_date = on_next_payment_date_membership($membership);
+        
+        // Determine effective end date
+        $effective_end_date = $end_date;
+        if (!empty($next_payment_date)) {
+            if (empty($end_date) || $next_payment_date < $end_date) {
+                $effective_end_date = $next_payment_date;
             }
+        }
+
+        if (!$start_date) {
+            echo '<span class="na">&ndash;</span>';
+            return;
+        }
+
+        $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date);
+
+        if ('numero_since' === $column) {
+            echo "ON-", $info['numero_debut'];
         } elseif ('numero_end' === $column) {
-            $membership = wc_memberships_get_user_membership($post_id);
-            if ($membership) {
-                $end_date = $membership->get_end_date();
-                $next_payment_date = on_next_payment_date_membership($membership);
-                if ($next_payment_date) {
-                    echo "ON-", on_date_magazine_to_numero($next_payment_date);
-                } elseif ($end_date) {
-                    echo "ON-", on_date_magazine_to_numero($end_date);
-                } else {
-                    echo '<span class="na">&ndash;</span>';
-                }
+            if ($effective_end_date) {
+                echo "ON-", $info['numero_fin'];
+            } else {
+                echo '<span class="na">&ndash;</span>';
             }
         }
     }
@@ -67,6 +76,19 @@ if (!function_exists('on_membership_customize_columns')) {
         $start_date = $user_membership->get_start_date();
         $end_date = $user_membership->get_end_date();
         $next_payment_date = on_next_payment_date_membership($user_membership);
+        
+        // Determine effective end date
+        $effective_end_date = $end_date;
+        if (!empty($next_payment_date)) {
+            if (empty($end_date) || $next_payment_date < $end_date) {
+                $effective_end_date = $next_payment_date;
+            }
+        }
+
+        $info = null;
+        if ($start_date) {
+            $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date);
+        }
         
         // Récupérer l'abonnement lié à ce membership
         $linked_subscription = null;
@@ -80,21 +102,23 @@ if (!function_exists('on_membership_customize_columns')) {
         <table class="shop_table">
             <tbody>
                 <?php
-                 if ($start_date) {
-                    $numero_debut = on_date_magazine_to_numero($start_date);
+                 if ($info) {
                     ?>
                 <tr>
                     <th><?php _e('Numéro de début:', 'orgues-nouvelles'); ?></th>
-                    <td><strong>ON-<?php echo esc_html($numero_debut); ?></strong></td>
+                    <td><strong>ON-<?php echo esc_html($info['numero_debut']); ?></strong> (<?php echo date_i18n('F Y', strtotime($info['mois_debut'] . '-01')); ?>)</td>
                 </tr>
                 <?php
                  }
-                 if ($next_payment_date || $end_date) {
-                    $numero_end = $next_payment_date ? on_date_magazine_to_numero($next_payment_date) : on_date_magazine_to_numero($end_date);
+                 if ($effective_end_date && $info) {
                     ?>
                 <tr>
                     <th><?php _e('Numéro de fin:', 'orgues-nouvelles'); ?></th>
-                    <td><strong>ON-<?php echo esc_html($numero_end); ?></strong></td>
+                    <td><strong>ON-<?php echo esc_html($info['numero_fin']); ?></strong> (<?php echo date_i18n('F Y', strtotime($info['mois_fin'] . '-01')); ?>)</td>
+                </tr>
+                <tr>
+                    <th><?php _e('Nombre de numéros:', 'orgues-nouvelles'); ?></th>
+                    <td><?php echo esc_html($info['nombre_numeros']); ?></td>
                 </tr>
                 <?php
                  }
