@@ -364,3 +364,37 @@ if (!function_exists('on_liste_numeros')) {
         return $liste;
     }
 }
+
+if (!function_exists('on_get_latest_magazine_product')) {
+    /**
+     * Récupère le dernier produit de la catégorie 'magazine'
+     * 
+     * @return WC_Product|null
+     */
+    function on_get_latest_magazine_product() {
+        $args = array(
+            'post_type'      => 'product',
+            'posts_per_page' => 1,
+            'tax_query'      => array(
+                array(
+                    'taxonomy' => 'product_cat',
+                    'field'    => 'slug',
+                    'terms'    => 'magazine',
+                ),
+            ),
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        );
+    
+        $query = new WP_Query($args);
+    
+        if ($query->have_posts()) {
+            $query->the_post();
+            $product = wc_get_product(get_the_ID());
+            wp_reset_postdata();
+            return $product;
+        }
+        
+        return null;
+    }
+}
