@@ -335,3 +335,8 @@ msgstr ""
 #: templates/mon-compte-mes-magazines.php:82
 msgid "Ajouter"
 msgstr ""
+
+#: includes/products/suggest-latest-magazine.php:75
+msgid "Vous vous abonnez ? Profitez-en pour ajouter le dernier numéro <strong>%s</strong> à votre commande ! <a href=\"%s\" class=\"button\">Ajouter au panier</a>"
+msgstr ""
+
