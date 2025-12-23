@@ -58,6 +58,11 @@ function on_load_plugin() {
         require_once(__DIR__ . '/includes/orders/email-subscription-info.php');
     }
     
+    // Charger les modules de gestion des produits (WooCommerce + Subscriptions)
+    if (is_plugin_active('woocommerce/woocommerce.php') && is_plugin_active('woocommerce-subscriptions/woocommerce-subscriptions.php')) {
+        require_once(__DIR__ . '/includes/products/suggest-latest-magazine.php');
+    }
+
     // Charger les modules de gestion des produits
     if (is_plugin_active('woocommerce/woocommerce.php') && is_plugin_active('pods/init.php')) {
         require_once(__DIR__ . '/includes/products/product-free-for-plans.php');

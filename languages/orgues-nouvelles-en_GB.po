@@ -334,3 +334,8 @@ msgstr "Start No."
 #: includes/subscriptions/subscription.php:100
 msgid "NÂ° Fin"
 msgstr "End No."
+
+#: includes/products/suggest-latest-magazine.php:75
+msgid "Vous vous abonnez ? Profitez-en pour ajouter le dernier numéro <strong>%s</strong> à votre commande ! <a href=\"%s\" class=\"button\">Ajouter au panier</a>"
+msgstr "Subscribing? Take the opportunity to add the latest issue <strong>%s</strong> to your order! <a href=\"%s\" class=\"button\">Add to cart</a>"
+
