@@ -13,7 +13,8 @@ if ( ! $product ) {
 
 $url = add_query_arg([
     'on_action' => 'download_free',
-    'product_id' => $product->get_id()
+    'product_id' => $product->get_id(),
+    '_wpnonce'   => wp_create_nonce('on_download_free_' . $product->get_id())
 ], home_url());
 
 ?>

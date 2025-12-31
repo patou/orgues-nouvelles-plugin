@@ -9,7 +9,13 @@ add_action('template_redirect', 'on_handle_free_download_request');
 
 function on_handle_free_download_request() {
     if (isset($_GET['on_action']) && $_GET['on_action'] === 'download_free' && isset($_GET['product_id'])) {
-        $product_id = intval($_GET['product_id']);
+        $product_id = absint($_GET['product_id']);
+
+        // Vérification du Nonce de sécurité
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'on_download_free_' . $product_id)) {
+            wp_die(__('Lien de téléchargement invalide ou expiré.', 'orgues-nouvelles'), __('Erreur de sécurité', 'orgues-nouvelles'), array('response' => 403));
+        }
+
         $product = wc_get_product($product_id);
 
         // Vérifications de sécurité et de validité
@@ -17,7 +23,7 @@ function on_handle_free_download_request() {
             return;
         }
 
-        // Vérifier si l'utilisateur est connecté (si requis par les réglages WooCommerce)
+        // Vérifier si l'utilisateur est connecté, seul les utilisateurs connectés peuvent télécharger les produits gratuits
         if (!is_user_logged_in()) {
             auth_redirect();
         }
@@ -54,8 +60,6 @@ function on_handle_free_download_request() {
         $order->calculate_totals();
         $order->set_payment_method('other');
         $order->set_payment_method_title('Gratuit');
-        $order->save();
-
         // 1. Passer la commande en "Terminée"
         $order->update_status('completed', 'Commande générée automatiquement pour téléchargement gratuit.');
         
@@ -67,10 +71,6 @@ function on_handle_free_download_request() {
         if (function_exists('wc_downloadable_product_permissions')) {
             wc_downloadable_product_permissions($order->get_id(), true);
         }
-
-        // 4. Sauvegarde finale et rechargement pour récupérer les liens générés
-        $order->save();
-        $order = wc_get_order($order->get_id());
 
         // Récupérer l'URL de téléchargement
         $downloads = $order->get_downloadable_items();
@@ -98,7 +98,8 @@ function on_change_free_download_button_loop($button, $product) {
     if ($product->is_downloadable() && $product->get_price() == 0) {
         $url = add_query_arg([
             'on_action' => 'download_free',
-            'product_id' => $product->get_id()
+            'product_id' => $product->get_id(),
+            '_wpnonce'   => wp_create_nonce('on_download_free_' . $product->get_id())
         ], home_url());
         
         return sprintf('<a href="%s" class="button product_type_simple add_to_cart_button ajax_add_to_cart">%s</a>', esc_url($url), __('Télécharger', 'orgues-nouvelles'));
