@@ -46,6 +46,7 @@ function on_load_plugin() {
     if (is_plugin_active('woocommerce-subscriptions/woocommerce-subscriptions.php')) {
         require_once(__DIR__ . '/includes/subscriptions/subscription.php');
         require_once(__DIR__ . '/includes/subscriptions/update-subscriptions-price.php');
+        require_once(__DIR__ . '/includes/products/auto-add-free-magazine.php');
     }
     
     // Charger les modules de gestion des commandes WooCommerce
