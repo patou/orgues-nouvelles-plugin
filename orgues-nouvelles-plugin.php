@@ -60,6 +60,7 @@ function on_load_plugin() {
     // Charger les modules de gestion des produits (WooCommerce seul)
     if (is_plugin_active('woocommerce/woocommerce.php')) {
         require_once(__DIR__ . '/includes/products/check-download-product.php');
+        require_once(__DIR__ . '/includes/products/direct-download-free.php');
     }
     
     // Charger les modules de gestion des produits (WooCommerce + Pods)
