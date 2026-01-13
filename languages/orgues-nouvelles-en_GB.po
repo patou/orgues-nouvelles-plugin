@@ -38,139 +38,139 @@ msgstr "Patrice de Saint Steban"
 msgid "https://patou.dev"
 msgstr "https://patou.dev"
 
-#: check-abonnement-france.php:23
+#: includes/orders/check-abonnement-france.php:23
 msgid "Vous devez selectionner la livraison Monde pour une livraison en dehors de la France lors de votre abonnement à Orgues-Nouvelles"
 msgstr "You must select World delivery for a delivery outside France when subscribing to Orgues-Nouvelles"
 
-#: justificatif-etudiant.php:11
+#: includes/orders/justificatif-etudiant.php:11
 msgid "Demande de justificatif étudiants"
 msgstr "Student proof request"
 
-#: justificatif-etudiant.php:13
+#: includes/orders/justificatif-etudiant.php:13
 msgid "Cet email est envoyé lorsqu'un abonné choisit le tarif étudiant pour lui demander d'envoyer un justificatif."
 msgstr "This email is sent when a subscriber chooses the student rate to ask them to send proof."
 
-#: justificatif-etudiant.php:79
+#: includes/orders/justificatif-etudiant.php:79
 msgid "[{site_title}]: Demande de justificatif pour votre commande"
 msgstr "[{site_title}]: Request for proof for your order"
 
-#: justificatif-etudiant.php:90
+#: includes/orders/justificatif-etudiant.php:90
 msgid "Demande de justificatif pour votre Abonnement"
 msgstr "Request for proof for your subscription"
 
-#: justificatif-etudiant.php:110
+#: includes/orders/justificatif-etudiant.php:110
 msgid "Contenu de l'email"
 msgstr "Email content"
 
-#: justificatif-etudiant.php:113
+#: includes/orders/justificatif-etudiant.php:113
 msgid "Texte de l'email envoyé aux clients lorsqu'ils choisissent le tarif étudiant pour leur demander un justificatif."
 msgstr "Text of the email sent to customers when they choose the student rate to request proof."
 
-#: justificatif-etudiant.php:124
+#: includes/orders/justificatif-etudiant.php:124
 msgid "Nous vous demandons de bien vouloir nous fournir un justificatif de votre statut étudiant pour valider votre abonnement."
 msgstr "We kindly ask you to provide proof of your student status to validate your subscription."
 
-#: justificatif-etudiant.php:247
+#: includes/orders/justificatif-etudiant.php:247
 msgid "Demande de justificatif"
 msgstr "Request for proof"
 
-#: justificatif-etudiant.php:248
+#: includes/orders/justificatif-etudiant.php:248
 msgid "Cochez cette case pour demander un justificatif pour cette variation."
 msgstr "Check this box to request proof for this variation."
 
-#: last-post-menu-item.php:4
+#: includes/content/last-post-menu-item.php:4
 msgid "Last post"
 msgstr "Last post"
 
-#: last-post-menu-item.php:59
+#: includes/content/last-post-menu-item.php:59
 msgid "Last"
 msgstr "Last"
 
-#: mon-compte.php:27
+#: includes/frontend/mon-compte.php:26
 msgid "Numero début"
 msgstr "Start number"
 
-#: mon-compte.php:30
+#: includes/frontend/mon-compte.php:29
 msgid "Numero fin"
 msgstr "End number"
 
-#: mon-compte.php:78
+#: includes/frontend/mon-compte.php:77
 msgid "Mes magazines"
 msgstr "My magazines"
 
-#: mon-compte.php:122
+#: includes/frontend/mon-compte.php:121
 msgid "Magazine ajouté avec succès !"
 msgstr "Magazine added successfully!"
 
-#: mon-compte.php:124
+#: includes/frontend/mon-compte.php:123
 msgid "Ce magazine est déjà dans votre liste."
 msgstr "This magazine is already in your list."
 
-#: mon-compte.php:130
+#: includes/frontend/mon-compte.php:129
 msgid "Code invalide."
 msgstr "Invalid code."
 
-#: restrict-magazines.php:11
+#: includes/products/restrict-magazines.php:11
 msgid "Abonnés Magazines"
 msgstr "Magazine Subscribers"
 
-#: restrict-magazines.php:20
+#: includes/products/restrict-magazines.php:20
 msgid "Visibilité aux magazines"
 msgstr "Magazine visibility"
 
-#: restrict-magazines.php:24
+#: includes/products/restrict-magazines.php:24
 msgid "Visible pour tous"
 msgstr "Visible to all"
 
-#: restrict-magazines.php:25
+#: includes/products/restrict-magazines.php:25
 msgid "Seulement les abonnés"
 msgstr "Subscribers only"
 
-#: restrict-magazines.php:26
+#: includes/products/restrict-magazines.php:26
 msgid "Seulement les non abonnés"
 msgstr "Non-subscribers only"
 
-#: restrict-magazines.php:31
+#: includes/products/restrict-magazines.php:31
 msgid "Choisissez qui peut voir ce contenu pour les abonnés comprenant le numéro en cours"
 msgstr "Choose who can see this content for subscribers including the current issue"
 
-#: restrict-magazines.php:37
+#: includes/products/restrict-magazines.php:37
 msgid "Actif pour les abonnés aux plans:"
 msgstr "Active for subscribers to the following plans:"
 
-#: restrict-magazines.php:42
+#: includes/products/restrict-magazines.php:42
 msgid "Choisissez quels plans d'adhésion sont requis pour accéder à ce contenu."
 msgstr "Choose which membership plans are required to access this content."
 
-#: restrict-magazines.php:47
+#: includes/products/restrict-magazines.php:47
 msgid "Affiche le message de restriction"
 msgstr "Show restriction message"
 
-#: restrict-magazines.php:171
+#: includes/products/restrict-magazines.php:171
 msgid "Vous n'avez pas accès à ce contenu"
 msgstr "You do not have access to this content"
 
-#: restrict-magazines.php:175
+#: includes/products/restrict-magazines.php:175
 msgid "Vous devez être connecté pour accéder à ce contenu."
 msgstr "You must be logged in to access this content."
 
-#: restrict-magazines.php:176
+#: includes/products/restrict-magazines.php:176
 msgid "Se connecter"
 msgstr "Log in"
 
-#: restrict-magazines.php:180
+#: includes/products/restrict-magazines.php:180
 msgid "Vous n'êtes pas abonné à ce magazine."
 msgstr "You are not subscribed to this magazine."
 
-#: restrict-magazines.php:181
+#: includes/products/restrict-magazines.php:181
 msgid "Abonnez-vous"
 msgstr "Subscribe"
 
-#: restrict-magazines.php:182
+#: includes/products/restrict-magazines.php:182
 msgid "ou saisissez"
 msgstr "or enter"
 
-#: restrict-magazines.php:183
+#: includes/products/restrict-magazines.php:183
 msgid "le code de l'espace privé"
 msgstr "the private area code"
 
@@ -208,83 +208,162 @@ msgstr "Magazine code"
 msgid "Ajouter"
 msgstr "Add"
 
-#: widget/search-result-content.php:17
+#: includes/elementor/widgets/search-result-content.php:17
 msgid "Contenu du Résultat de Recherche"
 msgstr "Search Result Content"
 
-#: widget/search-result-content.php:32
+#: includes/elementor/widgets/search-result-content.php:32
 msgid "Paramètres du Contenu"
 msgstr "Content Settings"
 
-#: widget/search-result-content.php:40
+#: includes/elementor/widgets/search-result-content.php:40
 msgid "ID du Post"
 msgstr "Post ID"
 
-#: widget/search-result-content.php:42
+#: includes/elementor/widgets/search-result-content.php:42
 msgid "Laissez vide pour le post actuel (dans une boucle de recherche). Entrez un ID de post spécifique."
 msgstr "Leave empty for the current post (in a search loop). Enter a specific post ID."
 
-#: widget/search-result-content.php:50
+#: includes/elementor/widgets/search-result-content.php:50
 msgid "Mots avant/après le terme de recherche"
 msgstr "Words before/after the search term"
 
-#: widget/search-result-content.php:54
+#: includes/elementor/widgets/search-result-content.php:54
 msgid "Nombre de mots à afficher avant et après chaque occurrence du terme de recherche."
 msgstr "Number of words to display before and after each occurrence of the search term."
 
-#: widget/search-result-content.php:72
+#: includes/elementor/widgets/search-result-content.php:72
 msgid "Balise de mise en évidence"
 msgstr "Highlight tag"
 
-#: widget/search-result-content.php:75
+#: includes/elementor/widgets/search-result-content.php:75
 msgid "Strong (Gras)"
 msgstr "Strong (Bold)"
 
-#: widget/search-result-content.php:76
+#: includes/elementor/widgets/search-result-content.php:76
 msgid "Em (Italique)"
 msgstr "Em (Italic)"
 
-#: widget/search-result-content.php:77
+#: includes/elementor/widgets/search-result-content.php:77
 msgid "Mark (Surligné)"
 msgstr "Mark (Highlighted)"
 
-#: widget/search-result-content.php:78
+#: includes/elementor/widgets/search-result-content.php:78
 msgid "Span (Personnalisé)"
 msgstr "Span (Custom)"
 
-#: widget/search-result-content.php:87
+#: includes/elementor/widgets/search-result-content.php:87
 msgid "Classe CSS pour la mise en évidence"
 msgstr "CSS class for highlighting"
 
-#: widget/search-result-content.php:90
+#: includes/elementor/widgets/search-result-content.php:90
 msgid "Ajoutez une classe CSS personnalisée si vous utilisez une balise <span>."
 msgstr "Add a custom CSS class if you use a <span> tag."
 
-#: widget/search-result-content.php:205
+#: includes/elementor/widgets/search-result-content.php:205
 msgid "Post non trouvé."
 msgstr "Post not found."
 
-#: widget/search-result-content.php:208
+#: includes/elementor/widgets/search-result-content.php:208
 msgid "Aucun ID de post spécifié ou post actuel introuvable."
 msgstr "No post ID specified or current post not found."
 
-#: membership-numero-on.php:73
-msgid "Numero début :"
-msgstr "Start number:"
-
-#: membership-numero-on.php:81
-#: membership-numero-on.php:88
-msgid "Numero fin :"
-msgstr "End number:"
-
-#: membership-profile-field-checkout-page.php:62
+#: includes/memberships/membership-profile-field-checkout-page.php:62
 msgid "Votre profil"
 msgstr "Your profile"
 
-#: membership-profile-field-checkout-page.php:63
+#: includes/memberships/membership-profile-field-checkout-page.php:63
 msgid "Merci de remplir ces informations pour mieux vous connaitre"
 msgstr "Please fill out this information for us to know you better."
 
-#: product-free-for-plans.php:82
+#: includes/products/product-free-for-plans.php:82
 msgid "Inclus"
 msgstr "Included"
+
+#: includes/memberships/membership-numero-on.php:79
+#: includes/subscriptions/subscription.php:59
+msgid "Numéros de Orgues-Nouvelles"
+msgstr "Orgues-Nouvelles Magazine"
+
+#: includes/memberships/membership-numero-on.php:87
+#: includes/subscriptions/subscription.php:63
+msgid "Numéro de début:"
+msgstr "Starting number:"
+
+#: includes/memberships/membership-numero-on.php:96
+#: includes/subscriptions/subscription.php:67
+msgid "Numéro de fin:"
+msgstr "Ending number:"
+
+#: includes/memberships/membership-numero-on.php:107
+msgid "Voir l'abonnement"
+msgstr "View subscription"
+
+#: includes/products/direct-download-free.php:16
+msgid "Lien de téléchargement invalide ou expiré."
+msgstr "Invalid or expired download link."
+
+#: includes/products/direct-download-free.php:16
+msgid "Erreur de sécurité"
+msgstr "Security error"
+
+#: includes/products/direct-download-free.php:24
+msgid "Produit introuvable, non téléchargeable ou payant."
+msgstr "Product not found, not downloadable or not free."
+
+#: includes/products/direct-download-free.php:25
+msgid "Téléchargement impossible"
+msgstr "Download unavailable"
+
+#: includes/products/direct-download-free.php:34
+msgid "Ce produit téléchargeable ne contient actuellement aucun fichier à télécharger."
+msgstr "This downloadable product currently contains no files to download."
+
+#: includes/products/direct-download-free.php:35
+msgid "Téléchargement indisponible"
+msgstr "Download unavailable"
+
+#: includes/products/direct-download-free.php:50
+msgid "Une erreur est survenue lors de la création de votre commande gratuite. Veuillez réessayer plus tard."
+msgstr "An error occurred whilst creating your free order. Please try again later."
+
+#: includes/products/direct-download-free.php:51
+#: includes/products/direct-download-free.php:63
+msgid "Erreur lors de la création de la commande"
+msgstr "Error creating order"
+
+#: includes/products/direct-download-free.php:62
+msgid "Impossible d'ajouter le produit à la commande. Veuillez réessayer plus tard."
+msgstr "Unable to add the product to the order. Please try again later."
+
+#: includes/products/direct-download-free.php:102
+msgid "Impossible de récupérer la commande pour le téléchargement gratuit."
+msgstr "Unable to retrieve the order for the free download."
+
+#: includes/products/direct-download-free.php:103
+msgid "Erreur de commande"
+msgstr "Order error"
+
+#: includes/products/direct-download-free.php:136
+msgid "Impossible de générer le lien de téléchargement pour ce produit gratuit. Votre commande a bien été enregistrée, mais aucun fichier n'a pu être trouvé. Veuillez réessayer ultérieurement ou contacter le support."
+msgstr "Unable to generate the download link for this free product. Your order has been registered, but no file could be found. Please try again later or contact support."
+
+#: includes/products/direct-download-free.php:158
+msgid "Télécharger"
+msgstr "Download"
+
+#: includes/subscriptions/subscription.php:75
+msgid "Voir l'adhésion"
+msgstr "View membership"
+
+#: includes/subscriptions/subscription.php:97
+msgid "N° Début"
+msgstr "Start No."
+
+#: includes/subscriptions/subscription.php:98
+msgid "N° Fin"
+msgstr "End No."
+
+#: templates/free-download-button.php:23
+msgid "Télécharger gratuitement"
+msgstr "Download for free"
