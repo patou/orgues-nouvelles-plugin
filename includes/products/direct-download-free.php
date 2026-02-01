@@ -19,7 +19,7 @@ function on_handle_free_download_request() {
         $product = wc_get_product($product_id);
 
         // Vérifications de sécurité et de validité
-        if (!$product || !$product->is_downloadable() || $product->get_price() !== 0) {
+        if (!$product || !$product->is_downloadable() || $product->get_price() > 0) {
             wp_die(
                 __('Produit introuvable, non téléchargeable ou payant.', 'orgues-nouvelles'),
                 __('Téléchargement impossible', 'orgues-nouvelles'),
@@ -148,7 +148,7 @@ function on_handle_free_download_request() {
 add_filter('woocommerce_loop_add_to_cart_link', 'on_change_free_download_button_loop', 10, 2);
 
 function on_change_free_download_button_loop($button, $product) {
-    if ($product->is_downloadable() && $product->get_price() == 0) {
+    if (is_user_logged_in() && $product->is_downloadable() && $product->get_price() == 0) {
         $url = add_query_arg([
             'on_action' => 'download_free',
             'product_id' => $product->get_id(),
@@ -177,7 +177,7 @@ function on_override_simple_add_to_cart_template($template, $template_name) {
             }
         }
 
-        if ($product && $product->is_downloadable() && $product->get_price() == 0) {
+        if (is_user_logged_in() && $product && $product->is_downloadable() && $product->get_price() == 0) {
             $custom_template = ORGUES_NOUVELLES_PLUGIN_DIR . 'templates/free-download-button.php';
             
             if (file_exists($custom_template)) {
