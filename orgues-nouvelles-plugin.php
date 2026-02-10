@@ -32,7 +32,7 @@ function on_load_plugin() {
     require_once(__DIR__ . '/includes/core/orgues-nouvelles.php');
     
     // Charger les modules WooCommerce Memberships (si le plugin est actif)
-    if (is_plugin_active('woocommerce-memberships/woocommerce-memberships.php')) {
+    if (class_exists('WC_Memberships')) {
         require_once(__DIR__ . '/includes/memberships/membership-numero-on.php');
         require_once(__DIR__ . '/includes/memberships/export-import.php');
         require_once(__DIR__ . '/includes/memberships/membership-export-members.php');
@@ -55,6 +55,7 @@ function on_load_plugin() {
         require_once(__DIR__ . '/includes/orders/justificatif-etudiant.php');
         require_once(__DIR__ . '/includes/orders/phone-orders.php');
         require_once(__DIR__ . '/includes/orders/advanced-order-export.php');
+        require_once(__DIR__ . '/includes/orders/email-subscription-info.php');
     }
 
     // Charger les modules de gestion des produits (WooCommerce seul)
@@ -71,7 +72,7 @@ function on_load_plugin() {
     
     // Charger les modules frontend
     require_once(__DIR__ . '/includes/frontend/shortcode.php');
-    if (is_plugin_active('woocommerce/woocommerce.php') && is_plugin_active('woocommerce-memberships/woocommerce-memberships.php')) {
+    if (class_exists('WooCommerce') && class_exists('WC_Memberships')) {
         require_once(__DIR__ . '/includes/frontend/mon-compte.php');
     }
     if (is_plugin_active('polylang-pro/polylang.php') || is_plugin_active('polylang/polylang.php')) {
