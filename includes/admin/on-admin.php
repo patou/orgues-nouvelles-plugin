@@ -28,7 +28,7 @@ add_action('admin_init', 'on_bypass_recaptcha_pour_admin');
 
 // Add Polylang menu for non-admin users
 add_action( 'admin_menu', function() {
-	if ( ! current_user_can( 'loco_admin' ) && function_exists( 'PLL' ) ) {
+	if ( ! current_user_can( 'loco_admin' ) ) {
 		add_menu_page( 
 			__( 'Strings translations', 'polylang' ),
 			__( 'Translations', 'polylang' ),
