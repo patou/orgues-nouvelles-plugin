@@ -32,10 +32,13 @@ add_action( 'admin_menu', function() {
 		add_menu_page( 
 			__( 'Strings translations', 'polylang' ),
 			__( 'Translations', 'polylang' ),
-			'edit_pages',
+			'loco_admin',
 			'mlang_strings',
 			array( PLL(), 'languages_page' ),
 			'dashicons-translation'
 		);
 	}
+  if ( ! current_user_can( 'administrator' ) ) {
+      remove_menu_page( 'pods' ); // Masque le menu principal Pods
+  }
 } );
