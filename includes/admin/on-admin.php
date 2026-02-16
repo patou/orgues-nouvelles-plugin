@@ -25,3 +25,17 @@ function on_bypass_recaptcha_pour_admin()
   }
 }
 add_action('admin_init', 'on_bypass_recaptcha_pour_admin');
+
+// Add Polylang menu for non-admin users
+add_action( 'admin_menu', function() {
+	if ( ! current_user_can( 'loco_admin' ) && function_exists( 'PLL' ) ) {
+		add_menu_page( 
+			__( 'Strings translations', 'polylang' ),
+			__( 'Translations', 'polylang' ),
+			'edit_pages',
+			'mlang_strings',
+			array( PLL(), 'languages_page' ),
+			'dashicons-translation'
+		);
+	}
+} );
