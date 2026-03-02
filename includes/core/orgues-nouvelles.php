@@ -284,6 +284,81 @@ if (!function_exists('on_get_subscription_info')) {
     }
 }
 
+if (!function_exists('on_calculate_issue_cycle_window')) {
+    /**
+     * Calcule la fenêtre de numéros couverte par un abonnement en fonction du nombre de numéros fournis.
+     *
+     * @param string $start_date Date de départ de la période (Y-m-d).
+     * @param int    $issue_count Nombre de numéros inclus.
+     *
+     * @return array{
+     *     start_issue:int,
+     *     end_issue:int,
+     *     next_issue:int
+     * }
+     */
+    function on_calculate_issue_cycle_window($start_date, $issue_count)
+    {
+        $issue_count = max(1, (int) $issue_count);
+        $start_issue = on_date_magazine_to_numero($start_date);
+        $end_issue = $start_issue + $issue_count - 1;
+
+        return array(
+            'start_issue' => $start_issue,
+            'end_issue' => $end_issue,
+            'next_issue' => $end_issue + 1,
+        );
+    }
+}
+
+if (!function_exists('on_issue_payment_cutoff_timestamp')) {
+    /**
+     * Retourne le timestamp correspondant à la date de facturation (15 jours avant la sortie du prochain numéro).
+     *
+     * @param int $issue_number Numéro du magazine.
+     *
+     * @return int|null
+     */
+    function on_issue_payment_cutoff_timestamp($issue_number)
+    {
+        $issue_month = on_numero_to_date_magazine($issue_number);
+        if (empty($issue_month)) {
+            return null;
+        }
+
+        $timezone = function_exists('wp_timezone') ? wp_timezone() : new DateTimeZone('UTC');
+        $date = DateTime::createFromFormat('Y-m-d', $issue_month . '-01', $timezone);
+
+        if (false === $date) {
+            return null;
+        }
+
+        $date->modify('-15 days');
+
+        return $date->getTimestamp();
+    }
+}
+
+if (!function_exists('on_issue_payment_cutoff_date')) {
+    /**
+     * Retourne la date (Y-m-d) correspondant à la facturation d'un numéro.
+     *
+     * @param int $issue_number Numéro du magazine.
+     *
+     * @return string|null
+     */
+    function on_issue_payment_cutoff_date($issue_number)
+    {
+        $timestamp = on_issue_payment_cutoff_timestamp($issue_number);
+
+        if (empty($timestamp)) {
+            return null;
+        }
+
+        return gmdate('Y-m-d', $timestamp);
+    }
+}
+
 if (!function_exists('on_liste_numeros')) {
     /**
      * Retourne la liste des numéros de magazine que l'utilisateur peut consulter

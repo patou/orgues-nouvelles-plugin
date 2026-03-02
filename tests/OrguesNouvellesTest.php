@@ -95,6 +95,46 @@ class OrguesNouvellesTest extends TestCase {
             ]],
         ];
     }
+
+    /**
+     * @dataProvider issueCycleProvider
+     */
+    public function test_on_calculate_issue_cycle_window($start_date, $issue_count, $expected)
+    {
+        $this->assertEquals($expected, on_calculate_issue_cycle_window($start_date, $issue_count));
+    }
+
+    public function issueCycleProvider()
+    {
+        return [
+            ['2025-11-16', 4, [
+                'start_issue' => 71,
+                'end_issue' => 74,
+                'next_issue' => 75,
+            ]],
+            ['2026-02-16', 2, [
+                'start_issue' => 72,
+                'end_issue' => 73,
+                'next_issue' => 74,
+            ]],
+        ];
+    }
+
+    /**
+     * @dataProvider issueCutoffProvider
+     */
+    public function test_on_issue_payment_cutoff_date($issue_number, $expected_date)
+    {
+        $this->assertEquals($expected_date, on_issue_payment_cutoff_date($issue_number));
+    }
+
+    public function issueCutoffProvider()
+    {
+        return [
+            [72, '2026-02-14'],
+            [75, '2026-11-16'],
+        ];
+    }
 }
 
 

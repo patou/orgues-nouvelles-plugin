@@ -138,3 +138,4 @@ if (!function_exists('on_membership_customize_columns')) {
     }
     add_action('wc_memberships_after_user_membership_details', 'on_wc_memberships_after_user_membership_details', 10, 1);
 }
+
