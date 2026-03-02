@@ -32,18 +32,35 @@ add_filter( 'wc_memberships_csv_export_user_memberships_headers', 'on_wc_members
  * Convertis les dates en numéro de magazine
  */
 function on_wc_memberships_csv_export_user_memberships_numero_column( $data, $key, $user_membership ) {
-    $date = $key == 'numero_since' ? $user_membership->get_start_date() : $user_membership->get_end_date();
-    if ($key == 'numero_end') {
-		$next_payment_date = on_next_payment_date_membership($user_membership);
-		if ($next_payment_date) {
-			$date = $next_payment_date;
-		}
-	}
-	if (empty($date)) {
+    $start_date = $user_membership->get_start_date();
+    $end_date = $user_membership->get_end_date();
+    $next_payment_date = on_next_payment_date_membership($user_membership);
+    
+    // Determine effective end date
+    $effective_end_date = $end_date;
+    if (!empty($next_payment_date)) {
+        if (empty($end_date) || $next_payment_date < $end_date) {
+            $effective_end_date = $next_payment_date;
+        }
+    }
+
+    if (empty($start_date)) {
         return '';
     }
-    $numero_since = on_date_magazine_to_numero($date);
-    return $numero_since;
+
+    $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date);
+
+    if ($key == 'numero_since') {
+        return $info['numero_debut'];
+    }
+    if ($key == 'numero_end') {
+        if (empty($effective_end_date)) {
+            return '';
+        }
+        return $info['numero_fin'];
+    }
+    
+    return '';
 }
 add_filter( 'wc_memberships_csv_export_user_memberships_numero_since_column', 'on_wc_memberships_csv_export_user_memberships_numero_column', 10, 3 );
 add_filter( 'wc_memberships_csv_export_user_memberships_numero_end_column', 'on_wc_memberships_csv_export_user_memberships_numero_column', 10, 3 );
