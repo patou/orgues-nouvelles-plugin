@@ -252,6 +252,18 @@ if (!function_exists('on_get_subscription_info')) {
      */
     function on_get_subscription_info($start_date, $end_date) {
         $numero_start = on_date_magazine_to_numero($start_date);
+        
+        // Handle empty end_date
+        if (empty($end_date)) {
+            return array(
+                'numero_debut' => $numero_start,
+                'mois_debut' => on_numero_to_date_magazine($numero_start),
+                'numero_fin' => 666,
+                'mois_fin' => '',
+                'nombre_numeros' => 666 - $numero_start + 1
+            );
+        }
+        
         $numero_end = on_date_magazine_to_numero($end_date);
         
         // Fix: Exclude issue if subscription ends before the end of the issue period
@@ -313,7 +325,7 @@ if (!function_exists('on_calculate_issue_cycle_window')) {
 
 if (!function_exists('on_issue_payment_cutoff_timestamp')) {
     /**
-     * Retourne le timestamp correspondant à la date de facturation (15 jours avant la sortie du prochain numéro).
+     * Retourne le timestamp correspondant à la date de facturation (15 du mois précédent la sortie du numéro).
      *
      * @param int $issue_number Numéro du magazine.
      *
@@ -327,13 +339,13 @@ if (!function_exists('on_issue_payment_cutoff_timestamp')) {
         }
 
         $timezone = function_exists('wp_timezone') ? wp_timezone() : new DateTimeZone('UTC');
-        $date = DateTime::createFromFormat('Y-m-d', $issue_month . '-01', $timezone);
+        $date = DateTime::createFromFormat('Y-m-d', $issue_month . '-15', $timezone);
 
         if (false === $date) {
             return null;
         }
 
-        $date->modify('-15 days');
+        $date->modify('-1 month');
 
         return $date->getTimestamp();
     }

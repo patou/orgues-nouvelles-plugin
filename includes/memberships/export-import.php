@@ -48,7 +48,7 @@ function on_wc_memberships_csv_export_user_memberships_numero_column( $data, $ke
         return '';
     }
 
-    $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date);
+    $info = on_get_subscription_info($start_date, $effective_end_date);
 
     if ($key == 'numero_since') {
         return $info['numero_debut'];

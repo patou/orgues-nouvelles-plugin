@@ -35,7 +35,7 @@ function on_display_subscription_numeros($subscription) {
     }
 
     // Calculer les numéros
-    $info = on_get_subscription_info($start_date, $date_fin ?: $start_date);
+    $info = on_get_subscription_info($start_date, $date_fin);
 
     // Récupérer le membership lié à cet abonnement
     $user_memberships = wc_memberships_get_user_memberships($subscription->get_user_id());
@@ -129,7 +129,7 @@ function on_fill_subscription_columns($column, $post_id) {
         }
 
         if ($column === 'on_numero_debut') {
-            $info = on_get_subscription_info($start_date, $start_date);
+            $info = on_get_subscription_info($start_date, '');
             echo '<strong>ON-' . esc_html($info['numero_debut']) . '</strong>';
         }
 
@@ -140,7 +140,7 @@ function on_fill_subscription_columns($column, $post_id) {
                 $date_fin = $end_date;
             }
             
-            $info = on_get_subscription_info($start_date, $date_fin ?: $start_date);
+            $info = on_get_subscription_info($start_date, $date_fin);
             echo '<strong>ON-' . esc_html($info['numero_fin']) . '</strong>';
         }
     }
