@@ -156,3 +156,90 @@ function on_make_subscription_columns_sortable($columns) {
     $columns['on_numero_fin'] = 'next_payment_date';
     return $columns;
 }
+
+if (!function_exists('on_get_subscription_issue_count')) {
+    /**
+     * Récupère le nombre de numéros associés à la variation d'abonnement.
+     *
+     * @param \WC_Subscription $subscription Subscription instance.
+     */
+    function on_get_subscription_issue_count($subscription)
+    {
+        if (!is_object($subscription) || !is_a($subscription, 'WC_Subscription')) {
+            return 0;
+        }
+
+        foreach ($subscription->get_items() as $item) {
+            $product = $item->get_product();
+            if (!$product || !$product->is_type(array('subscription', 'variable-subscription', 'subscription_variation'))) {
+                continue;
+            }
+
+            $issue_count = (int) get_post_meta($product->get_id(), '_on_issue_count', true);
+            if ($issue_count <= 0 && $product->get_parent_id()) {
+                $issue_count = (int) get_post_meta($product->get_parent_id(), '_on_issue_count', true);
+            }
+
+            return $issue_count > 0 ? $issue_count : 4;
+        }
+
+        return 0;
+    }
+}
+
+if (!function_exists('on_render_issue_count_variation_field')) {
+    /**
+     * Ajoute un champ numérique permettant de définir le nombre de numéros délivrés par une variation.
+     */
+    function on_render_issue_count_variation_field($loop, $variation_data, $variation)
+    {
+        if (!function_exists('wc_get_product')) {
+            return;
+        }
+
+        $product = wc_get_product($variation->ID);
+        if (!$product || !$product->is_type(array('subscription', 'variable-subscription', 'subscription_variation'))) {
+            return;
+        }
+
+        $value = get_post_meta($variation->ID, '_on_issue_count', true);
+        if ('' === $value) {
+            $value = 0;
+        }
+
+        woocommerce_wp_text_input(array(
+            'id' => 'on_issue_count[' . $loop . ']',
+            'label' => __('Nombre de numéros par abonnement', 'orgues-nouvelles'),
+            'description' => __('Définissez combien de numéros sont inclus avant le prochain paiement.', 'orgues-nouvelles'),
+            'desc_tip' => true,
+            'type' => 'number',
+            'custom_attributes' => array(
+                'min' => 1,
+                'step' => 1,
+            ),
+            'value' => absint($value),
+        ));
+    }
+    add_action('woocommerce_product_after_variable_attributes', 'on_render_issue_count_variation_field', 15, 3);
+
+    /**
+     * Sauvegarde la valeur définie sur la variation.
+     */
+    function on_save_issue_count_variation_field($variation_id, $index)
+    {
+        if (!function_exists('wc_get_product')) {
+            return;
+        }
+
+        $product = wc_get_product($variation_id);
+        if (!$product || !$product->is_type(array('subscription', 'variable-subscription', 'subscription_variation'))) {
+            return;
+        }
+
+        $values = isset($_POST['on_issue_count']) ? wp_unslash($_POST['on_issue_count']) : array();
+        $raw_value = isset($values[$index]) ? $values[$index] : '';
+        $issue_count = max(0, absint($raw_value));
+        update_post_meta($variation_id, '_on_issue_count', $issue_count);
+    }
+    add_action('woocommerce_save_product_variation', 'on_save_issue_count_variation_field', 10, 2);
+}
