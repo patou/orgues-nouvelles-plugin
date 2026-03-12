@@ -173,6 +173,37 @@ function on_make_subscription_columns_sortable($columns) {
     return $columns;
 }
 
+if (!function_exists('on_get_product_issue_count')) {
+    /**
+     * Retourne le nombre de numéros configuré sur un produit (variation ou parent).
+     *
+     * @param \WC_Product|int $product Product instance or ID.
+     *
+     * @return int
+     */
+    function on_get_product_issue_count($product)
+    {
+        if (is_numeric($product)) {
+            $product = wc_get_product($product);
+        }
+
+        if (!$product || !is_a($product, 'WC_Product')) {
+            return 0;
+        }
+
+        $issue_count = (int) get_post_meta($product->get_id(), '_on_issue_count', true);
+        if ($issue_count <= 0 && $product->get_parent_id()) {
+            $issue_count = (int) get_post_meta($product->get_parent_id(), '_on_issue_count', true);
+        }
+
+        if ($issue_count <= 0) {
+            $issue_count = (int) apply_filters('on_default_subscription_issue_count', 4, $product);
+        }
+
+        return max(0, $issue_count);
+    }
+}
+
 if (!function_exists('on_get_subscription_issue_count')) {
     /**
      * Récupère le nombre de numéros associés à la variation d'abonnement.
@@ -191,12 +222,10 @@ if (!function_exists('on_get_subscription_issue_count')) {
                 continue;
             }
 
-            $issue_count = (int) get_post_meta($product->get_id(), '_on_issue_count', true);
-            if ($issue_count <= 0 && $product->get_parent_id()) {
-                $issue_count = (int) get_post_meta($product->get_parent_id(), '_on_issue_count', true);
+            $issue_count = on_get_product_issue_count($product);
+            if ($issue_count > 0) {
+                return $issue_count;
             }
-
-            return $issue_count > 0 ? $issue_count : apply_filters('on_default_subscription_issue_count', 4);
         }
 
         return 0;
@@ -258,6 +287,44 @@ if (!function_exists('on_render_issue_count_variation_field')) {
         update_post_meta($variation_id, '_on_issue_count', $issue_count);
     }
     add_action('woocommerce_save_product_variation', 'on_save_issue_count_variation_field', 10, 2);
+}
+
+if (!function_exists('on_add_issue_count_to_price_html')) {
+    /**
+     * Ajoute le nombre de numéros après le prix des abonnements.
+     *
+     * @param string      $price_html HTML du prix.
+     * @param \WC_Product $product    Produit courant.
+     */
+    function on_add_issue_count_to_price_html($price_html, $product)
+    {
+        if (!is_object($product) || !is_a($product, 'WC_Product')) {
+            return $price_html;
+        }
+
+        if (!$product->is_type(array('subscription', 'variable-subscription', 'subscription_variation'))) {
+            return $price_html;
+        }
+
+        $issue_count = on_get_product_issue_count($product);
+        if ($issue_count <= 0) {
+            return $price_html;
+        }
+
+        $issue_text = sprintf(
+            _n('%s numéro', '%s numéros', $issue_count, 'orgues-nouvelles'),
+            number_format_i18n($issue_count)
+        );
+
+        $issue_html = sprintf(
+            ' <span class="on-price-issue-count">- %s</span>',
+            esc_html($issue_text)
+        );
+
+        return $price_html . $issue_html;
+    }
+
+    add_filter('woocommerce_get_price_html', 'on_add_issue_count_to_price_html', 25, 2);
 }
 
 if (!function_exists('on_get_subscription_number_overrides')) {
