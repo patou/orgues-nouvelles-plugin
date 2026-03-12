@@ -276,6 +276,14 @@ msgstr "Your profile"
 msgid "Merci de remplir ces informations pour mieux vous connaitre"
 msgstr "Please fill out this information for us to know you better."
 
+#: includes/subscriptions/subscription.php:223
+msgid "Nombre de numéros par abonnement"
+msgstr "Number of issues per subscription"
+
+#: includes/subscriptions/subscription.php:224
+msgid "Définissez combien de numéros sont inclus avant le prochain paiement."
+msgstr "Set how many issues are included before the next payment."
+
 #: includes/products/product-free-for-plans.php:82
 msgid "Inclus"
 msgstr "Included"

@@ -48,7 +48,15 @@ function on_wc_memberships_csv_export_user_memberships_numero_column( $data, $ke
         return '';
     }
 
-    $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date);
+    $overrides = array();
+    if ($user_membership instanceof \WC_Memberships_Integration_Subscriptions_User_Membership && function_exists('on_get_subscription_number_overrides')) {
+        $linked_subscription = $user_membership->get_subscription();
+        if ($linked_subscription) {
+            $overrides = on_get_subscription_number_overrides($linked_subscription);
+        }
+    }
+
+    $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date, $overrides);
 
     if ($key == 'numero_since') {
         return $info['numero_debut'];

@@ -95,6 +95,33 @@ class OrguesNouvellesTest extends TestCase {
             ]],
         ];
     }
+
+    public function test_on_get_subscription_info_respects_manual_overrides() {
+        $overrides = [
+            'numero_debut' => 10,
+            'numero_fin' => 12,
+        ];
+
+        $info = on_get_subscription_info('2025-11-16', '2026-11-16', $overrides);
+
+        $this->assertEquals(10, $info['numero_debut']);
+        $this->assertEquals('2010-10', $info['mois_debut']);
+        $this->assertEquals(12, $info['numero_fin']);
+        $this->assertEquals('2011-04', $info['mois_fin']);
+        $this->assertEquals(3, $info['nombre_numeros']);
+    }
+
+    public function test_on_get_subscription_info_clamps_override_below_start() {
+        $overrides = [
+            'numero_fin' => 60,
+        ];
+
+        $info = on_get_subscription_info('2025-11-16', '2026-11-16', $overrides);
+
+        $this->assertEquals(71, $info['numero_debut']);
+        $this->assertEquals(71, $info['numero_fin']);
+        $this->assertEquals(1, $info['nombre_numeros']);
+    }
 }
 
 
