@@ -196,7 +196,7 @@ if (!function_exists('on_get_subscription_issue_count')) {
                 $issue_count = (int) get_post_meta($product->get_parent_id(), '_on_issue_count', true);
             }
 
-            return $issue_count > 0 ? $issue_count : 4;
+            return $issue_count > 0 ? $issue_count : apply_filters('on_default_subscription_issue_count', 4);
         }
 
         return 0;
@@ -340,5 +340,81 @@ if (!function_exists('on_save_subscription_number_fields')) {
         }
     }
     add_action('woocommerce_process_shop_subscription_meta', 'on_save_subscription_number_fields', 10, 2);
+}
+
+if (!function_exists('on_initialize_subscription_number_bounds')) {
+    /**
+     * Initialise automatiquement les numéros de début/fin lors de la création d'un abonnement.
+     *
+     * @param \WC_Subscription $subscription Subscription instance.
+     */
+    function on_initialize_subscription_number_bounds($subscription)
+    {
+        if (!$subscription instanceof \WC_Subscription) {
+            return;
+        }
+
+        $existing_start = $subscription->get_meta('number-start', true);
+        $existing_end = $subscription->get_meta('number-end', true);
+        if ($existing_start !== '' && $existing_start !== null && $existing_end !== '' && $existing_end !== null) {
+            return;
+        }
+
+        $start_date = $subscription->get_date('start');
+        if (empty($start_date)) {
+            return;
+        }
+
+        $info = on_get_subscription_info($start_date, $start_date);
+        $numero_start = isset($info['numero_debut']) ? (int) $info['numero_debut'] : null;
+        if ($numero_start === null) {
+            return;
+        }
+
+        $issue_count = max(1, (int) on_get_subscription_issue_count($subscription));
+        $numero_end = $numero_start + max(0, $issue_count - 1);
+
+        $subscription->update_meta_data('number-start', $numero_start);
+        $subscription->update_meta_data('number-end', $numero_end);
+        $subscription->save();
+    }
+
+    add_action('woocommerce_checkout_subscription_created', 'on_initialize_subscription_number_bounds', 20, 1);
+    add_action('woocommerce_admin_created_subscription', 'on_initialize_subscription_number_bounds', 20, 1);
+    add_action('woocommerce_subscription_payment_complete', 'on_initialize_subscription_number_bounds', 20, 1);
+}
+
+if (!function_exists('on_extend_subscription_number_bounds_on_renewal')) {
+    /**
+     * Étend le numéro de fin lorsqu'un renouvellement est facturé.
+     *
+     * @param \WC_Subscription $subscription Subscription instance.
+     */
+    function on_extend_subscription_number_bounds_on_renewal($subscription)
+    {
+        if (!$subscription instanceof \WC_Subscription) {
+            return;
+        }
+
+        $issue_count = (int) on_get_subscription_issue_count($subscription);
+        if ($issue_count <= 0) {
+            return;
+        }
+
+        $current_end = $subscription->get_meta('number-end', true);
+        if ($current_end === '' || $current_end === null) {
+            on_initialize_subscription_number_bounds($subscription);
+            $current_end = $subscription->get_meta('number-end', true);
+            if ($current_end === '' || $current_end === null) {
+                return;
+            }
+        }
+
+        $new_end = max(0, (int) $current_end) + $issue_count;
+        $subscription->update_meta_data('number-end', $new_end);
+        $subscription->save();
+    }
+
+    add_action('woocommerce_subscription_renewal_payment_complete', 'on_extend_subscription_number_bounds_on_renewal', 20, 2);
 }
 

@@ -252,7 +252,6 @@ if (!function_exists('on_get_subscription_info')) {
      * @return array
      */
     function on_get_subscription_info($start_date, $end_date, $overrides = array()) {
-        $overrides = is_array($overrides) ? $overrides : array();
         $override_start = array_key_exists('numero_debut', $overrides) ? $overrides['numero_debut'] : null;
         $override_end = array_key_exists('numero_fin', $overrides) ? $overrides['numero_fin'] : null;
 
