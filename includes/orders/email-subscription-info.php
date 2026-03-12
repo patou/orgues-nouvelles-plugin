@@ -37,7 +37,8 @@ function on_add_subscription_info_to_email($order, $sent_to_admin, $plain_text, 
              $effective_end_date = $start_date;
         }
 
-        $info = on_get_subscription_info($start_date, $effective_end_date);
+        $overrides = function_exists('on_get_subscription_number_overrides') ? on_get_subscription_number_overrides($subscription) : array();
+        $info = on_get_subscription_info($start_date, $effective_end_date, $overrides);
 
         echo '<h2>' . __('Informations sur votre abonnement', 'orgues-nouvelles') . '</h2>';
         echo '<ul>';

@@ -56,7 +56,17 @@ if (!function_exists('on_membership_customize_columns')) {
             return;
         }
 
-        $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date);
+        $linked_subscription = null;
+        if ($membership instanceof \WC_Memberships_Integration_Subscriptions_User_Membership) {
+            $linked_subscription = $membership->get_subscription();
+        }
+
+        $overrides = array();
+        if ($linked_subscription && function_exists('on_get_subscription_number_overrides')) {
+            $overrides = on_get_subscription_number_overrides($linked_subscription);
+        }
+
+        $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date, $overrides);
 
         if ('numero_since' === $column) {
             echo "ON-", $info['numero_debut'];
@@ -85,15 +95,19 @@ if (!function_exists('on_membership_customize_columns')) {
             }
         }
 
-        $info = null;
-        if ($start_date) {
-            $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date);
-        }
-        
         // Récupérer l'abonnement lié à ce membership
         $linked_subscription = null;
+        $overrides = array();
         if ($user_membership instanceof \WC_Memberships_Integration_Subscriptions_User_Membership) {
             $linked_subscription = $user_membership->get_subscription();
+            if ($linked_subscription && function_exists('on_get_subscription_number_overrides')) {
+                $overrides = on_get_subscription_number_overrides($linked_subscription);
+            }
+        }
+
+        $info = null;
+        if ($start_date) {
+            $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date, $overrides);
         }
         
         ?>

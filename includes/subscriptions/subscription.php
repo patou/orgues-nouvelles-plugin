@@ -23,6 +23,7 @@ function on_display_subscription_numeros($subscription) {
     $start_date = $subscription->get_date('start');
     $next_payment_date = $subscription->get_date('next_payment');
     $end_date = $subscription->get_date('end');
+    $overrides = on_get_subscription_number_overrides($subscription);
 
     if (empty($start_date)) {
         return;
@@ -35,7 +36,9 @@ function on_display_subscription_numeros($subscription) {
     }
 
     // Calculer les numéros
-    $info = on_get_subscription_info($start_date, $date_fin ?: $start_date);
+    $info = on_get_subscription_info($start_date, $date_fin ?: $start_date, $overrides);
+    $manual_number_start = isset($overrides['numero_debut']) ? $overrides['numero_debut'] : '';
+    $manual_number_end = isset($overrides['numero_fin']) ? $overrides['numero_fin'] : '';
 
     // Récupérer le membership lié à cet abonnement
     $user_memberships = wc_memberships_get_user_memberships($subscription->get_user_id());
@@ -54,6 +57,18 @@ function on_display_subscription_numeros($subscription) {
     // Afficher les numéros
     ?>
     <div class="on-subscription-numeros">
+        <div class="on-subscription-number-fields wcs-date-input">
+            <p class="form-field form-field-wide">
+                <label for="number-start"><?php _e('Numéro de début personnalisé', 'orgues-nouvelles'); ?></label>
+                <input type="number" class="short" name="number-start" id="number-start" min="0" step="1" value="<?php echo esc_attr($manual_number_start); ?>" />
+                <span class="description"><?php _e('Laissez vide pour utiliser le calcul automatique effectué à partir des dates d\'abonnement.', 'orgues-nouvelles'); ?></span>
+            </p>
+            <p class="form-field form-field-wide">
+                <label for="number-end"><?php _e('Numéro de fin personnalisé', 'orgues-nouvelles'); ?></label>
+                <input type="number" class="short" name="number-end" id="number-end" min="0" step="1" value="<?php echo esc_attr($manual_number_end); ?>" />
+                <span class="description"><?php _e('Laissez vide pour que le numéro de fin soit déterminé automatiquement.', 'orgues-nouvelles'); ?></span>
+            </p>
+        </div>
         <h3 style="margin-top: 0;"><?php _e('Numéros de Orgues-Nouvelles', 'orgues-nouvelles'); ?></h3>
         <table class="shop_table">
             <tbody>
@@ -122,6 +137,7 @@ function on_fill_subscription_columns($column, $post_id) {
         $start_date = $subscription->get_date('start');
         $next_payment_date = $subscription->get_date('next_payment');
         $end_date = $subscription->get_date('end');
+        $overrides = on_get_subscription_number_overrides($subscription);
 
         if (empty($start_date)) {
             echo '—';
@@ -129,7 +145,7 @@ function on_fill_subscription_columns($column, $post_id) {
         }
 
         if ($column === 'on_numero_debut') {
-            $info = on_get_subscription_info($start_date, $start_date);
+            $info = on_get_subscription_info($start_date, $start_date, $overrides);
             echo '<strong>ON-' . esc_html($info['numero_debut']) . '</strong>';
         }
 
@@ -140,7 +156,7 @@ function on_fill_subscription_columns($column, $post_id) {
                 $date_fin = $end_date;
             }
             
-            $info = on_get_subscription_info($start_date, $date_fin ?: $start_date);
+            $info = on_get_subscription_info($start_date, $date_fin ?: $start_date, $overrides);
             echo '<strong>ON-' . esc_html($info['numero_fin']) . '</strong>';
         }
     }
@@ -243,3 +259,86 @@ if (!function_exists('on_render_issue_count_variation_field')) {
     }
     add_action('woocommerce_save_product_variation', 'on_save_issue_count_variation_field', 10, 2);
 }
+
+if (!function_exists('on_get_subscription_number_overrides')) {
+    /**
+     * Retourne les éventuels numéros personnalisés stockés sur l'abonnement.
+     *
+     * @param \WC_Subscription $subscription Subscription instance.
+     *
+     * @return array
+     */
+    function on_get_subscription_number_overrides($subscription)
+    {
+        if (!$subscription || !is_a($subscription, 'WC_Subscription')) {
+            return array();
+        }
+
+        $overrides = array();
+        $numero_start = $subscription->get_meta('number-start', true);
+        if ($numero_start !== '' && null !== $numero_start) {
+            $overrides['numero_debut'] = max(0, (int) $numero_start);
+        }
+
+        $numero_end = $subscription->get_meta('number-end', true);
+        if ($numero_end !== '' && null !== $numero_end) {
+            $overrides['numero_fin'] = max(0, (int) $numero_end);
+        }
+
+        return $overrides;
+    }
+}
+
+if (!function_exists('on_save_subscription_number_fields')) {
+    /**
+     * Sauvegarde les numéros personnalisés dans la méta de l'abonnement via l'API WooCommerce.
+     *
+     * @param int               $post_id      Subscription post ID.
+     * @param \WC_Subscription $subscription Subscription object.
+     */
+    function on_save_subscription_number_fields($post_id, $subscription)
+    {
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+
+        if (!$subscription instanceof \WC_Subscription) {
+            $subscription = function_exists('wcs_get_subscription') ? wcs_get_subscription($post_id) : null;
+        }
+
+        if (!$subscription) {
+            return;
+        }
+
+        $fields = array(
+            'number-start' => 'number-start',
+            'number-end' => 'number-end',
+        );
+
+        $has_changes = false;
+
+        foreach ($fields as $field_name => $meta_key) {
+            if (!isset($_POST[$field_name])) {
+                continue;
+            }
+
+            $raw_value = wp_unslash($_POST[$field_name]);
+
+            if ($raw_value === '' || $raw_value === null) {
+                $subscription->delete_meta_data($meta_key);
+                $has_changes = true;
+                continue;
+            }
+
+            $value = max(0, absint($raw_value));
+            $subscription->update_meta_data($meta_key, $value);
+            $has_changes = true;
+        }
+
+        if ($has_changes) {
+            $subscription->save();
+        }
+    }
+    add_action('woocommerce_process_shop_subscription_meta', 'on_save_subscription_number_fields', 10, 2);
+}
+

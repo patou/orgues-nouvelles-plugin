@@ -245,35 +245,45 @@ if (!function_exists('on_next_payment_date_membership')) {
 if (!function_exists('on_get_subscription_info')) {
     /**
      * Retourne les informations sur les numéros compris dans une période
-     * 
+     *
      * @param string $start_date Date de début (Y-m-d)
-     * @param string $end_date Date de fin (Y-m-d)
+     * @param string $end_date   Date de fin (Y-m-d)
+     * @param array  $overrides  Tableau optionnel ['numero_debut' => int|null, 'numero_fin' => int|null]
      * @return array
      */
-    function on_get_subscription_info($start_date, $end_date) {
-        $numero_start = on_date_magazine_to_numero($start_date);
-        $numero_end = on_date_magazine_to_numero($end_date);
-        
-        // Fix: Exclude issue if subscription ends before the end of the issue period
-        // The end of the issue period is defined as the 15th of the month before the NEXT publication.
-        $next_pub_date = on_numero_to_date_magazine($numero_end + 1);
-        if ($next_pub_date) {
-            // next_pub_date is YYYY-MM
-            // We want YYYY-MM-15 - 1 month
-            $limit_date = date('Y-m-d', strtotime($next_pub_date . '-15 -1 month'));
-            
-            if (substr($end_date, 0, 10) <= $limit_date) {
-                $numero_end--;
+    function on_get_subscription_info($start_date, $end_date, $overrides = array()) {
+        $overrides = is_array($overrides) ? $overrides : array();
+        $override_start = array_key_exists('numero_debut', $overrides) ? $overrides['numero_debut'] : null;
+        $override_end = array_key_exists('numero_fin', $overrides) ? $overrides['numero_fin'] : null;
+
+        $has_override_start = '' !== $override_start && null !== $override_start;
+        $has_override_end = '' !== $override_end && null !== $override_end;
+
+        $numero_start = $has_override_start ? max(0, (int) $override_start) : on_date_magazine_to_numero($start_date);
+        $numero_end = $has_override_end ? max(0, (int) $override_end) : on_date_magazine_to_numero($end_date);
+
+        if (!$has_override_end) {
+            // Fix: Exclude issue if subscription ends before the end of the issue period
+            // The end of the issue period is defined as the 15th of the month before the NEXT publication.
+            $next_pub_date = on_numero_to_date_magazine($numero_end + 1);
+            if ($next_pub_date) {
+                // next_pub_date is YYYY-MM
+                // We want YYYY-MM-15 - 1 month
+                $limit_date = date('Y-m-d', strtotime($next_pub_date . '-15 -1 month'));
+
+                if (substr($end_date, 0, 10) <= $limit_date) {
+                    $numero_end--;
+                }
             }
         }
-        
+
         // Ensure we don't go backwards before start
         $numero_end = max($numero_end, $numero_start);
-        
+
         $mois_debut = on_numero_to_date_magazine($numero_start);
         $mois_fin = on_numero_to_date_magazine($numero_end);
         $nombre_numeros = max(0, $numero_end - $numero_start + 1);
-        
+
         return array(
             'numero_debut' => $numero_start,
             'mois_debut' => $mois_debut,
@@ -344,8 +354,16 @@ if (!function_exists('on_liste_numeros')) {
             }
 
             
+            $overrides = array();
+            if ($membership instanceof \WC_Memberships_Integration_Subscriptions_User_Membership && function_exists('on_get_subscription_number_overrides')) {
+                $linked_subscription = $membership->get_subscription();
+                if ($linked_subscription) {
+                    $overrides = on_get_subscription_number_overrides($linked_subscription);
+                }
+            }
+
             // Use the centralized logic to determine the end number
-            $info = on_get_subscription_info($start_date, $effective_end_date);
+            $info = on_get_subscription_info($start_date, $effective_end_date, $overrides);
             $numero_start = $info['numero_debut'];
             $numero_end = $info['numero_fin'];
 
