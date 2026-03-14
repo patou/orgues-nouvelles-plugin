@@ -204,6 +204,34 @@ if (!function_exists('on_get_product_issue_count')) {
     }
 }
 
+if (!function_exists('on_get_issue_count_suffix_html')) {
+    /**
+     * Retourne le suffixe HTML affichant le nombre de numéros.
+     *
+     * @param int $issue_count Number of issues.
+     *
+     * @return string
+     */
+    function on_get_issue_count_suffix_html($issue_count)
+    {
+        $issue_count = (int) $issue_count;
+
+        if ($issue_count <= 0) {
+            return '';
+        }
+
+        $issue_text = sprintf(
+            _n('%s numéro', '%s numéros', $issue_count, 'orgues-nouvelles'),
+            number_format_i18n($issue_count)
+        );
+
+        return sprintf(
+            ' <span class="on-price-issue-count">- %s</span>',
+            esc_html($issue_text)
+        );
+    }
+}
+
 if (!function_exists('on_get_subscription_issue_count')) {
     /**
      * Récupère le nombre de numéros associés à la variation d'abonnement.
@@ -229,6 +257,47 @@ if (!function_exists('on_get_subscription_issue_count')) {
         }
 
         return 0;
+    }
+}
+
+if (!function_exists('on_get_recurring_cart_issue_count')) {
+    /**
+     * Calcule le nombre total de numéros représenté dans un panier récurrent.
+     *
+     * @param \WC_Cart $cart Cart instance.
+     *
+     * @return int
+     */
+    function on_get_recurring_cart_issue_count($cart)
+    {
+        if (!is_a($cart, 'WC_Cart')) {
+            return 0;
+        }
+
+        $issue_count = 0;
+
+        foreach ($cart->get_cart() as $cart_item) {
+            $product = isset($cart_item['data']) ? $cart_item['data'] : null;
+
+            if (!$product || !is_a($product, 'WC_Product')) {
+                continue;
+            }
+
+            if (!$product->is_type(array('subscription', 'variable-subscription', 'subscription_variation'))) {
+                continue;
+            }
+
+            $item_issue_count = on_get_product_issue_count($product);
+
+            if ($item_issue_count <= 0) {
+                continue;
+            }
+
+            $quantity = isset($cart_item['quantity']) ? max(1, (int) $cart_item['quantity']) : 1;
+            $issue_count += $item_issue_count * $quantity;
+        }
+
+        return $issue_count;
     }
 }
 
@@ -307,24 +376,194 @@ if (!function_exists('on_add_issue_count_to_price_html')) {
         }
 
         $issue_count = on_get_product_issue_count($product);
-        if ($issue_count <= 0) {
+        $issue_html = on_get_issue_count_suffix_html($issue_count);
+
+        if ('' === $issue_html) {
             return $price_html;
         }
-
-        $issue_text = sprintf(
-            _n('%s numéro', '%s numéros', $issue_count, 'orgues-nouvelles'),
-            number_format_i18n($issue_count)
-        );
-
-        $issue_html = sprintf(
-            ' <span class="on-price-issue-count">- %s</span>',
-            esc_html($issue_text)
-        );
 
         return $price_html . $issue_html;
     }
 
     add_filter('woocommerce_get_price_html', 'on_add_issue_count_to_price_html', 25, 2);
+}
+
+if (!function_exists('on_add_issue_count_to_cart_price')) {
+    /**
+     * Ajoute le nombre de numéros après le prix dans le panier.
+     *
+     * @param string $price_html Current price HTML.
+     * @param array  $cart_item  Cart item data.
+     */
+    function on_add_issue_count_to_cart_price($price_html, $cart_item, $cart_item_key = '')
+    {
+        $product = isset($cart_item['data']) ? $cart_item['data'] : null;
+
+        if (!$product || !is_a($product, 'WC_Product')) {
+            return $price_html;
+        }
+
+        if (!$product->is_type(array('subscription', 'variable-subscription', 'subscription_variation'))) {
+            return $price_html;
+        }
+
+        $issue_count = on_get_product_issue_count($product);
+        $issue_html = on_get_issue_count_suffix_html($issue_count);
+
+        if ('' === $issue_html) {
+            return $price_html;
+        }
+
+        return $price_html . $issue_html;
+    }
+
+    add_filter('woocommerce_cart_item_price', 'on_add_issue_count_to_cart_price', 20, 3);
+}
+
+if (!function_exists('on_add_issue_count_to_cart_subtotal')) {
+    /**
+     * Ajoute le nombre de numéros après le sous-total des articles du panier.
+     */
+    function on_add_issue_count_to_cart_subtotal($subtotal, $cart_item, $cart_item_key)
+    {
+        $product = isset($cart_item['data']) ? $cart_item['data'] : null;
+
+        if (!$product || !is_a($product, 'WC_Product')) {
+            return $subtotal;
+        }
+
+        if (!$product->is_type(array('subscription', 'variable-subscription', 'subscription_variation'))) {
+            return $subtotal;
+        }
+
+        $issue_html = on_get_issue_count_suffix_html(on_get_product_issue_count($product));
+
+        if ('' === $issue_html) {
+            return $subtotal;
+        }
+
+        return $subtotal . $issue_html;
+    }
+
+    add_filter('woocommerce_cart_item_subtotal', 'on_add_issue_count_to_cart_subtotal', 20, 3);
+}
+
+if (!function_exists('on_add_issue_count_to_order_line_subtotal')) {
+    /**
+     * Ajoute le nombre de numéros aux lignes d'une commande.
+     */
+    function on_add_issue_count_to_order_line_subtotal($subtotal, $item, $order)
+    {
+        if (!is_object($item) || !is_callable(array($item, 'get_product'))) {
+            return $subtotal;
+        }
+
+        $product = $item->get_product();
+
+        if (!$product || !is_a($product, 'WC_Product')) {
+            return $subtotal;
+        }
+
+        if (!$product->is_type(array('subscription', 'variable-subscription', 'subscription_variation'))) {
+            return $subtotal;
+        }
+
+        $issue_html = on_get_issue_count_suffix_html(on_get_product_issue_count($product));
+
+        if ('' === $issue_html) {
+            return $subtotal;
+        }
+
+        return $subtotal . $issue_html;
+    }
+
+    add_filter('woocommerce_order_formatted_line_subtotal', 'on_add_issue_count_to_order_line_subtotal', 20, 3);
+}
+
+if (!function_exists('on_recurring_subtotal_issue_context')) {
+    /**
+     * Gère l'état de contexte lors du rendu des sous-totaux récurrents.
+     *
+     * @param string $action start|stop|get.
+     *
+     * @return bool
+     */
+    function on_recurring_subtotal_issue_context($action = 'get')
+    {
+        static $depth = 0;
+
+        if ('start' === $action) {
+            $depth++;
+        } elseif ('stop' === $action) {
+            $depth = max(0, $depth - 1);
+        }
+
+        return $depth > 0;
+    }
+}
+
+if (!function_exists('on_start_recurring_subtotal_issue_context')) {
+    function on_start_recurring_subtotal_issue_context($recurring_carts)
+    {
+        on_recurring_subtotal_issue_context('start');
+    }
+
+    add_action('woocommerce_subscriptions_recurring_totals_subtotals', 'on_start_recurring_subtotal_issue_context', 1);
+}
+
+if (!function_exists('on_stop_recurring_subtotal_issue_context')) {
+    function on_stop_recurring_subtotal_issue_context($recurring_carts)
+    {
+        on_recurring_subtotal_issue_context('stop');
+    }
+
+    add_action('woocommerce_subscriptions_recurring_totals_subtotals', 'on_stop_recurring_subtotal_issue_context', 200);
+}
+
+if (!function_exists('on_add_issue_count_to_recurring_subtotal_details')) {
+    /**
+     * Ajoute le suffixe aux sous-totaux récurrents.
+     */
+    function on_add_issue_count_to_recurring_subtotal_details($details, $cart)
+    {
+        if (!on_recurring_subtotal_issue_context('get')) {
+            return $details;
+        }
+
+        if (!isset($details['recurring_amount'])) {
+            return $details;
+        }
+
+        $issue_html = on_get_issue_count_suffix_html(on_get_recurring_cart_issue_count($cart));
+
+        if ('' === $issue_html) {
+            return $details;
+        }
+
+        $details['recurring_amount'] .= $issue_html;
+
+        return $details;
+    }
+
+    add_filter('woocommerce_cart_subscription_string_details', 'on_add_issue_count_to_recurring_subtotal_details', 20, 2);
+}
+
+if (!function_exists('on_add_issue_count_to_recurring_total_html')) {
+    /**
+     * Ajoute le suffixe au total récurrent.
+     */
+    function on_add_issue_count_to_recurring_total_html($html, $cart)
+    {
+        $issue_html = on_get_issue_count_suffix_html(on_get_recurring_cart_issue_count($cart));
+
+        if ('' === $issue_html) {
+            return $html;
+        }
+
+        return $html . $issue_html;
+    }
+
+    add_filter('wcs_cart_totals_order_total_html', 'on_add_issue_count_to_recurring_total_html', 20, 2);
 }
 
 if (!function_exists('on_get_subscription_number_overrides')) {
