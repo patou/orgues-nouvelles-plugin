@@ -7,6 +7,14 @@
     padding: 0; /* Supprime le padding de la liste */
 }
 
+.magazine-add-form {
+    margin-top: 20px;
+}
+
+div.magazine-add-form h3 {
+    margin-bottom: 5px !important;
+}
+
 .magazine-item {
     display: flex;
     flex-direction: column; /* Organise la miniature et les détails en colonne */

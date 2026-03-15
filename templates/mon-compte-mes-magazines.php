@@ -13,6 +13,8 @@ $current_lang = function_exists('pll_current_language') ? pll_current_language()
 echo '<h2>' . esc_html__('Vos magazines abonnés :', 'orgues-nouvelles') . '</h2>';
 
 if (!empty($numeros)) {
+    echo '<p>Vos numéros abonnés : ' . on_format_numeros_with_ranges($numeros) . '</p>';
+
     echo '<ul class="magazines-grid">';
     // Préparer les arguments pour WP_Query
     $args = array(
@@ -75,10 +77,12 @@ if (!empty($numeros)) {
 }
 
 if ($current_lang === 'fr') {
-    echo '<h2>' . esc_html__('Ajouter un magazine avec un code :', 'orgues-nouvelles') . '</h2>';
+    echo '<div class="magazine-add-form">';
+    echo '<h3>' . esc_html__('Ajouter un magazine avec un code :', 'orgues-nouvelles') . '</h3>';
     echo '<p>' . esc_html__('Retrouvez le code à saisir dans votre magazine pour accéder à l\'espace privé.', 'orgues-nouvelles') . '</p>';
     echo '<form method="post" action="" class="magazines-form">';
     echo '<input type="text" name="magazine_code" placeholder="' . esc_attr__('Code du magazine', 'orgues-nouvelles') . '">';
     echo '<input type="submit" value="' . esc_attr__('Ajouter', 'orgues-nouvelles') . '">';
     echo '</form>';
+    echo '</div>';
 }

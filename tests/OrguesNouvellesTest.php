@@ -95,6 +95,24 @@ class OrguesNouvellesTest extends TestCase {
             ]],
         ];
     }
+
+    /**
+     * @dataProvider numerosWithRangesProvider
+     */
+    public function test_on_format_numeros_with_ranges($expected, $numeros) {
+        $this->assertSame($expected, on_format_numeros_with_ranges($numeros));
+    }
+
+    public function numerosWithRangesProvider() {
+        return [
+            ['1-3,5-8,10', [1, 2, 3, 5, 6, 7, 8, 10]],
+            ['3-6', [5, 3, 4, 4, 6]],
+            ['7', [7]],
+            ['2,4', [2, 4]],
+            ['', []],
+            ['', null],
+        ];
+    }
 }
 
 

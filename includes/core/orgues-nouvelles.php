@@ -363,4 +363,57 @@ if (!function_exists('on_liste_numeros')) {
 
         return $liste;
     }
+
+    
+}
+
+if (!function_exists('on_format_numeros_with_ranges')) {
+    /**
+     * Formate une liste de numéros en regroupant les séquences consécutives.
+     *
+     * @param array $numeros Liste de numéros.
+     * @return string Liste formatée (ex: 1-3,5-8,10).
+     */
+    function on_format_numeros_with_ranges($numeros = array())
+    {
+        if (empty($numeros) || !is_array($numeros)) {
+            return '';
+        }
+
+        $numeros = array_map('intval', $numeros);
+        $numeros = array_unique($numeros);
+        sort($numeros, SORT_NUMERIC);
+
+        $formatted_ranges = array();
+        $range_start = null;
+        $previous = null;
+
+        foreach ($numeros as $numero) {
+            if ($range_start === null) {
+                $range_start = $numero;
+                $previous = $numero;
+                continue;
+            }
+
+            if ($numero === $previous + 1) {
+                $previous = $numero;
+                continue;
+            }
+
+            $formatted_ranges[] = ($range_start === $previous)
+                ? (string) $range_start
+                : $range_start . '-' . $previous;
+
+            $range_start = $numero;
+            $previous = $numero;
+        }
+
+        if ($range_start !== null) {
+            $formatted_ranges[] = ($range_start === $previous)
+                ? (string) $range_start
+                : $range_start . '-' . $previous;
+        }
+
+        return implode(',', $formatted_ranges);
+    }
 }
