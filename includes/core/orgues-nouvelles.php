@@ -231,13 +231,39 @@ if (!function_exists('on_next_payment_date_membership')) {
      */
     function on_next_payment_date_membership($membership)
     {
-        if ($membership instanceof \WC_Memberships_Integration_Subscriptions_User_Membership) {
+        if (!$membership) {
+            return null;
+        }
+
+        if (is_numeric($membership) && function_exists('wc_memberships_get_user_membership')) {
+            $membership = wc_memberships_get_user_membership((int) $membership);
+        }
+
+        if (!is_object($membership)) {
+            return null;
+        }
+
+        $subscription = null;
+
+        if (method_exists($membership, 'get_subscription')) {
             $subscription = $membership->get_subscription();
-            if ($subscription) {
-                $next_payment_date = $subscription->get_date('next_payment');
-                return $next_payment_date;
+        }
+
+        if (!$subscription && class_exists('\WC_Memberships_User_Membership', false) && $membership instanceof \WC_Memberships_User_Membership && function_exists('wc_memberships')) {
+            $integrations = wc_memberships()->get_integrations_instance();
+            if ($integrations && method_exists($integrations, 'get_subscriptions_instance')) {
+                $subscriptions_integration = $integrations->get_subscriptions_instance();
+                if ($subscriptions_integration && method_exists($subscriptions_integration, 'get_subscription_from_membership')) {
+                    $subscription = $subscriptions_integration->get_subscription_from_membership($membership->get_id());
+                }
             }
         }
+
+        if ($subscription instanceof \WC_Subscription) {
+            $next_payment_date = $subscription->get_date('next_payment');
+            return $next_payment_date ? $next_payment_date : null;
+        }
+
         return null;
     }
 }
@@ -270,7 +296,7 @@ if (!function_exists('on_get_subscription_info')) {
                 // We want YYYY-MM-15 - 1 month
                 $limit_date = date('Y-m-d', strtotime($next_pub_date . '-15 -1 month'));
 
-                if (substr($end_date, 0, 10) <= $limit_date) {
+                if ($end_date && substr($end_date, 0, 10) <= $limit_date) {
                     $numero_end--;
                 }
             }
@@ -379,5 +405,58 @@ if (!function_exists('on_liste_numeros')) {
         }
 
         return $liste;
+    }
+
+    
+}
+
+if (!function_exists('on_format_numeros_with_ranges')) {
+    /**
+     * Formate une liste de numéros en regroupant les séquences consécutives.
+     *
+     * @param array $numeros Liste de numéros.
+     * @return string Liste formatée (ex: 1-3,5-8,10).
+     */
+    function on_format_numeros_with_ranges($numeros = array())
+    {
+        if (empty($numeros) || !is_array($numeros)) {
+            return '';
+        }
+
+        $numeros = array_map('intval', $numeros);
+        $numeros = array_unique($numeros);
+        sort($numeros, SORT_NUMERIC);
+
+        $formatted_ranges = array();
+        $range_start = null;
+        $previous = null;
+
+        foreach ($numeros as $numero) {
+            if ($range_start === null) {
+                $range_start = $numero;
+                $previous = $numero;
+                continue;
+            }
+
+            if ($numero === $previous + 1) {
+                $previous = $numero;
+                continue;
+            }
+
+            $formatted_ranges[] = ($range_start === $previous)
+                ? (string) $range_start
+                : $range_start . '-' . $previous;
+
+            $range_start = $numero;
+            $previous = $numero;
+        }
+
+        if ($range_start !== null) {
+            $formatted_ranges[] = ($range_start === $previous)
+                ? (string) $range_start
+                : $range_start . '-' . $previous;
+        }
+
+        return implode(',', $formatted_ranges);
     }
 }
