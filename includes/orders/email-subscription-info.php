@@ -11,6 +11,7 @@ function on_add_subscription_info_to_email($order, $sent_to_admin, $plain_text, 
         return;
     }
 
+    
     $subscriptions = wcs_get_subscriptions_for_order($order->get_id(), array('order_type' => 'any'));
 
     if (empty($subscriptions)) {
@@ -18,6 +19,19 @@ function on_add_subscription_info_to_email($order, $sent_to_admin, $plain_text, 
     }
 
     foreach ($subscriptions as $subscription) {
+        if (!$subscription instanceof WC_Subscription) {
+            continue;
+        }
+
+        $valid_statuses = (array) apply_filters('on_subscription_email_info_statuses', array('active'));
+        if (function_exists('sanitize_key')) {
+            $valid_statuses = array_map('sanitize_key', $valid_statuses);
+        }
+
+        if (!$subscription->has_status($valid_statuses)) {
+            continue; // Ne rien afficher tant que l'abonnement n'est pas validé.
+        }
+
         $start_date = $subscription->get_date('start');
         $next_payment_date = $subscription->get_date('next_payment');
         $end_date = $subscription->get_date('end');
