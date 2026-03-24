@@ -163,6 +163,14 @@ msgstr ""
 msgid "Merci de remplir ces informations pour mieux vous connaitre"
 msgstr ""
 
+#: includes/subscriptions/subscription.php:223
+msgid "Nombre de numéros par abonnement"
+msgstr ""
+
+#: includes/subscriptions/subscription.php:224
+msgid "Définissez combien de numéros sont inclus avant le prochain paiement."
+msgstr ""
+
 #: includes/orders/check-abonnement-france.php:23
 msgid "Vous devez selectionner la livraison Monde pour une livraison en dehors de la France lors de votre abonnement à Orgues-Nouvelles"
 msgstr ""
