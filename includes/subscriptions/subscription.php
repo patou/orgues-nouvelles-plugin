@@ -10,12 +10,37 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Affiche les numéros ON dans la metabox de détails d'un abonnement
+ * Ajoute la meta box affichant les numéros ON sur les abonnements.
  */
-add_action('wcs_subscription_schedule_after_billing_schedule', 'on_display_subscription_numeros', 10, 1);
+add_action('add_meta_boxes_shop_subscription', 'on_register_subscription_numeros_metabox');
+
+function on_register_subscription_numeros_metabox() {
+    add_meta_box(
+        'on-subscription-numeros',
+        __('Numéros Orgues-Nouvelles', 'orgues-nouvelles'),
+        'on_render_subscription_numeros_metabox',
+        'shop_subscription',
+        'side',
+        'high'
+    );
+}
+
+function on_render_subscription_numeros_metabox($post) {
+    if (!function_exists('wcs_get_subscription')) {
+        return;
+    }
+
+    $subscription = wcs_get_subscription($post->ID);
+
+    if (!$subscription instanceof WC_Subscription) {
+        return;
+    }
+
+    on_display_subscription_numeros($subscription);
+}
 
 function on_display_subscription_numeros($subscription) {
-    if (!$subscription) {
+    if (!$subscription instanceof WC_Subscription) {
         return;
     }
 
