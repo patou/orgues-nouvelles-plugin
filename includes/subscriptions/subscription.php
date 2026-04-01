@@ -17,7 +17,7 @@ add_action('add_meta_boxes_shop_subscription', 'on_register_subscription_numeros
 function on_register_subscription_numeros_metabox() {
     add_meta_box(
         'on-subscription-numeros',
-        __('Numéros Orgues-Nouvelles', 'orgues-nouvelles'),
+        __('Orgues-Nouvelles', 'orgues-nouvelles'),
         'on_render_subscription_numeros_metabox',
         'shop_subscription',
         'side',
@@ -64,6 +64,11 @@ function on_display_subscription_numeros($subscription) {
     $info = on_get_subscription_info($start_date, $date_fin ?: $start_date, $overrides);
     $manual_number_start = isset($overrides['numero_debut']) ? $overrides['numero_debut'] : '';
     $manual_number_end = isset($overrides['numero_fin']) ? $overrides['numero_fin'] : '';
+    $formule_value = on_sanitize_subscription_formule($subscription->get_meta('on_formule', true));
+    if ('' === $formule_value) {
+        $formule_value = on_guess_subscription_formule_from_items($subscription);
+    }
+    $formule_choices = on_get_subscription_formule_choices();
 
     // Récupérer le membership lié à cet abonnement
     $user_memberships = wc_memberships_get_user_memberships($subscription->get_user_id());
@@ -83,6 +88,18 @@ function on_display_subscription_numeros($subscription) {
     ?>
     <div class="on-subscription-numeros">
         <div class="on-subscription-number-fields wcs-date-input">
+            <p class="form-field form-field-wide">
+                <label for="on-formule"><?php _e('Formule', 'orgues-nouvelles'); ?></label>
+                <select name="on-formule" id="on-formule" class="postform">
+                    <option value=""><?php esc_html_e('Sélectionnez une formule', 'orgues-nouvelles'); ?></option>
+                    <?php foreach ($formule_choices as $value => $label) : ?>
+                        <option value="<?php echo esc_attr($value); ?>" <?php selected($formule_value, $value); ?>>
+                            <?php echo esc_html($label); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <span class="description"><?php _e('Valeur utilisée pour suivre la formule d\'abonnement.', 'orgues-nouvelles'); ?></span>
+            </p>
             <p class="form-field form-field-wide">
                 <label for="number-start"><?php _e('Numéro de début personnalisé', 'orgues-nouvelles'); ?></label>
                 <input type="number" class="short" name="number-start" id="number-start" min="0" step="1" value="<?php echo esc_attr($manual_number_start); ?>" />
@@ -620,6 +637,90 @@ if (!function_exists('on_get_subscription_number_overrides')) {
     }
 }
 
+if (!function_exists('on_get_subscription_formule_choices')) {
+    /**
+     * Retourne les choix disponibles pour la formule.
+     *
+     * @return array
+     */
+    function on_get_subscription_formule_choices()
+    {
+        $choices = array(
+            'ON' => __('ON', 'orgues-nouvelles'),
+            'ONED' => __('ONED', 'orgues-nouvelles'),
+            'ONEDA' => __('ONEDA', 'orgues-nouvelles'),
+        );
+
+        return (array) apply_filters('on_subscription_formule_choices', $choices);
+    }
+}
+
+if (!function_exists('on_sanitize_subscription_formule')) {
+    /**
+     * Nettoie et valide la valeur de la formule.
+     *
+     * @param mixed $value Raw value.
+     *
+     * @return string
+     */
+    function on_sanitize_subscription_formule($value)
+    {
+        if (!is_scalar($value)) {
+            return '';
+        }
+
+        $value = strtoupper(sanitize_text_field((string) $value));
+        $choices = array_keys(on_get_subscription_formule_choices());
+
+        return in_array($value, $choices, true) ? $value : '';
+    }
+}
+
+if (!function_exists('on_guess_subscription_formule_from_items')) {
+    /**
+     * Devine la formule à partir du SKU du premier produit d'abonnement.
+     *
+     * @param \WC_Subscription $subscription Subscription instance.
+     *
+     * @return string
+     */
+    function on_guess_subscription_formule_from_items($subscription)
+    {
+        if (!$subscription instanceof \WC_Subscription) {
+            return '';
+        }
+
+        foreach ($subscription->get_items() as $item) {
+            $product = $item->get_product();
+
+            if (!$product || !is_callable(array($product, 'get_sku'))) {
+                continue;
+            }
+
+            $sku = strtoupper(sanitize_text_field($product->get_sku()));
+
+            // Correspondance exacte d'abord.
+            $formule = on_sanitize_subscription_formule($sku);
+            if ('' !== $formule) {
+                return $formule;
+            }
+
+            // Correspondance partielle : chercher si un choix est contenu dans le SKU.
+            // Trier par longueur décroissante pour éviter que "ON" ne corresponde avant "ONED" ou "ONEDA".
+            $choices = array_keys(on_get_subscription_formule_choices());
+            usort($choices, function ($a, $b) { return strlen($b) - strlen($a); });
+
+            foreach ($choices as $choice) {
+                if (false !== strpos($sku, $choice)) {
+                    return $choice;
+                }
+            }
+        }
+
+        return '';
+    }
+}
+
 if (!function_exists('on_save_subscription_number_fields')) {
     /**
      * Sauvegarde les numéros personnalisés dans la méta de l'abonnement via l'API WooCommerce.
@@ -642,13 +743,23 @@ if (!function_exists('on_save_subscription_number_fields')) {
         }
 
         $fields = array(
-            'number-start' => 'number-start',
-            'number-end' => 'number-end',
+            'number-start' => array(
+                'meta_key' => 'number-start',
+                'type' => 'int',
+            ),
+            'number-end' => array(
+                'meta_key' => 'number-end',
+                'type' => 'int',
+            ),
+            'on-formule' => array(
+                'meta_key' => 'on_formule',
+                'type' => 'formule',
+            ),
         );
 
         $has_changes = false;
 
-        foreach ($fields as $field_name => $meta_key) {
+        foreach ($fields as $field_name => $field_config) {
             if (!isset($_POST[$field_name])) {
                 continue;
             }
@@ -656,13 +767,24 @@ if (!function_exists('on_save_subscription_number_fields')) {
             $raw_value = wp_unslash($_POST[$field_name]);
 
             if ($raw_value === '' || $raw_value === null) {
-                $subscription->delete_meta_data($meta_key);
+                $subscription->delete_meta_data($field_config['meta_key']);
                 $has_changes = true;
                 continue;
             }
 
-            $value = max(0, absint($raw_value));
-            $subscription->update_meta_data($meta_key, $value);
+            if ('formule' === $field_config['type']) {
+                $value = on_sanitize_subscription_formule($raw_value);
+
+                if ('' === $value) {
+                    $subscription->delete_meta_data($field_config['meta_key']);
+                    $has_changes = true;
+                    continue;
+                }
+            } else {
+                $value = max(0, absint($raw_value));
+            }
+
+            $subscription->update_meta_data($field_config['meta_key'], $value);
             $has_changes = true;
         }
 
@@ -685,29 +807,43 @@ if (!function_exists('on_initialize_subscription_number_bounds')) {
             return;
         }
 
-        $existing_start = $subscription->get_meta('number-start', true);
-        $existing_end = $subscription->get_meta('number-end', true);
-        if ($existing_start !== '' && $existing_start !== null && $existing_end !== '' && $existing_end !== null) {
-            return;
-        }
-
         $start_date = $subscription->get_date('start');
         if (empty($start_date)) {
             return;
         }
 
-        $info = on_get_subscription_info($start_date, $start_date);
-        $numero_start = isset($info['numero_debut']) ? (int) $info['numero_debut'] : null;
-        if ($numero_start === null) {
-            return;
+        $has_changes = false;
+
+        // Initialiser les bornes de numéros si elles ne sont pas encore définies.
+        $existing_start = $subscription->get_meta('number-start', true);
+        $existing_end   = $subscription->get_meta('number-end', true);
+        if ($existing_start === '' || $existing_start === null || $existing_end === '' || $existing_end === null) {
+            $info         = on_get_subscription_info($start_date, $start_date);
+            $numero_start = isset($info['numero_debut']) ? (int) $info['numero_debut'] : null;
+
+            if ($numero_start !== null) {
+                $issue_count = max(1, (int) on_get_subscription_issue_count($subscription));
+                $numero_end  = $numero_start + max(0, $issue_count - 1);
+
+                $subscription->update_meta_data('number-start', $numero_start);
+                $subscription->update_meta_data('number-end', $numero_end);
+                $has_changes = true;
+            }
         }
 
-        $issue_count = max(1, (int) on_get_subscription_issue_count($subscription));
-        $numero_end = $numero_start + max(0, $issue_count - 1);
+        // Initialiser la formule si elle n'est pas encore définie.
+        $existing_formule = $subscription->get_meta('on_formule', true);
+        if ($existing_formule === '' || $existing_formule === null) {
+            $formule = on_guess_subscription_formule_from_items($subscription);
+            if ('' !== $formule) {
+                $subscription->update_meta_data('on_formule', $formule);
+                $has_changes = true;
+            }
+        }
 
-        $subscription->update_meta_data('number-start', $numero_start);
-        $subscription->update_meta_data('number-end', $numero_end);
-        $subscription->save();
+        if ($has_changes) {
+            $subscription->save();
+        }
     }
 
     add_action('woocommerce_checkout_subscription_created', 'on_initialize_subscription_number_bounds', 20, 1);
