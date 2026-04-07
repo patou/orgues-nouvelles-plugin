@@ -31,6 +31,8 @@ function on_pre_get_posts( $query ) {
     }
 
     if ($query->is_post_type_archive( 'ressource' ) || $query->is_tax( 'type_de_ressource' )) {
+        /*
+        Accès aux resources pour tout les visiteurs.
         $numeros = on_liste_numeros();
         if (!empty($numeros)) {
             $meta_query[] = array(
@@ -38,7 +40,7 @@ function on_pre_get_posts( $query ) {
                 'value' => $numeros,
                 'compare' => 'IN'
             );
-        }
+        }*/
         // Obtenir la langue actuelle de Polylang
         $current_lang = pll_current_language();
 
