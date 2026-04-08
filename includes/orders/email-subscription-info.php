@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-add_action('woocommerce_email_after_order_table', 'on_add_subscription_info_to_email', 10, 4);
+//add_action('woocommerce_email_after_order_table', 'on_add_subscription_info_to_email', 10, 4);
 
 function on_add_subscription_info_to_email($order, $sent_to_admin, $plain_text, $email) {
     if (!function_exists('wcs_get_subscriptions_for_order')) {
