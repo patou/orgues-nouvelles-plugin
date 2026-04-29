@@ -62,6 +62,9 @@ function on_highlight_results($text)
 {
     if (is_search() && !is_admin()) {
         $sr = get_query_var('s');
+        if (empty($sr)) {
+            return $text;
+        }
         $keys = explode(" ", $sr);
         $keys = array_filter($keys);
         $regEx = '\'(?!((<.*?)|(<a.*?)))(\b' . implode('|', $keys) . '\b)(?!(([^<>]*?)>)|([^>]*?</a>))\'iu';
