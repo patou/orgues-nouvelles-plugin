@@ -62,7 +62,7 @@ function on_highlight_results($text)
 {
     if (is_search() && !is_admin()) {
         $sr = get_query_var('s');
-        if (empty($sr)) {
+        if (empty(trim($sr))) {
             return $text;
         }
         $keys = explode(" ", $sr);
