@@ -57,6 +57,11 @@ function on_load_plugin() {
         require_once(__DIR__ . '/includes/products/product-free-for-plans.php');
         require_once(__DIR__ . '/includes/products/restrict-magazines.php');
     }
+
+    // Charger les modules Pods transverses.
+    if (is_plugin_active('pods/init.php')) {
+        require_once(__DIR__ . '/includes/core/pods-pick-field-labels.php');
+    }
     
     // Charger les modules frontend
     require_once(__DIR__ . '/includes/frontend/shortcode.php');
