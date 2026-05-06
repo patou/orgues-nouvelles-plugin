@@ -46,8 +46,8 @@ function on_register_visibility_controls($element) {
     $element->add_control(ON_VISIBILITY_MESSAGE, [
         'label' => __('Affiche le message de restriction', 'orgues-nouvelles'),
         'type' => \Elementor\Controls_Manager::SWITCHER,
-        'label_on' => __('Yes', 'woocommerce-memberships'),
-        'label_off' => __('No', 'woocommerce-memberships'),
+        'label_on' => __('Yes', 'orgues-nouvelles'),
+        'label_off' => __('No', 'orgues-nouvelles'),
         'default' => 'yes',
         'section' => ON_VISIBILITY_SECTION,
     ]);
@@ -55,13 +55,12 @@ function on_register_visibility_controls($element) {
 
 function get_membership_plans_options() {
 
-    $available_plans_list = [];
-    $membership_plans = wc_memberships_get_membership_plans();
+    $available_plans_list = array(
+        'on' => __('ON', 'orgues-nouvelles'),
+        'oned' => __('ONED', 'orgues-nouvelles'),
+        'oneda' => __('ONEDA', 'orgues-nouvelles'),
+    );
 
-    // build the options list
-    foreach ( $membership_plans as $plan ) {
-        $available_plans_list[$plan->get_slug()] = $plan->get_name();
-    }
     return $available_plans_list;
 }
 
@@ -75,7 +74,15 @@ function on_ajouter_numero_apres_achat($order_id)
 
     if ($user_id) {
         foreach ($order->get_items() as $item) {
-            $product_id = $item->get_product_id();
+            $product_id = 0;
+            if (is_object($item) && is_callable(array($item, 'get_product_id'))) {
+                $product_id = (int) call_user_func(array($item, 'get_product_id'));
+            }
+
+            if ($product_id <= 0) {
+                continue;
+            }
+
             $magazine = pods('product', $product_id)->field('magazine', true);
 
             if ($magazine) {

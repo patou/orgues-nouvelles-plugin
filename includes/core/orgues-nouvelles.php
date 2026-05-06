@@ -223,51 +223,6 @@ if (!function_exists('on_magazine_title')) {
 
 }
 
-if (!function_exists('on_next_payment_date_membership')) {
-    /**
-     * Retourne la date du prochain paiement d'un abonnement
-     * 
-     * @param \WC_Memberships_Integration_Subscriptions_User_Membership $membership
-     */
-    function on_next_payment_date_membership($membership)
-    {
-        if (!$membership) {
-            return null;
-        }
-
-        if (is_numeric($membership) && function_exists('wc_memberships_get_user_membership')) {
-            $membership = wc_memberships_get_user_membership((int) $membership);
-        }
-
-        if (!is_object($membership)) {
-            return null;
-        }
-
-        $subscription = null;
-
-        if (method_exists($membership, 'get_subscription')) {
-            $subscription = $membership->get_subscription();
-        }
-
-        if (!$subscription && class_exists('\WC_Memberships_User_Membership', false) && $membership instanceof \WC_Memberships_User_Membership && function_exists('wc_memberships')) {
-            $integrations = wc_memberships()->get_integrations_instance();
-            if ($integrations && method_exists($integrations, 'get_subscriptions_instance')) {
-                $subscriptions_integration = $integrations->get_subscriptions_instance();
-                if ($subscriptions_integration && method_exists($subscriptions_integration, 'get_subscription_from_membership')) {
-                    $subscription = $subscriptions_integration->get_subscription_from_membership($membership->get_id());
-                }
-            }
-        }
-
-        if ($subscription instanceof \WC_Subscription) {
-            $next_payment_date = $subscription->get_date('next_payment');
-            return $next_payment_date ? $next_payment_date : null;
-        }
-
-        return null;
-    }
-}
-
 if (!function_exists('on_get_subscription_info')) {
     /**
      * Retourne les informations sur les numéros compris dans une période
@@ -352,43 +307,50 @@ if (!function_exists('on_liste_numeros')) {
                 }
             }
         }
-        // Numéros accessibles via les abonnements de l'utilisateur
-        $memberships = wc_memberships_get_user_memberships();
-        foreach ($memberships as $membership) {
-            // Filtrer par slug si le paramètre est fourni
+        // Numéros accessibles via les abonnements Subscriptions de l'utilisateur.
+        if (function_exists('wcs_get_users_subscriptions')) {
+            $subscriptions = wcs_get_users_subscriptions($user_id);
+        } else {
+            $subscriptions = array();
+        }
+
+        foreach ($subscriptions as $subscription) {
+            if (!$subscription || !is_a($subscription, 'WC_Subscription')) {
+                continue;
+            }
+
+            if (is_callable(array($subscription, 'has_status')) && !$subscription->has_status(array('active', 'pending-cancel', 'on-hold'))) {
+                continue;
+            }
+
+            // Filtrer par formule si un filtre est fourni.
             if (!empty($memberships_plan)) {
-                $plan = $membership->get_plan();
-                if (!$plan) {
+                $normalized_plans = array_map('strtolower', (array) $memberships_plan);
+                $formule = strtolower((string) $subscription->get_meta('on_formule', true));
+                if ('' === $formule || !in_array($formule, $normalized_plans, true)) {
                     continue;
-                }
-                $slug = is_callable(array($plan, 'get_slug')) ? $plan->get_slug() : '';
-                if (!in_array($slug, $memberships_plan)) {
-                    continue;
-                }
-            }
-            $start_date = $membership->get_start_date();
-            $end_date = $membership->get_end_date();
-            $next_payment_date = on_next_payment_date_membership($membership);
-            
-            // Determine effective end date
-            $effective_end_date = $end_date;
-            if (!empty($next_payment_date)) {
-                if (empty($end_date) || $next_payment_date < $end_date) {
-                    $effective_end_date = $next_payment_date;
                 }
             }
 
-            
+            $start_date = $subscription->get_date('start');
+            if (empty($start_date)) {
+                continue;
+            }
+
+            $next_payment_date = $subscription->get_date('next_payment');
+            $end_date = $subscription->get_date('end');
+            $effective_end_date = $next_payment_date;
+            if (!empty($end_date) && ((!empty($next_payment_date) && $end_date < $next_payment_date) || empty($next_payment_date))) {
+                $effective_end_date = $end_date;
+            }
+
             $overrides = array();
-            if ($membership instanceof \WC_Memberships_Integration_Subscriptions_User_Membership && function_exists('on_get_subscription_number_overrides')) {
-                $linked_subscription = $membership->get_subscription();
-                if ($linked_subscription) {
-                    $overrides = on_get_subscription_number_overrides($linked_subscription);
-                }
+            if (function_exists('on_get_subscription_number_overrides')) {
+                $overrides = on_get_subscription_number_overrides($subscription);
             }
 
-            // Use the centralized logic to determine the end number
-            $info = on_get_subscription_info($start_date, $effective_end_date, $overrides);
+            // Use the centralized logic to determine the end number.
+            $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date, $overrides);
             $numero_start = $info['numero_debut'];
             $numero_end = $info['numero_fin'];
 
