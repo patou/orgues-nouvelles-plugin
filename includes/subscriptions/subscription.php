@@ -69,6 +69,7 @@ function on_display_subscription_numeros($subscription) {
         $formule_value = on_guess_subscription_formule_from_items($subscription);
     }
     $formule_choices = on_get_subscription_formule_choices();
+    $magazine_quantity = on_get_subscription_magazine_quantity($subscription);
 
     // Récupérer le membership lié à cet abonnement
     $user_memberships = wc_memberships_get_user_memberships($subscription->get_user_id());
@@ -123,6 +124,10 @@ function on_display_subscription_numeros($subscription) {
                     <td><strong>ON-<?php echo esc_html($info['numero_fin']); ?></strong> (<?php echo date_i18n('F Y', strtotime($info['mois_fin'] . '-01')); ?>)</td>
                 </tr>
                 <tr>
+                    <th><?php _e('Exemplaires à envoyer:', 'orgues-nouvelles'); ?></th>
+                    <td><?php echo esc_html($magazine_quantity); ?></td>
+                </tr>
+                <tr>
                     <th><?php _e('Nombre de numéros:', 'orgues-nouvelles'); ?></th>
                     <td><?php echo esc_html($info['nombre_numeros']); ?></td>
                 </tr>
@@ -155,6 +160,7 @@ function on_add_subscription_columns($columns) {
         if ($key === 'last_payment_date') {
             $new_columns['on_numero_debut'] = __('N° Début', 'orgues-nouvelles');
             $new_columns['on_numero_fin'] = __('N° Fin', 'orgues-nouvelles');
+            $new_columns['on_magazine_quantity'] = __('Exemplaires', 'orgues-nouvelles');
         }
     }
     
@@ -167,7 +173,7 @@ function on_add_subscription_columns($columns) {
 add_action('manage_shop_subscription_posts_custom_column', 'on_fill_subscription_columns', 10, 2);
 
 function on_fill_subscription_columns($column, $post_id) {
-    if ($column === 'on_numero_debut' || $column === 'on_numero_fin') {
+    if ($column === 'on_numero_debut' || $column === 'on_numero_fin' || $column === 'on_magazine_quantity') {
         $subscription = wcs_get_subscription($post_id);
         
         if (!$subscription) {
@@ -183,6 +189,11 @@ function on_fill_subscription_columns($column, $post_id) {
 
         if (empty($start_date)) {
             echo '—';
+            return;
+        }
+
+        if ($column === 'on_magazine_quantity') {
+            echo esc_html(on_get_subscription_magazine_quantity($subscription));
             return;
         }
 
@@ -213,6 +224,37 @@ function on_make_subscription_columns_sortable($columns) {
     $columns['on_numero_debut'] = 'start_date';
     $columns['on_numero_fin'] = 'next_payment_date';
     return $columns;
+}
+
+if (!function_exists('on_get_subscription_magazine_quantity')) {
+    /**
+     * Retourne le nombre total d'exemplaires à envoyer pour un abonnement.
+     *
+     * @param \WC_Subscription $subscription Subscription instance.
+     *
+     * @return int
+     */
+    function on_get_subscription_magazine_quantity($subscription)
+    {
+        if (!is_object($subscription) || !is_a($subscription, 'WC_Subscription')) {
+            return 1;
+        }
+
+        $total_quantity = 0;
+
+        foreach ($subscription->get_items() as $item) {
+            if (!is_object($item) || !is_callable(array($item, 'get_quantity'))) {
+                continue;
+            }
+
+            $quantity = (int) $item->get_quantity();
+            if ($quantity > 0) {
+                $total_quantity += $quantity;
+            }
+        }
+
+        return max(1, $total_quantity);
+    }
 }
 
 if (!function_exists('on_get_product_issue_count')) {
