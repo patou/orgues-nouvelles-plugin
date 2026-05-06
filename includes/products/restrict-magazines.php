@@ -54,14 +54,19 @@ function on_register_visibility_controls($element) {
 }
 
 function get_membership_plans_options() {
+    if (function_exists('on_get_subscription_formule_choices')) {
+        $choices = on_get_subscription_formule_choices();
 
-    $available_plans_list = array(
-        'on' => __('ON', 'orgues-nouvelles'),
-        'oned' => __('ONED', 'orgues-nouvelles'),
-        'oneda' => __('ONEDA', 'orgues-nouvelles'),
-    );
+        // Les filtres Elementor utilisent des clés en minuscules.
+        $normalized_choices = array();
+        foreach ((array) $choices as $key => $label) {
+            $normalized_choices[strtolower((string) $key)] = $label;
+        }
 
-    return $available_plans_list;
+        return $normalized_choices;
+    }
+
+    return array();
 }
 
 // register section controls
