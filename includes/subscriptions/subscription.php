@@ -20,7 +20,7 @@ function on_register_subscription_numeros_metabox() {
         __('Orgues-Nouvelles', 'orgues-nouvelles'),
         'on_render_subscription_numeros_metabox',
         'shop_subscription',
-        'side',
+        'normal',
         'high'
     );
 }
@@ -74,51 +74,55 @@ function on_display_subscription_numeros($subscription) {
     // Afficher les numéros
     ?>
     <div class="on-subscription-numeros">
-        <div class="on-subscription-number-fields wcs-date-input">
-            <p class="form-field form-field-wide">
-                <label for="on-formule"><?php _e('Formule', 'orgues-nouvelles'); ?></label>
-                <select name="on-formule" id="on-formule" class="postform">
-                    <option value=""><?php esc_html_e('Sélectionnez une formule', 'orgues-nouvelles'); ?></option>
-                    <?php foreach ($formule_choices as $value => $label) : ?>
-                        <option value="<?php echo esc_attr($value); ?>" <?php selected($formule_value, $value); ?>>
-                            <?php echo esc_html($label); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <span class="description"><?php _e('Valeur utilisée pour suivre la formule d\'abonnement.', 'orgues-nouvelles'); ?></span>
-            </p>
-            <p class="form-field form-field-wide">
-                <label for="number-start"><?php _e('Numéro de début personnalisé', 'orgues-nouvelles'); ?></label>
-                <input type="number" class="short" name="number-start" id="number-start" min="0" step="1" value="<?php echo esc_attr($manual_number_start); ?>" />
-                <span class="description"><?php _e('Laissez vide pour utiliser le calcul automatique effectué à partir des dates d\'abonnement.', 'orgues-nouvelles'); ?></span>
-            </p>
-            <p class="form-field form-field-wide">
-                <label for="number-end"><?php _e('Numéro de fin personnalisé', 'orgues-nouvelles'); ?></label>
-                <input type="number" class="short" name="number-end" id="number-end" min="0" step="1" value="<?php echo esc_attr($manual_number_end); ?>" />
-                <span class="description"><?php _e('Laissez vide pour que le numéro de fin soit déterminé automatiquement.', 'orgues-nouvelles'); ?></span>
-            </p>
+        <div class="on-subscription-numeros-column on-subscription-numeros-column-summary">
+            <h3><?php _e('Numéros de Orgues-Nouvelles', 'orgues-nouvelles'); ?></h3>
+            <table class="shop_table">
+                <tbody>
+                    <tr>
+                        <th><?php _e('Numéro de début:', 'orgues-nouvelles'); ?></th>
+                        <td><strong>ON-<?php echo esc_html($info['numero_debut']); ?></strong> (<?php echo date_i18n('F Y', strtotime($info['mois_debut'] . '-01')); ?>)</td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Numéro de fin:', 'orgues-nouvelles'); ?></th>
+                        <td><strong>ON-<?php echo esc_html($info['numero_fin']); ?></strong> (<?php echo date_i18n('F Y', strtotime($info['mois_fin'] . '-01')); ?>)</td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Exemplaires à envoyer:', 'orgues-nouvelles'); ?></th>
+                        <td><?php echo esc_html($magazine_quantity); ?></td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Nombre de numéros:', 'orgues-nouvelles'); ?></th>
+                        <td><?php echo esc_html($info['nombre_numeros']); ?></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <h3 style="margin-top: 0;"><?php _e('Numéros de Orgues-Nouvelles', 'orgues-nouvelles'); ?></h3>
-        <table class="shop_table">
-            <tbody>
-                <tr>
-                    <th><?php _e('Numéro de début:', 'orgues-nouvelles'); ?></th>
-                    <td><strong>ON-<?php echo esc_html($info['numero_debut']); ?></strong> (<?php echo date_i18n('F Y', strtotime($info['mois_debut'] . '-01')); ?>)</td>
-                </tr>
-                <tr>
-                    <th><?php _e('Numéro de fin:', 'orgues-nouvelles'); ?></th>
-                    <td><strong>ON-<?php echo esc_html($info['numero_fin']); ?></strong> (<?php echo date_i18n('F Y', strtotime($info['mois_fin'] . '-01')); ?>)</td>
-                </tr>
-                <tr>
-                    <th><?php _e('Exemplaires à envoyer:', 'orgues-nouvelles'); ?></th>
-                    <td><?php echo esc_html($magazine_quantity); ?></td>
-                </tr>
-                <tr>
-                    <th><?php _e('Nombre de numéros:', 'orgues-nouvelles'); ?></th>
-                    <td><?php echo esc_html($info['nombre_numeros']); ?></td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="on-subscription-numeros-column on-subscription-numeros-column-fields">
+            <div class="on-subscription-number-fields wcs-date-input">
+                <p class="form-field form-field-wide">
+                    <label for="on-formule"><?php _e('Formule', 'orgues-nouvelles'); ?></label>
+                    <select name="on-formule" id="on-formule" class="postform">
+                        <option value=""><?php esc_html_e('Sélectionnez une formule', 'orgues-nouvelles'); ?></option>
+                        <?php foreach ($formule_choices as $value => $label) : ?>
+                            <option value="<?php echo esc_attr($value); ?>" <?php selected($formule_value, $value); ?>>
+                                <?php echo esc_html($label); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <span class="description"><?php _e('Valeur utilisée pour suivre la formule d\'abonnement.', 'orgues-nouvelles'); ?></span>
+                </p>
+                <p class="form-field form-field-wide">
+                    <label for="number-start"><?php _e('Numéro de début personnalisé', 'orgues-nouvelles'); ?></label>
+                    <input type="number" class="short" name="number-start" id="number-start" min="0" step="1" value="<?php echo esc_attr($manual_number_start); ?>" />
+                    <span class="description"><?php _e('Laissez vide pour utiliser le calcul automatique effectué à partir des dates d\'abonnement.', 'orgues-nouvelles'); ?></span>
+                </p>
+                <p class="form-field form-field-wide">
+                    <label for="number-end"><?php _e('Numéro de fin personnalisé', 'orgues-nouvelles'); ?></label>
+                    <input type="number" class="short" name="number-end" id="number-end" min="0" step="1" value="<?php echo esc_attr($manual_number_end); ?>" />
+                    <span class="description"><?php _e('Laissez vide pour que le numéro de fin soit déterminé automatiquement.', 'orgues-nouvelles'); ?></span>
+                </p>
+            </div>
+        </div>
     </div>
     <?php
 
