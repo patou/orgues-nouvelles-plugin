@@ -235,12 +235,25 @@ if (!function_exists('on_save_subscription_number_fields')) {
         }
 
         $fields = array(
-            'number-start' => array('meta_key' => 'number-start', 'type' => 'int'),
-            'number-end' => array('meta_key' => 'number-end', 'type' => 'int'),
-            'on-formule' => array('meta_key' => 'on_formule', 'type' => 'formule'),
+            'number-start' => array(
+                'meta_key' => 'number-start',
+                'type'     => 'int',
+                'label'    => __('Numéro de début', 'orgues-nouvelles'),
+            ),
+            'number-end' => array(
+                'meta_key' => 'number-end',
+                'type'     => 'int',
+                'label'    => __('Numéro de fin', 'orgues-nouvelles'),
+            ),
+            'on-formule' => array(
+                'meta_key' => 'on_formule',
+                'type'     => 'formule',
+                'label'    => __('Formule', 'orgues-nouvelles'),
+            ),
         );
 
         $has_changes = false;
+        $note_lines  = array();
 
         foreach ($fields as $field_name => $field_config) {
             if (!isset($_POST[$field_name])) {
@@ -248,8 +261,17 @@ if (!function_exists('on_save_subscription_number_fields')) {
             }
 
             $raw_value = wp_unslash($_POST[$field_name]);
+            $old_value = $subscription->get_meta($field_config['meta_key'], true);
 
             if ($raw_value === '' || $raw_value === null) {
+                if ($old_value !== '' && $old_value !== null) {
+                    $note_lines[] = sprintf(
+                        /* translators: 1: field label, 2: old value */
+                        __('%1$s supprimé (ancienne valeur : %2$s)', 'orgues-nouvelles'),
+                        $field_config['label'],
+                        esc_html($old_value)
+                    );
+                }
                 $subscription->delete_meta_data($field_config['meta_key']);
                 $has_changes = true;
                 continue;
@@ -259,6 +281,14 @@ if (!function_exists('on_save_subscription_number_fields')) {
                 $value = on_sanitize_subscription_formule($raw_value);
 
                 if ('' === $value) {
+                    if ($old_value !== '' && $old_value !== null) {
+                        $note_lines[] = sprintf(
+                            /* translators: 1: field label, 2: old value */
+                            __('%1$s supprimé (ancienne valeur : %2$s)', 'orgues-nouvelles'),
+                            $field_config['label'],
+                            esc_html($old_value)
+                        );
+                    }
                     $subscription->delete_meta_data($field_config['meta_key']);
                     $has_changes = true;
                     continue;
@@ -267,12 +297,45 @@ if (!function_exists('on_save_subscription_number_fields')) {
                 $value = max(0, absint($raw_value));
             }
 
-            $subscription->update_meta_data($field_config['meta_key'], $value);
-            $has_changes = true;
+            if ((string) $value !== (string) $old_value) {
+                if ($old_value !== '' && $old_value !== null) {
+                    $note_lines[] = sprintf(
+                        /* translators: 1: field label, 2: old value, 3: new value */
+                        __('%1$s modifié : %2$s → %3$s', 'orgues-nouvelles'),
+                        $field_config['label'],
+                        esc_html($old_value),
+                        esc_html($value)
+                    );
+                } else {
+                    $note_lines[] = sprintf(
+                        /* translators: 1: field label, 2: new value */
+                        __('%1$s défini : %2$s', 'orgues-nouvelles'),
+                        $field_config['label'],
+                        esc_html($value)
+                    );
+                }
+                $subscription->update_meta_data($field_config['meta_key'], $value);
+                $has_changes = true;
+            }
         }
 
         if ($has_changes) {
             $subscription->save();
+
+            if (!empty($note_lines)) {
+                $current_user = wp_get_current_user();
+                $author = $current_user->exists()
+                    ? $current_user->display_name
+                    : __('Administrateur', 'orgues-nouvelles');
+
+                $note = sprintf(
+                    /* translators: %s: admin username */
+                    __('Numéros Orgues-Nouvelles mis à jour par %s :', 'orgues-nouvelles'),
+                    esc_html($author)
+                ) . "\n" . implode("\n", $note_lines);
+
+                $subscription->add_order_note($note, false, true);
+            }
         }
     }
     add_action('woocommerce_process_shop_subscription_meta', 'on_save_subscription_number_fields', 10, 2);
