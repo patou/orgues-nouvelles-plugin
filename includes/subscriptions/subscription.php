@@ -70,6 +70,7 @@ function on_display_subscription_numeros($subscription) {
     }
     $formule_choices = on_get_subscription_formule_choices();
     $magazine_quantity = on_get_subscription_magazine_quantity($subscription);
+    $renewal_info = on_get_subscription_renewal_info($subscription);
 
     // Afficher les numéros
     ?>
@@ -93,6 +94,19 @@ function on_display_subscription_numeros($subscription) {
                     <tr>
                         <th><?php _e('Nombre de numéros:', 'orgues-nouvelles'); ?></th>
                         <td><?php echo esc_html($info['nombre_numeros']); ?></td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Renouvellements effectués:', 'orgues-nouvelles'); ?></th>
+                        <td><?php 
+                            echo esc_html($renewal_info['paid_renewals']);
+                            if ($renewal_info['pending_renewals'] > 0) {
+                                echo ' (' . esc_html($renewal_info['pending_renewals']) . ' ' . esc_html(__('en attente', 'orgues-nouvelles')) . ')';
+                            }
+                        ?></td>
+                    </tr>
+                    <tr>
+                        <th><?php _e('Numéros par renouvellement:', 'orgues-nouvelles'); ?></th>
+                        <td><?php echo esc_html($renewal_info['issues_per_renewal']); ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -324,6 +338,61 @@ if (!function_exists('on_get_subscription_issue_count')) {
         }
 
         return 0;
+    }
+}
+
+if (!function_exists('on_get_subscription_renewal_info')) {
+    /**
+     * Récupère le nombre de renouvellements effectués et le nombre de numéros par renouvellement.
+     *
+     * @param \WC_Subscription $subscription Subscription instance.
+     *
+     * @return array {
+     *     'paid_renewals' => int,         // Nombre de commandes de renouvellement payées
+     *     'pending_renewals' => int,      // Nombre de commandes de renouvellement en attente de paiement
+     *     'issues_per_renewal' => int,    // Nombre de numéros par cycle/renouvellement
+     * }
+     */
+    function on_get_subscription_renewal_info($subscription)
+    {
+        $paid_renewals = 0;
+        $pending_renewals = 0;
+        $issues_per_renewal = 0;
+
+        if (!$subscription instanceof WC_Subscription) {
+            return array(
+                'paid_renewals' => $paid_renewals,
+                'pending_renewals' => $pending_renewals,
+                'issues_per_renewal' => $issues_per_renewal,
+            );
+        }
+
+        // Récupérer le nombre de numéros par cycle
+        $issues_per_renewal = max(0, (int) on_get_subscription_issue_count($subscription));
+
+        // Compter les commandes de renouvellement (renewal orders) liées à cette subscription
+        $related_orders = $subscription->get_related_orders(array('renewal'));
+        if (is_array($related_orders)) {
+            foreach ($related_orders as $order) {
+                if (!is_a($order, 'WC_Order')) {
+                    continue;
+                }
+                $status = $order->get_status();
+                // Statuts de paiement complété
+                if (in_array($status, array('completed', 'processing', 'on-hold'), true)) {
+                    $paid_renewals++;
+                } elseif (in_array($status, array('pending', 'failed'), true)) {
+                    // Statuts d'attente de paiement
+                    $pending_renewals++;
+                }
+            }
+        }
+
+        return array(
+            'paid_renewals' => $paid_renewals,
+            'pending_renewals' => $pending_renewals,
+            'issues_per_renewal' => $issues_per_renewal,
+        );
     }
 }
 
