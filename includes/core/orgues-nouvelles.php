@@ -223,83 +223,47 @@ if (!function_exists('on_magazine_title')) {
 
 }
 
-if (!function_exists('on_next_payment_date_membership')) {
+if (!function_exists('on_get_subscription_info')) {
     /**
-     * Retourne la date du prochain paiement d'un abonnement
-     * 
-     * @param \WC_Memberships_Integration_Subscriptions_User_Membership $membership
+     * Retourne les informations sur les numéros compris dans une période
+     *
+     * @param string $start_date Date de début (Y-m-d)
+     * @param string $end_date   Date de fin (Y-m-d)
+     * @param array  $overrides  Tableau optionnel ['numero_debut' => int|null, 'numero_fin' => int|null]
+     * @return array
      */
-    function on_next_payment_date_membership($membership)
-    {
-        if (!$membership) {
-            return null;
-        }
+    function on_get_subscription_info($start_date, $end_date, $overrides = array()) {
+        $override_start = array_key_exists('numero_debut', $overrides) ? $overrides['numero_debut'] : null;
+        $override_end = array_key_exists('numero_fin', $overrides) ? $overrides['numero_fin'] : null;
 
-        if (is_numeric($membership) && function_exists('wc_memberships_get_user_membership')) {
-            $membership = wc_memberships_get_user_membership((int) $membership);
-        }
+        $has_override_start = '' !== $override_start && null !== $override_start;
+        $has_override_end = '' !== $override_end && null !== $override_end;
 
-        if (!is_object($membership)) {
-            return null;
-        }
+        $numero_start = $has_override_start ? max(0, (int) $override_start) : on_date_magazine_to_numero($start_date);
+        $numero_end = $has_override_end ? max(0, (int) $override_end) : on_date_magazine_to_numero($end_date);
 
-        $subscription = null;
+        if (!$has_override_end) {
+            // Fix: Exclude issue if subscription ends before the end of the issue period
+            // The end of the issue period is defined as the 15th of the month before the NEXT publication.
+            $next_pub_date = on_numero_to_date_magazine($numero_end + 1);
+            if ($next_pub_date) {
+                // next_pub_date is YYYY-MM
+                // We want YYYY-MM-15 - 1 month
+                $limit_date = date('Y-m-d', strtotime($next_pub_date . '-15 -1 month'));
 
-        if (method_exists($membership, 'get_subscription')) {
-            $subscription = $membership->get_subscription();
-        }
-
-        if (!$subscription && class_exists('\WC_Memberships_User_Membership', false) && $membership instanceof \WC_Memberships_User_Membership && function_exists('wc_memberships')) {
-            $integrations = wc_memberships()->get_integrations_instance();
-            if ($integrations && method_exists($integrations, 'get_subscriptions_instance')) {
-                $subscriptions_integration = $integrations->get_subscriptions_instance();
-                if ($subscriptions_integration && method_exists($subscriptions_integration, 'get_subscription_from_membership')) {
-                    $subscription = $subscriptions_integration->get_subscription_from_membership($membership->get_id());
+                if ($end_date && substr($end_date, 0, 10) <= $limit_date) {
+                    $numero_end--;
                 }
             }
         }
 
-        if ($subscription instanceof \WC_Subscription) {
-            $next_payment_date = $subscription->get_date('next_payment');
-            return $next_payment_date ? $next_payment_date : null;
-        }
-
-        return null;
-    }
-}
-
-if (!function_exists('on_get_subscription_info')) {
-    /**
-     * Retourne les informations sur les numéros compris dans une période
-     * 
-     * @param string $start_date Date de début (Y-m-d)
-     * @param string $end_date Date de fin (Y-m-d)
-     * @return array
-     */
-    function on_get_subscription_info($start_date, $end_date) {
-        $numero_start = on_date_magazine_to_numero($start_date);
-        $numero_end = on_date_magazine_to_numero($end_date);
-        
-        // Fix: Exclude issue if subscription ends before the end of the issue period
-        // The end of the issue period is defined as the 15th of the month before the NEXT publication.
-        $next_pub_date = on_numero_to_date_magazine($numero_end + 1);
-        if ($next_pub_date) {
-            // next_pub_date is YYYY-MM
-            // We want YYYY-MM-15 - 1 month
-            $limit_date = date('Y-m-d', strtotime($next_pub_date . '-15 -1 month'));
-            
-            if ($end_date && substr($end_date, 0, 10) <= $limit_date) {
-                $numero_end--;
-            }
-        }
-        
         // Ensure we don't go backwards before start
         $numero_end = max($numero_end, $numero_start);
-        
+
         $mois_debut = on_numero_to_date_magazine($numero_start);
         $mois_fin = on_numero_to_date_magazine($numero_end);
         $nombre_numeros = max(0, $numero_end - $numero_start + 1);
-        
+
         return array(
             'numero_debut' => $numero_start,
             'mois_debut' => $mois_debut,
@@ -343,35 +307,50 @@ if (!function_exists('on_liste_numeros')) {
                 }
             }
         }
-        // Numéros accessibles via les abonnements de l'utilisateur
-        $memberships = wc_memberships_get_user_memberships();
-        foreach ($memberships as $membership) {
-            // Filtrer par slug si le paramètre est fourni
-            if (!empty($memberships_plan)) {
-                $plan = $membership->get_plan();
-                if (!$plan) {
-                    continue;
-                }
-                $slug = is_callable(array($plan, 'get_slug')) ? $plan->get_slug() : '';
-                if (!in_array($slug, $memberships_plan)) {
-                    continue;
-                }
+        // Numéros accessibles via les abonnements Subscriptions de l'utilisateur.
+        if (function_exists('wcs_get_users_subscriptions')) {
+            $subscriptions = wcs_get_users_subscriptions($user_id);
+        } else {
+            $subscriptions = array();
+        }
+
+        foreach ($subscriptions as $subscription) {
+            if (!$subscription || !is_a($subscription, 'WC_Subscription')) {
+                continue;
             }
-            $start_date = $membership->get_start_date();
-            $end_date = $membership->get_end_date();
-            $next_payment_date = on_next_payment_date_membership($membership);
-            
-            // Determine effective end date
-            $effective_end_date = $end_date;
-            if (!empty($next_payment_date)) {
-                if (empty($end_date) || $next_payment_date < $end_date) {
-                    $effective_end_date = $next_payment_date;
+
+            if (is_callable(array($subscription, 'has_status')) && !$subscription->has_status(array('active', 'pending-cancel', 'on-hold'))) {
+                continue;
+            }
+
+            // Filtrer par formule si un filtre est fourni.
+            if (!empty($memberships_plan)) {
+                $normalized_plans = array_map('strtolower', (array) $memberships_plan);
+                $formule = strtolower((string) $subscription->get_meta('on_formule', true));
+                if ('' === $formule || !in_array($formule, $normalized_plans, true)) {
+                    continue;
                 }
             }
 
-            
-            // Use the centralized logic to determine the end number
-            $info = on_get_subscription_info($start_date, $effective_end_date);
+            $start_date = $subscription->get_date('start');
+            if (empty($start_date)) {
+                continue;
+            }
+
+            $next_payment_date = $subscription->get_date('next_payment');
+            $end_date = $subscription->get_date('end');
+            $effective_end_date = $next_payment_date;
+            if (!empty($end_date) && ((!empty($next_payment_date) && $end_date < $next_payment_date) || empty($next_payment_date))) {
+                $effective_end_date = $end_date;
+            }
+
+            $overrides = array();
+            if (function_exists('on_get_subscription_number_overrides')) {
+                $overrides = on_get_subscription_number_overrides($subscription);
+            }
+
+            // Use the centralized logic to determine the end number.
+            $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date, $overrides);
             $numero_start = $info['numero_debut'];
             $numero_end = $info['numero_fin'];
 
