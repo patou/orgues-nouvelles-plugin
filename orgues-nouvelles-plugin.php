@@ -33,7 +33,7 @@ function on_load_plugin() {
     
     // Charger les modules WooCommerce Subscriptions (si le plugin est actif)
     if (is_plugin_active('woocommerce-subscriptions/woocommerce-subscriptions.php')) {
-        require_once(__DIR__ . '/includes/subscriptions/subscription.php');
+        require_once(__DIR__ . '/includes/subscriptions/bootstrap.php');
         require_once(__DIR__ . '/includes/subscriptions/update-subscriptions-price.php');
     }
     
