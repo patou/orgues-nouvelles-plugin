@@ -370,19 +370,18 @@ if (!function_exists('on_get_subscription_renewal_info')) {
         // Récupérer le nombre de numéros par cycle
         $issues_per_renewal = max(0, (int) on_get_subscription_issue_count($subscription));
 
-        // Compter les commandes de renouvellement (renewal orders) liées à cette subscription
-        $related_orders = $subscription->get_related_orders(array('renewal'));
+        // Compter les commandes de renouvellement liées à cette subscription.
+        $related_orders = $subscription->get_related_orders('renewal');
         if (is_array($related_orders)) {
-            foreach ($related_orders as $order) {
-                if (!is_a($order, 'WC_Order')) {
+            foreach ($related_orders as $related_order) {
+                $order = $related_order instanceof WC_Order ? $related_order : wc_get_order($related_order);
+                if (!$order || !is_a($order, 'WC_Order')) {
                     continue;
                 }
-                $status = $order->get_status();
-                // Statuts de paiement complété
-                if (in_array($status, array('completed', 'processing', 'on-hold'), true)) {
+
+                if ($order->is_paid()) {
                     $paid_renewals++;
-                } elseif (in_array($status, array('pending', 'failed'), true)) {
-                    // Statuts d'attente de paiement
+                } elseif ($order->has_status('pending')) {
                     $pending_renewals++;
                 }
             }
