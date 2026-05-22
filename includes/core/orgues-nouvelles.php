@@ -339,7 +339,7 @@ if (!function_exists('on_liste_numeros')) {
                 foreach ($magazines as $magazine) {
                     $magazine_id = $magazine['ID'];
                     $numero = pods('magazine', $magazine_id)->get_field('numero');
-                    $liste[] = $numero;
+                    $liste[] = intval($numero);
                 }
             }
         }
