@@ -45,6 +45,7 @@ function on_load_plugin() {
         require_once(__DIR__ . '/includes/orders/justificatif-etudiant.php');
         require_once(__DIR__ . '/includes/orders/phone-orders.php');
         require_once(__DIR__ . '/includes/orders/email-subscription-info.php');
+        require_once(__DIR__ . '/includes/orders/custom-export-type-filter.php');
         require_once(__DIR__ . '/includes/orders/subscription-link-button.php');
     }
 
