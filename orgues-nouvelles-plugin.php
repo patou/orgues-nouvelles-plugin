@@ -30,6 +30,7 @@ function on_load_plugin() {
 
     // Charger le fichier core (PRIORITÉ 1 - nécessaire pour tous les autres fichiers)
     require_once(__DIR__ . '/includes/core/orgues-nouvelles.php');
+    require_once(__DIR__ . '/includes/core/subscription-formule-choices.php');
     
     // Charger les modules WooCommerce Subscriptions (si le plugin est actif)
     if (is_plugin_active('woocommerce-subscriptions/woocommerce-subscriptions.php')) {
