@@ -36,6 +36,9 @@ function on_load_plugin() {
     if (is_plugin_active('woocommerce-subscriptions/woocommerce-subscriptions.php')) {
         require_once(__DIR__ . '/includes/subscriptions/bootstrap.php');
         require_once(__DIR__ . '/includes/subscriptions/update-subscriptions-price.php');
+        if (defined('WP_CLI') && WP_CLI) {
+            require_once(__DIR__ . '/includes/subscriptions/wp-cli-sync-memberships.php');
+        }
     }
     
     // Charger les modules de gestion des commandes WooCommerce
