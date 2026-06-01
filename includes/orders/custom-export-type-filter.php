@@ -235,21 +235,26 @@ if (!function_exists('on_save_export_type_filter')) {
 if (!function_exists('on_apply_custom_export_type')) {
     /**
      * Force le type de post exporté selon l'option sélectionnée.
+     * Note: Ce hook ne reçoit qu'1 paramètre, on utilise donc une variable globale
+     * pour accéder à $settings qui est définie dans on_apply_custom_subscription_export_filters.
      *
-     * @param array $types    Types de commandes à exporter.
-     * @param array $settings Paramètres du profil d'export.
+     * Les valeurs doivent être retournées avec guillemets simples (WOE ne les échappe pas).
+     *
+     * @param array $types Types de commandes à exporter.
      * @return array
      */
-    function on_apply_custom_export_type($types, $settings)
+    function on_apply_custom_export_type($types)
     {
-        if (isset($settings['custom_export_type']) && 'shop_subscription' === $settings['custom_export_type']) {
-            return array('shop_subscription');
+        $custom_type = $GLOBALS['_on_export_custom_type'] ?? 'shop_order';
+
+        if ('shop_subscription' === $custom_type) {
+            return array("'shop_subscription'");
         }
 
         return $types;
     }
 
-    add_filter('woe_sql_get_orders_types', 'on_apply_custom_export_type', 20, 2);
+    add_filter('woe_sql_order_types', 'on_apply_custom_export_type', 20, 1);
 }
 
 if (!function_exists('on_apply_custom_subscription_export_filters')) {
@@ -262,6 +267,10 @@ if (!function_exists('on_apply_custom_subscription_export_filters')) {
      */
     function on_apply_custom_subscription_export_filters($where, $settings)
     {
+        // Track the custom export type so on_apply_custom_export_type can use it
+        // (that hook only receives 1 parameter, so we use a global variable)
+        $GLOBALS['_on_export_custom_type'] = $settings['custom_export_type'] ?? 'shop_order';
+
         $has_custom_type = isset($settings['custom_export_type']) && 'shop_subscription' === $settings['custom_export_type'];
         $has_custom_filters = !empty($settings['on_subscription_plan'])
             || !empty($settings['on_subscription_issue_number'])
@@ -285,6 +294,15 @@ if (!function_exists('on_apply_custom_subscription_export_filters')) {
         $order_id_column = $is_hpos_query ? 'orders.id' : 'orders.ID';
 
         $statuses = on_get_selected_subscription_statuses($settings);
+
+        // Quand on exporte des subscriptions, les statuts WOE par défaut (wc-pending, wc-processing...)
+        // ne correspondent pas aux statuts subscription (wc-active, wc-expired...).
+        // Il faut toujours remplacer cette clause par les statuts subscription appropriés.
+        if (empty($statuses)) {
+            // Statuts subscription par défaut si aucun filtre personnalisé
+            $statuses = array('wc-active', 'wc-pending', 'wc-on-hold', 'wc-pending-cancel', 'wc-cancelled', 'wc-expired');
+        }
+
         if (!empty($statuses)) {
             $normalized_statuses = array();
             foreach ($statuses as $status) {
@@ -300,7 +318,22 @@ if (!function_exists('on_apply_custom_subscription_export_filters')) {
 
             if (!empty($normalized_statuses)) {
                 $quoted_statuses = array_map('esc_sql', $normalized_statuses);
-                $where[] = $status_column . " IN ('" . implode("','", $quoted_statuses) . "')";
+                $new_status_clause = $status_column . " IN ('" . implode("','", $quoted_statuses) . "')";
+
+                // Remplace la clause de statuts par défaut de WOE pour éviter un conflit AND impossible.
+                // WOE injecte post_status IN ('wc-pending',...) mais les subscriptions ont des statuts différents.
+                $replaced = false;
+                foreach ($where as $idx => $clause) {
+                    if (is_string($clause) && false !== strpos($clause, $status_column . ' in (')) {
+                        $where[$idx] = $new_status_clause;
+                        $replaced = true;
+                        break;
+                    }
+                }
+
+                if (!$replaced) {
+                    $where[] = $new_status_clause;
+                }
             }
         }
 
@@ -502,4 +535,48 @@ if (!function_exists('on_get_export_value_subscription_end_number')) {
     }
 
     add_filter('woe_get_order_value_sub_on_numero_end', 'on_get_export_value_subscription_end_number', 10, 2);
+}
+
+if (!function_exists('on_add_common_export_order_type_column')) {
+    /**
+     * Ajoute une colonne exportable dans le segment Common pour le type de commande.
+     *
+     * @param array $fields Champs du segment Common.
+     * @return array
+     */
+    function on_add_common_export_order_type_column($fields)
+    {
+        $fields['on_order_type'] = array(
+            'segment' => 'common',
+            'format'  => 'string',
+            'label'   => __('Order Entity Type', 'orgues-nouvelles'),
+        );
+
+        return $fields;
+    }
+
+    add_filter('woe_get_order_fields_common', 'on_add_common_export_order_type_column', 20, 1);
+}
+
+if (!function_exists('on_get_export_value_common_order_type')) {
+    /**
+     * Valeur de la colonne Common: type d'entite exportee.
+     *
+     * @param string $value Valeur par defaut.
+     * @param mixed  $order Objet commande/subscription.
+     * @return string
+     */
+    function on_get_export_value_common_order_type($value, $order)
+    {
+        if (is_object($order) && is_callable(array($order, 'get_type'))) {
+            $type = (string) $order->get_type();
+            if ('' !== $type) {
+                return $type;
+            }
+        }
+
+        return $value;
+    }
+
+    add_filter('woe_get_order_value_on_order_type', 'on_get_export_value_common_order_type', 10, 2);
 }
