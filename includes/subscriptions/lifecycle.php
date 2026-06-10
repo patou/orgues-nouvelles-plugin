@@ -125,3 +125,42 @@ if (!function_exists('on_extend_subscription_number_bounds_on_renewal')) {
 
     add_action('woocommerce_subscription_renewal_payment_complete', 'on_extend_subscription_number_bounds_on_renewal', 20, 2);
 }
+
+if (!function_exists('on_exclude_custom_meta_from_renewal_order_copy')) {
+    /**
+     * Empêche la copie de meta personnalisées abonnement vers les commandes de renouvellement.
+     *
+     * @param array $order_meta Liste des meta à copier.
+     * @return array
+     */
+    function on_exclude_custom_meta_from_renewal_order_copy($order_meta)
+    {
+        if (!is_array($order_meta)) {
+            return $order_meta;
+        }
+
+        $excluded_keys = array(
+            'numero-start',
+            'numero-end',
+            'formule',
+            'number-start',
+            'number-end',
+            'on_formule',
+        );
+
+        foreach ($order_meta as $index => $meta_item) {
+            if (!is_array($meta_item)) {
+                continue;
+            }
+
+            $meta_key = isset($meta_item['meta_key']) ? (string) $meta_item['meta_key'] : '';
+            if ('' !== $meta_key && in_array($meta_key, $excluded_keys, true)) {
+                unset($order_meta[$index]);
+            }
+        }
+
+        return array_values($order_meta);
+    }
+
+    add_filter('wcs_renewal_order_meta', 'on_exclude_custom_meta_from_renewal_order_copy', 20, 1);
+}
