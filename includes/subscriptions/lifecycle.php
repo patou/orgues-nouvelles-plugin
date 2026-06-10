@@ -120,6 +120,17 @@ if (!function_exists('on_extend_subscription_number_bounds_on_renewal')) {
 
         $new_end = max(0, (int) $current_end) + $issue_count;
         $subscription->update_meta_data('number-end', $new_end);
+
+        $subscription->add_order_note(
+            sprintf(
+                /* translators: 1: previous end number, 2: new end number, 3: issue count added. */
+                __('Numéro de fin d\'abonnement étendu de ON-%1$d à ON-%2$d (+%3$d numéro(s)).', 'orgues-nouvelles'),
+                (int) $current_end,
+                (int) $new_end,
+                (int) $issue_count
+            )
+        );
+
         $subscription->save();
     }
 
