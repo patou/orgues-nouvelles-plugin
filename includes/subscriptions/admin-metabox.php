@@ -180,7 +180,11 @@ if (!function_exists('on_guess_subscription_formule_from_items')) {
         }
 
         foreach ($subscription->get_items() as $item) {
-            $product = $item->get_product();
+            if (!is_object($item) || !is_callable(array($item, 'get_product'))) {
+                continue;
+            }
+
+            $product = call_user_func(array($item, 'get_product'));
 
             if (!$product || !is_callable(array($product, 'get_sku'))) {
                 continue;
@@ -323,6 +327,10 @@ if (!function_exists('on_save_subscription_number_fields')) {
 
                 $subscription->add_order_note($note, false, true);
             }
+        }
+
+        if (function_exists('on_sync_subscription_billing_schedule_from_items')) {
+            on_sync_subscription_billing_schedule_from_items($subscription);
         }
     }
     add_action('woocommerce_process_shop_subscription_meta', 'on_save_subscription_number_fields', 10, 2);
