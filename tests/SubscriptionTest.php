@@ -108,6 +108,29 @@ class SubscriptionTest extends TestCase {
             $this->assertEquals($expected, $numero, "Date $date should be ON-$expected");
         }
     }
+
+    public function test_sync_subscription_billing_schedule_from_items() {
+        $product = new on_mock_subscription_product('year', 1);
+        $item = new on_mock_subscription_item($product);
+        $subscription = new on_mock_subscription_for_billing_schedule('2024-01-15 00:00:00', 'month', 3, 0, array($item));
+
+        add_filter('on_subscription_billing_schedule_from_product', 'on_mock_subscription_schedule_from_product', 10, 4);
+
+        try {
+            $synced = on_sync_subscription_billing_schedule_from_items($subscription);
+        } finally {
+            remove_filter('on_subscription_billing_schedule_from_product', 'on_mock_subscription_schedule_from_product', 10);
+        }
+
+        $this->assertTrue($synced);
+        $this->assertSame('year', $subscription->get_billing_period());
+        $this->assertSame(1, $subscription->get_billing_interval());
+        $this->assertTrue($subscription->saved);
+
+        $expected_next_payment = gmdate('Y-m-d H:i:s', wcs_add_time(1, 'year', strtotime('2024-01-15 00:00:00'), 'offset_site_time'));
+        $this->assertArrayHasKey('next_payment', $subscription->updated_dates);
+        $this->assertSame($expected_next_payment, $subscription->updated_dates['next_payment']);
+    }
 }
 
 // Mock d'un abonnement
@@ -123,5 +146,113 @@ class MockSubscription {
     public function get_date($type) {
         return isset($this->dates[$type]) ? $this->dates[$type] : '';
     }
+}
+
+class on_mock_subscription_product {
+    private $billing_period;
+    private $billing_interval;
+
+    public function __construct($billing_period, $billing_interval) {
+        $this->billing_period = $billing_period;
+        $this->billing_interval = (int) $billing_interval;
+    }
+
+    public function get_id() {
+        return 1234;
+    }
+
+    public function get_billing_period() {
+        return $this->billing_period;
+    }
+
+    public function get_billing_interval() {
+        return $this->billing_interval;
+    }
+}
+
+class on_mock_subscription_item {
+    private $product;
+
+    public function __construct($product) {
+        $this->product = $product;
+    }
+
+    public function get_product() {
+        return $this->product;
+    }
+}
+
+class on_mock_subscription_for_billing_schedule {
+    private $dates = array();
+    private $items = array();
+    private $billing_period;
+    private $billing_interval;
+    private $payment_count;
+
+    public $saved = false;
+    public $updated_dates = array();
+
+    public function __construct($start, $billing_period, $billing_interval, $payment_count = 0, $items = array()) {
+        $this->dates['start'] = $start;
+        $this->dates['trial_end'] = '';
+        $this->billing_period = $billing_period;
+        $this->billing_interval = (int) $billing_interval;
+        $this->payment_count = (int) $payment_count;
+        $this->items = $items;
+    }
+
+    public function get_items() {
+        return $this->items;
+    }
+
+    public function get_time($type) {
+        if (!isset($this->dates[$type]) || '' === $this->dates[$type]) {
+            return 0;
+        }
+
+        return strtotime($this->dates[$type]);
+    }
+
+    public function get_payment_count() {
+        return $this->payment_count;
+    }
+
+    public function get_billing_period() {
+        return $this->billing_period;
+    }
+
+    public function get_billing_interval() {
+        return $this->billing_interval;
+    }
+
+    public function set_billing_period($value) {
+        $this->billing_period = $value;
+    }
+
+    public function set_billing_interval($value) {
+        $this->billing_interval = (int) $value;
+    }
+
+    public function update_dates($dates, $context = 'gmt') {
+        $this->updated_dates = array_merge($this->updated_dates, $dates);
+        foreach ($dates as $key => $value) {
+            $this->dates[$key] = $value;
+        }
+    }
+
+    public function save() {
+        $this->saved = true;
+    }
+}
+
+function on_mock_subscription_schedule_from_product($schedule, $product, $subscription, $item) {
+    if ($product instanceof on_mock_subscription_product) {
+        return array(
+            'billing_period'   => $product->get_billing_period(),
+            'billing_interval' => $product->get_billing_interval(),
+        );
+    }
+
+    return $schedule;
 }
 

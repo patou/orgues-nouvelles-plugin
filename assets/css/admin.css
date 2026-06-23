@@ -30,9 +30,43 @@
 }
 
 .on-subscription-numeros {
-    margin: 20px 5px;
-    padding: 10px;
-    background: #f8f8f8;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    margin: 12px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+#side-sortables .on-subscription-numeros {
+    grid-template-columns: 1fr;
+}
+
+.on-subscription-numeros-column h3 {
+    margin: 0 0 10px;
+}
+
+.on-subscription-numeros-column .shop_table {
+    margin-top: 0;
+}
+
+.on-subscription-numeros-column .shop_table th {
+    text-align: left;
+}
+
+.on-subscription-numeros-column-fields .on-subscription-number-fields {
+    margin: 0;
+}
+
+.on-subscription-numeros-column-fields .form-field {
+    margin-top: 0;
+}
+
+.on-subscription-number-fields .description {
+    display: block;
+    margin-top: 6px;
+}
+
+@media screen and (max-width: 1200px) {
+    .on-subscription-numeros {
+        grid-template-columns: 1fr;
+    }
 }

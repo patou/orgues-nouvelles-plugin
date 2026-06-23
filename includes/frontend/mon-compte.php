@@ -12,51 +12,6 @@ if (!function_exists('on_account_dashboard')) {
     add_action('woocommerce_account_dashboard', 'on_account_dashboard');
 }
 
-// Ajoute des colonnes "numero_since" et "numero_end" dans la liste des adhésions
-if (!function_exists('on_wc_memberships_my_memberships_column_names')) {
-    function on_wc_memberships_my_memberships_column_names($my_memberships_columns, $user_id) {
-        $new_headers = array();
-
-        // add a column header for "numero_since" and "numero_end"
-        foreach ($my_memberships_columns as $key => $name) {
-
-            $new_headers[$key] = $name;
-
-            if ('membership-start-date' == $key) {
-                $new_headers['numero_since'] = __('Numero début', 'orgues-nouvelles');
-            }
-            if ('membership-end-date' == $key) {
-                $new_headers['numero_end'] = __('Numero fin', 'orgues-nouvelles');
-            }
-        }
-
-        return $new_headers;
-    }
-    add_action('wc_memberships_my_memberships_column_names', 'on_wc_memberships_my_memberships_column_names', 10, 2);
-    function on_wc_memberships_my_memberships_column_numero_since( $user_membership ) {
-        $date = $user_membership->get_start_date();
-        if (empty($date)) {
-            return '';
-        }
-        $numero_since = on_date_magazine_to_numero($date);
-        echo "ON-", $numero_since;
-    }
-    add_action( 'wc_memberships_my_memberships_column_numero_since', 'on_wc_memberships_my_memberships_column_numero_since', 10, 1 );
-    function on_wc_memberships_my_memberships_column_numero_end( $user_membership ) {
-        $date = $user_membership->get_end_date();
-        $membership = wc_memberships_get_user_membership($user_membership);
-        $next_payment_date = on_next_payment_date_membership($membership);
-        if (empty($date) && empty($next_payment_date)) {
-            return '';
-        }
-        if ($next_payment_date) {
-            $date = $next_payment_date;
-        }
-        $numero_end = on_date_magazine_to_numero($date);
-        echo "ON-", $numero_end;
-    }
-    add_action( 'wc_memberships_my_memberships_column_numero_end', 'on_wc_memberships_my_memberships_column_numero_end', 10, 1 );
-}
 function on_register_new_item_endpoint()
 {
     add_rewrite_endpoint('mes-magazines', EP_PAGES);
@@ -137,3 +92,74 @@ function on_ajouter_contenu_mes_magazines()
     include ORGUES_NOUVELLES_PLUGIN_DIR . 'templates/mon-compte-mes-magazines.php'; // Chemin vers votre modèle
 }
 add_action('woocommerce_account_mes-magazines_endpoint', 'on_ajouter_contenu_mes_magazines');
+
+if (!function_exists('on_account_subscription_issue_info')) {
+    /**
+     * Affiche les numéros ON calculés sur la page d'un abonnement côté client.
+     */
+    function on_account_subscription_issue_info($subscription)
+    {
+        if (!$subscription instanceof \WC_Subscription) {
+            return;
+        }
+
+        $start_date = $subscription->get_date('start');
+        if (empty($start_date)) {
+            return;
+        }
+
+        $end_date = $subscription->get_date('end');
+        $next_payment_date = $subscription->get_date('next_payment');
+        $effective_end_date = $end_date;
+
+        if (!empty($next_payment_date)) {
+            if (empty($end_date) || $next_payment_date < $end_date) {
+                $effective_end_date = $next_payment_date;
+            }
+        }
+
+        $overrides = function_exists('on_get_subscription_number_overrides') ? on_get_subscription_number_overrides($subscription) : array();
+        $info = on_get_subscription_info($start_date, $effective_end_date ?: $start_date, $overrides);
+
+        if (empty($info)) {
+            return;
+        }
+
+        ?>
+        <section class="on-account-subscription-issues">
+            <h2><?php esc_html_e('Numéros Orgues-Nouvelles', 'orgues-nouvelles'); ?></h2>
+            <ul>
+                <li>
+                    <?php
+                    printf(
+                        /* translators: 1: issue number */
+                        esc_html__('Numéro de début : ON-%1$s', 'orgues-nouvelles'),
+                        esc_html($info['numero_debut'])
+                    );
+                    ?>
+                </li>
+                <li>
+                    <?php
+                    printf(
+                        /* translators: 1: issue number */
+                        esc_html__('Numéro de fin : ON-%1$s', 'orgues-nouvelles'),
+                        esc_html($info['numero_fin'])
+                    );
+                    ?>
+                </li>
+                <li>
+                    <?php
+                    printf(
+                        /* translators: 1: count */
+                        esc_html__('Nombre de numéros : %1$s', 'orgues-nouvelles'),
+                        esc_html($info['nombre_numeros'])
+                    );
+                    ?>
+                </li>
+            </ul>
+        </section>
+        <?php
+    }
+
+    add_action('woocommerce_subscription_details_after_subscription_table', 'on_account_subscription_issue_info', 15, 1);
+}

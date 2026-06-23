@@ -3,6 +3,11 @@
 function on_set_product_price_to_zero($price, $product)
 {
 
+    // Ne pas modifier le prix dans l'interface d'admin
+    if (is_admin()) {
+        return $price;
+    }
+
     // Assurez-vous d'avoir accès à la fonction personnalisée (simulée ici pour l'exemple)
     if (!function_exists('on_liste_numeros')) {
         // En cas d'erreur ou si la fonction n'est pas définie ailleurs.
