@@ -45,6 +45,7 @@ function on_load_plugin() {
     if (is_plugin_active('woocommerce/woocommerce.php')) {
         require_once(__DIR__ . '/includes/orders/complete-order.php');
         require_once(__DIR__ . '/includes/orders/check-abonnement-france.php');
+        require_once(__DIR__ . '/includes/orders/require-shipping-formule-on.php');
         require_once(__DIR__ . '/includes/orders/justificatif-etudiant.php');
         require_once(__DIR__ . '/includes/orders/phone-orders.php');
         require_once(__DIR__ . '/includes/orders/email-subscription-info.php');
@@ -73,6 +74,8 @@ function on_load_plugin() {
     require_once(__DIR__ . '/includes/frontend/shortcode.php');
     if (is_plugin_active('woocommerce/woocommerce.php') && is_plugin_active('pods/init.php')) {
         require_once(__DIR__ . '/includes/frontend/mon-compte.php');
+        require_once(__DIR__ . '/includes/frontend/subscription-shipping.php');
+        require_once(__DIR__ . '/includes/frontend/subscription-address-sync.php');
     }
     if (is_plugin_active('polylang-pro/polylang.php') || is_plugin_active('polylang/polylang.php')) {
         require_once(__DIR__ . '/includes/frontend/search.php');

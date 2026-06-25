@@ -12,4 +12,5 @@ require_once __DIR__ . '/admin-metabox.php';
 require_once __DIR__ . '/admin-filters.php';
 require_once __DIR__ . '/admin-columns.php';
 require_once __DIR__ . '/issue-count-hooks.php';
+require_once __DIR__ . '/formule-on-detection.php';
 require_once __DIR__ . '/lifecycle.php';
