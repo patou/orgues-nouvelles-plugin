@@ -18,7 +18,6 @@ function on_custom_shipping_validation($posted_data, $errors) {
     }
   }
 
-  print_r(array('chosen_country' => $chosen_country, 'france_variation_exists' => $france_variation_exists));
   if ( $chosen_country !== 'FR' && $france_variation_exists ) {
     $errors->add( 'shipping_error', __( 'Vous devez selectionner la livraison Monde pour une livraison en dehors de la France lors de votre abonnement à Orgues-Nouvelles', 'orgues-nouvelles' ) );
   }
