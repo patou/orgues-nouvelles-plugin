@@ -333,3 +333,41 @@ if (!function_exists('on_exclude_custom_meta_from_renewal_order_copy')) {
 
     add_filter('wcs_renewal_order_meta', 'on_exclude_custom_meta_from_renewal_order_copy', 20, 1);
 }
+
+if (!function_exists('on_allow_admin_status_change_from_expired_subscription')) {
+    /**
+     * Autorise des transitions de statut manuelles en admin depuis "expired".
+     *
+     * @param bool            $can_be_updated Résultat courant de la validation.
+     * @param WC_Subscription $subscription   Abonnement concerné.
+     * @return bool
+     */
+    function on_allow_admin_status_change_from_expired_subscription($can_be_updated, $subscription)
+    {
+        if (true === $can_be_updated) {
+            return true;
+        }
+
+        if (!is_admin() || !$subscription instanceof WC_Subscription) {
+            return $can_be_updated;
+        }
+
+        if (!$subscription->has_status('expired')) {
+            return $can_be_updated;
+        }
+
+        $post_type_object = get_post_type_object($subscription->get_type());
+        if (!$post_type_object || !isset($post_type_object->cap->edit_post)) {
+            return $can_be_updated;
+        }
+
+        if (!current_user_can($post_type_object->cap->edit_post, $subscription->get_id())) {
+            return $can_be_updated;
+        }
+
+        return true;
+    }
+
+    add_filter('woocommerce_can_subscription_be_updated_to_active', 'on_allow_admin_status_change_from_expired_subscription', 20, 2);
+    add_filter('woocommerce_can_subscription_be_updated_to_on-hold', 'on_allow_admin_status_change_from_expired_subscription', 20, 2);
+}
