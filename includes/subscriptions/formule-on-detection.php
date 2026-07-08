@@ -121,7 +121,10 @@ if (!function_exists('on_subscription_has_formule_on')) {
                 continue;
             }
 
-            return true;
+            $formule = on_guess_subscription_formule_from_items_product($product);
+            if ('ON' == $formule) {
+                return true;
+            }
         }
 
         return false;

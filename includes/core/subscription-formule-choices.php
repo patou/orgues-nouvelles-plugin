@@ -16,9 +16,9 @@ if (!function_exists('on_get_subscription_formule_choices')) {
     function on_get_subscription_formule_choices()
     {
         $choices = array(
-            'ON' => __('ON', 'orgues-nouvelles'),
-            'ONED' => __('ONED', 'orgues-nouvelles'),
-            'ONEDA' => __('ONEDA', 'orgues-nouvelles'),
+            'ON' => __('Papier', 'orgues-nouvelles'),
+            'ONED' => __('Numérique', 'orgues-nouvelles'),
+            'ONEDA' => __('Anglais', 'orgues-nouvelles'),
         );
 
         return (array) apply_filters('on_subscription_formule_choices', $choices);

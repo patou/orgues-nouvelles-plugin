@@ -93,12 +93,55 @@ function on_ajouter_contenu_mes_magazines()
 }
 add_action('woocommerce_account_mes-magazines_endpoint', 'on_ajouter_contenu_mes_magazines');
 
-if (!function_exists('on_account_subscription_issue_info')) {
+
+
+if (!function_exists('on_translate_formule')) {
     /**
-     * Affiche les numéros ON calculés sur la page d'un abonnement côté client.
+     * Traduit les codes de formule en français en utilisant on_get_subscription_formule_choices().
      */
-    function on_account_subscription_issue_info($subscription)
-    {
+    function on_translate_formule($formule_code) {
+        if (function_exists('on_get_subscription_formule_choices')) {
+            $choices = on_get_subscription_formule_choices();
+            $key = strtoupper($formule_code);
+            return isset($choices[$key]) ? esc_html($choices[$key]) : esc_html($formule_code);
+        }
+
+        return esc_html($formule_code);
+    }
+}
+
+if (!function_exists('on_display_subscription_formule_in_details_table')) {
+    /**
+     * Affiche la formule de l'abonnement dans le tableau de détails de l'abonnement.
+     */
+    function on_display_subscription_formule_in_details_table($subscription) {
+        if (!$subscription instanceof \WC_Subscription) {
+            return;
+        }
+
+        $formule = $subscription->get_meta('on_formule', true);
+        if ('' === $formule || null === $formule) {
+            $formule = on_guess_subscription_formule_from_items($subscription);
+        }
+
+        if ('' !== $formule) {
+            ?>
+            <tr>
+                <td><?php esc_html_e('Formule', 'orgues-nouvelles'); ?></td>
+                <td><?php echo on_translate_formule($formule); ?></td>
+            </tr>
+            <?php
+        }
+    }
+
+    add_action('wcs_subscription_details_table_before_dates', 'on_display_subscription_formule_in_details_table', 10, 1);
+}
+
+if (!function_exists('on_display_subscription_issue_numbers_in_table')) {
+    /**
+     * Affiche les numéros de début et fin de l'abonnement dans le tableau de détails.
+     */
+    function on_display_subscription_issue_numbers_in_table($subscription) {
         if (!$subscription instanceof \WC_Subscription) {
             return;
         }
@@ -126,40 +169,48 @@ if (!function_exists('on_account_subscription_issue_info')) {
         }
 
         ?>
-        <section class="on-account-subscription-issues">
-            <h2><?php esc_html_e('Numéros Orgues-Nouvelles', 'orgues-nouvelles'); ?></h2>
-            <ul>
-                <li>
-                    <?php
-                    printf(
-                        /* translators: 1: issue number */
-                        esc_html__('Numéro de début : ON-%1$s', 'orgues-nouvelles'),
-                        esc_html($info['numero_debut'])
-                    );
-                    ?>
-                </li>
-                <li>
-                    <?php
-                    printf(
-                        /* translators: 1: issue number */
-                        esc_html__('Numéro de fin : ON-%1$s', 'orgues-nouvelles'),
-                        esc_html($info['numero_fin'])
-                    );
-                    ?>
-                </li>
-                <li>
-                    <?php
-                    printf(
-                        /* translators: 1: count */
-                        esc_html__('Nombre de numéros : %1$s', 'orgues-nouvelles'),
-                        esc_html($info['nombre_numeros'])
-                    );
-                    ?>
-                </li>
-            </ul>
-        </section>
+        <tr>
+            <td><?php esc_html_e('Numéro de début', 'orgues-nouvelles'); ?></td>
+            <td><?php echo esc_html('ON-' . $info['numero_debut']); ?></td>
+        </tr>
+        <tr>
+            <td><?php esc_html_e('Numéro de fin', 'orgues-nouvelles'); ?></td>
+            <td><?php echo esc_html('ON-' . $info['numero_fin']); ?></td>
+        </tr>
+        <tr>
+            <td><?php esc_html_e('Nombre de numéros', 'orgues-nouvelles'); ?></td>
+            <td><?php echo esc_html($info['nombre_numeros']); ?></td>
+        </tr>
         <?php
     }
 
-    add_action('woocommerce_subscription_details_after_subscription_table', 'on_account_subscription_issue_info', 15, 1);
+    add_action('wcs_subscription_details_table_after_dates', 'on_display_subscription_issue_numbers_in_table', 10, 1);
+}
+
+
+if (!function_exists('on_display_subscription_formule_in_list')) {
+    /**
+     * Affiche la formule de l'abonnement dans le tableau "Mes abonnements".
+     */
+    function on_display_subscription_formule_in_list($subscription) {
+        if (!$subscription instanceof \WC_Subscription) {
+            return;
+        }
+
+        $formule = $subscription->get_meta('on_formule', true);
+        if ('' === $formule || null === $formule) {
+            $formule = on_guess_subscription_formule_from_items($subscription);
+        }
+
+        if ('' !== $formule) {
+            ?>
+            <br />
+            <small class="on-subscription-formule-list" style="display: block; margin-top: 4px; color: #666;">
+                <strong><?php esc_html_e('Formule:', 'orgues-nouvelles'); ?></strong> <?php echo esc_html(on_translate_formule($formule)); ?>
+            </small>
+            <?php
+        }
+    }
+
+    add_action('woocommerce_my_subscriptions_after_subscription_id', 'on_display_subscription_formule_in_list', 10, 1);
 }
