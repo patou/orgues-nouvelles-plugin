@@ -99,11 +99,9 @@ if (!function_exists('on_translate_formule')) {
     /**
      * Traduit les codes de formule en français en utilisant on_get_subscription_formule_choices().
      */
-    function on_translate_formule($formule_code) {
-        if (function_exists('on_get_subscription_formule_choices')) {
-            $choices = on_get_subscription_formule_choices();
-            $key = strtoupper($formule_code);
-            return isset($choices[$key]) ? esc_html($choices[$key]) : esc_html($formule_code);
+    function on_translate_formule(string $formule_code): string {
+        if (function_exists('on_get_subscription_formule_label')) {
+            return esc_html(on_get_subscription_formule_label($formule_code));
         }
 
         return esc_html($formule_code);
@@ -190,7 +188,7 @@ if (!function_exists('on_display_subscription_issue_numbers_in_table')) {
 
 if (!function_exists('on_display_subscription_formule_in_list')) {
     /**
-     * Affiche la formule de l'abonnement dans le tableau "Mes abonnements".
+     * Affiche la formule et les numéros de début/fin de l'abonnement dans le tableau "Mes abonnements".
      */
     function on_display_subscription_formule_in_list($subscription) {
         if (!$subscription instanceof \WC_Subscription) {
@@ -207,6 +205,24 @@ if (!function_exists('on_display_subscription_formule_in_list')) {
             <br />
             <small class="on-subscription-formule-list" style="display: block; margin-top: 4px; color: #666;">
                 <strong><?php esc_html_e('Formule:', 'orgues-nouvelles'); ?></strong> <?php echo esc_html(on_translate_formule($formule)); ?>
+            </small>
+            <?php
+        }
+
+        $number_start = $subscription->get_meta('number-start', true);
+        $number_end   = $subscription->get_meta('number-end', true);
+
+        if ('' !== $number_start && null !== $number_start) {
+            ?>
+            <small class="on-subscription-numbers-list" style="display: block; margin-top: 2px; color: #666;">
+                <strong><?php esc_html_e('Numéros:', 'orgues-nouvelles'); ?></strong>
+                <?php
+                if ('' !== $number_end && null !== $number_end && (int) $number_end !== (int) $number_start) {
+                    echo esc_html('ON-' . (int) $number_start . ' – ON-' . (int) $number_end);
+                } else {
+                    echo esc_html('ON-' . (int) $number_start);
+                }
+                ?>
             </small>
             <?php
         }
