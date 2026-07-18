@@ -8,19 +8,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-add_action('woocommerce_customer_meta_fields', 'on_add_shipping_sync_checkbox_to_edit_address');
-
-if (!function_exists('on_add_shipping_sync_checkbox_to_edit_address')) {
-    /**
-     * Ajoute une case à cocher dans le formulaire d'édition d'adresse de livraison
-     * pour permettre de synchroniser vers les abonnements.
-     */
-    function on_add_shipping_sync_checkbox_to_edit_address($meta_fields) {
-        // Cette fonction s'exécute sur la page d'édition utilisateur en admin
-        // Dans le frontend, on utilisera un hook différent
-    }
-}
-
 // Hook frontend pour le formulaire de modification d'adresse
 add_action('woocommerce_after_edit_address_form_billing', 'on_render_subscription_sync_checkbox_on_address_form');
 add_action('woocommerce_after_edit_address_form_shipping', 'on_render_subscription_sync_checkbox_on_address_form');
