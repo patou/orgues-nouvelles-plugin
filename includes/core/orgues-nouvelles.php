@@ -319,7 +319,11 @@ if (!function_exists('on_liste_numeros')) {
                 continue;
             }
 
-            if (is_callable(array($subscription, 'has_status')) && !$subscription->has_status(array('active', 'pending-cancel', 'on-hold'))) {
+            if (function_exists('on_can_user_manage_subscription_shipping') && !on_can_user_manage_subscription_shipping($subscription, $user_id)) {
+                continue;
+            }
+
+            if (is_callable(array($subscription, 'has_status')) && !$subscription->has_status(array('active', 'pending-cancel', 'on-hold', 'expired', 'cancelled'))) {
                 continue;
             }
 

@@ -171,6 +171,95 @@ if (!function_exists('on_guess_subscription_formule_from_items_product')) {
     }
 }
 
+if (!function_exists('on_get_subscription_effective_shipping_user_id')) {
+    /**
+     * Détermine si un abonnement est un abonnement cadeau (gifting).
+     *
+     * @param WC_Subscription|int $subscription
+     * @return bool
+     */
+    function on_is_gifted_subscription($subscription) {
+        if (is_numeric($subscription)) {
+            $subscription = wcs_get_subscription($subscription);
+        }
+
+        if (!$subscription || !is_a($subscription, 'WC_Subscription')) {
+            return false;
+        }
+
+        if (class_exists('WCS_Gifting') && is_callable(array('WCS_Gifting', 'is_gifted_subscription'))) {
+            return (bool) WCS_Gifting::is_gifted_subscription($subscription);
+        }
+
+        $recipient_user_id = absint($subscription->get_meta('_recipient_user', true));
+        $recipient_email = (string) $subscription->get_meta('_recipient_user_email_address', true);
+
+        return $recipient_user_id > 0 || '' !== $recipient_email;
+    }
+}
+
+if (!function_exists('on_get_subscription_effective_shipping_user_id')) {
+    /**
+     * Retourne l'ID utilisateur destinataire effectif d'un abonnement.
+     * Pour un abonnement cadeau, le destinataire est le recipient gifting.
+     * Sinon, il s'agit du customer_id de l'abonnement.
+     *
+     * @param WC_Subscription|int $subscription
+     * @return int
+     */
+    function on_get_subscription_effective_shipping_user_id($subscription) {
+        if (is_numeric($subscription)) {
+            $subscription = wcs_get_subscription($subscription);
+        }
+
+        if (!$subscription || !is_a($subscription, 'WC_Subscription')) {
+            return 0;
+        }
+
+        $recipient_user_id = 0;
+
+        if (class_exists('WCS_Gifting') && is_callable(array('WCS_Gifting', 'get_recipient_user'))) {
+            $recipient_user_id = absint(WCS_Gifting::get_recipient_user($subscription));
+        }
+
+        if ($recipient_user_id <= 0) {
+            $recipient_user_id = absint($subscription->get_meta('_recipient_user', true));
+        }
+
+        if (on_is_gifted_subscription($subscription)) {
+            // Un abonnement cadeau ne doit jamais être piloté par l'offreur.
+            // S'il n'y a pas encore d'utilisateur bénéficiaire lié, aucun utilisateur frontend
+            // ne peut gérer l'adresse via Mon Compte.
+            return $recipient_user_id > 0 ? $recipient_user_id : 0;
+        }
+
+        return absint($subscription->get_customer_id());
+    }
+}
+
+if (!function_exists('on_can_user_manage_subscription_shipping')) {
+    /**
+     * Vérifie si un utilisateur peut gérer l'adresse de livraison d'un abonnement.
+     *
+     * @param WC_Subscription|int $subscription
+     * @param int                 $user_id
+     * @return bool
+     */
+    function on_can_user_manage_subscription_shipping($subscription, $user_id = 0) {
+        if ($user_id <= 0) {
+            $user_id = get_current_user_id();
+        }
+
+        if ($user_id <= 0) {
+            return false;
+        }
+
+        $effective_user_id = on_get_subscription_effective_shipping_user_id($subscription);
+
+        return $effective_user_id > 0 && $user_id === $effective_user_id;
+    }
+}
+
 if (!function_exists('on_get_user_formule_on_subscriptions')) {
     /**
      * Récupère tous les abonnements ON (papier) actifs d'un utilisateur.
@@ -187,17 +276,26 @@ if (!function_exists('on_get_user_formule_on_subscriptions')) {
             return array();
         }
 
-        if (!function_exists('wcs_get_subscriptions')) {
+        if (!function_exists('wcs_get_users_subscriptions')) {
             return array();
         }
 
-        $subscriptions = wcs_get_subscriptions(array(
-            'customer_id' => $user_id,
-            'subscription_status' => array('active', 'on-hold', 'pending'),
-        ));
+        $subscriptions = wcs_get_users_subscriptions($user_id);
 
         $formule_on_subs = array();
         foreach ($subscriptions as $sub) {
+            if (!$sub || !is_a($sub, 'WC_Subscription')) {
+                continue;
+            }
+
+            if (is_callable(array($sub, 'has_status')) && !$sub->has_status(array('active', 'on-hold', 'pending', 'pending-cancel'))) {
+                continue;
+            }
+
+            if (!on_can_user_manage_subscription_shipping($sub, $user_id)) {
+                continue;
+            }
+
             if (on_subscription_has_formule_on($sub)) {
                 $formule_on_subs[] = $sub;
             }

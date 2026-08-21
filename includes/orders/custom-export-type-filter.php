@@ -445,6 +445,36 @@ if (!function_exists('on_add_subscription_export_custom_columns')) {
             'format'  => 'number',
             'label'   => __('Subscription ON End Number', 'orgues-nouvelles'),
         );
+        $fields['sub_is_gifted'] = array(
+            'segment' => 'subscription',
+            'format'  => 'number',
+            'label'   => __('Subscription Is Gifted', 'orgues-nouvelles'),
+        );
+        $fields['sub_recipient_user_id'] = array(
+            'segment' => 'subscription',
+            'format'  => 'number',
+            'label'   => __('Gift Recipient User ID', 'orgues-nouvelles'),
+        );
+        $fields['sub_recipient_email'] = array(
+            'segment' => 'subscription',
+            'format'  => 'string',
+            'label'   => __('Gift Recipient Email', 'orgues-nouvelles'),
+        );
+        $fields['sub_shipping_first_name'] = array(
+            'segment' => 'subscription',
+            'format'  => 'string',
+            'label'   => __('Subscription Shipping First Name', 'orgues-nouvelles'),
+        );
+        $fields['sub_shipping_last_name'] = array(
+            'segment' => 'subscription',
+            'format'  => 'string',
+            'label'   => __('Subscription Shipping Last Name', 'orgues-nouvelles'),
+        );
+        $fields['sub_shipping_address_full'] = array(
+            'segment' => 'subscription',
+            'format'  => 'string',
+            'label'   => __('Subscription Shipping Address (Full)', 'orgues-nouvelles'),
+        );
 
         return $fields;
     }
@@ -535,6 +565,188 @@ if (!function_exists('on_get_export_value_subscription_end_number')) {
     }
 
     add_filter('woe_get_order_value_sub_on_numero_end', 'on_get_export_value_subscription_end_number', 10, 2);
+}
+
+if (!function_exists('on_get_export_value_subscription_is_gifted')) {
+    /**
+     * Valeur de colonne exportable: indicateur cadeau (1/0).
+     */
+    function on_get_export_value_subscription_is_gifted($value, $order)
+    {
+        $subscription = on_get_subscription_for_export_row($order);
+        if (!$subscription) {
+            return $value;
+        }
+
+        $is_gifted = false;
+
+        if (class_exists('WCS_Gifting') && is_callable(array('WCS_Gifting', 'is_gifted_subscription'))) {
+            $is_gifted = (bool) WCS_Gifting::is_gifted_subscription($subscription);
+        } else {
+            $recipient_user_id = absint($subscription->get_meta('_recipient_user', true));
+            $recipient_email = (string) $subscription->get_meta('_recipient_user_email_address', true);
+            $is_gifted = ($recipient_user_id > 0) || ('' !== $recipient_email);
+        }
+
+        return $is_gifted ? 1 : 0;
+    }
+
+    add_filter('woe_get_order_value_sub_is_gifted', 'on_get_export_value_subscription_is_gifted', 10, 2);
+}
+
+if (!function_exists('on_get_subscription_export_recipient_user_id')) {
+    /**
+     * Retourne l'ID utilisateur du destinataire cadeau pour un abonnement exporte.
+     *
+     * @param WC_Subscription $subscription
+     * @return int
+     */
+    function on_get_subscription_export_recipient_user_id($subscription)
+    {
+        if (!$subscription instanceof WC_Subscription) {
+            return 0;
+        }
+
+        if (class_exists('WCS_Gifting') && is_callable(array('WCS_Gifting', 'get_recipient_user'))) {
+            return absint(WCS_Gifting::get_recipient_user($subscription));
+        }
+
+        return absint($subscription->get_meta('_recipient_user', true));
+    }
+}
+
+if (!function_exists('on_get_export_value_subscription_recipient_user_id')) {
+    /**
+     * Valeur de colonne exportable: ID du destinataire cadeau.
+     */
+    function on_get_export_value_subscription_recipient_user_id($value, $order)
+    {
+        $subscription = on_get_subscription_for_export_row($order);
+        if (!$subscription) {
+            return $value;
+        }
+
+        $recipient_id = on_get_subscription_export_recipient_user_id($subscription);
+
+        return $recipient_id > 0 ? $recipient_id : $value;
+    }
+
+    add_filter('woe_get_order_value_sub_recipient_user_id', 'on_get_export_value_subscription_recipient_user_id', 10, 2);
+}
+
+if (!function_exists('on_get_export_value_subscription_recipient_email')) {
+    /**
+     * Valeur de colonne exportable: email du destinataire cadeau.
+     */
+    function on_get_export_value_subscription_recipient_email($value, $order)
+    {
+        $subscription = on_get_subscription_for_export_row($order);
+        if (!$subscription) {
+            return $value;
+        }
+
+        $recipient_id = on_get_subscription_export_recipient_user_id($subscription);
+        if ($recipient_id > 0) {
+            $recipient_user = get_userdata($recipient_id);
+            if ($recipient_user && !empty($recipient_user->user_email)) {
+                return (string) $recipient_user->user_email;
+            }
+        }
+
+        $recipient_email = (string) $subscription->get_meta('_recipient_user_email_address', true);
+
+        return '' !== $recipient_email ? $recipient_email : $value;
+    }
+
+    add_filter('woe_get_order_value_sub_recipient_email', 'on_get_export_value_subscription_recipient_email', 10, 2);
+}
+
+if (!function_exists('on_get_export_value_subscription_shipping_first_name')) {
+    /**
+     * Valeur de colonne exportable: prénom livraison de l'abonnement.
+     */
+    function on_get_export_value_subscription_shipping_first_name($value, $order)
+    {
+        $subscription = on_get_subscription_for_export_row($order);
+        if (!$subscription) {
+            return $value;
+        }
+
+        $shipping_first_name = (string) $subscription->get_shipping_first_name();
+
+        return '' !== $shipping_first_name ? $shipping_first_name : $value;
+    }
+
+    add_filter('woe_get_order_value_sub_shipping_first_name', 'on_get_export_value_subscription_shipping_first_name', 10, 2);
+}
+
+if (!function_exists('on_get_export_value_subscription_shipping_last_name')) {
+    /**
+     * Valeur de colonne exportable: nom livraison de l'abonnement.
+     */
+    function on_get_export_value_subscription_shipping_last_name($value, $order)
+    {
+        $subscription = on_get_subscription_for_export_row($order);
+        if (!$subscription) {
+            return $value;
+        }
+
+        $shipping_last_name = (string) $subscription->get_shipping_last_name();
+
+        return '' !== $shipping_last_name ? $shipping_last_name : $value;
+    }
+
+    add_filter('woe_get_order_value_sub_shipping_last_name', 'on_get_export_value_subscription_shipping_last_name', 10, 2);
+}
+
+if (!function_exists('on_get_export_value_subscription_shipping_address_full')) {
+    /**
+     * Valeur de colonne exportable: adresse livraison formatee de l'abonnement.
+     */
+    function on_get_export_value_subscription_shipping_address_full($value, $order)
+    {
+        $subscription = on_get_subscription_for_export_row($order);
+        if (!$subscription) {
+            return $value;
+        }
+
+        $address = array(
+            'first_name' => $subscription->get_shipping_first_name(),
+            'last_name'  => $subscription->get_shipping_last_name(),
+            'company'    => $subscription->get_shipping_company(),
+            'address_1'  => $subscription->get_shipping_address_1(),
+            'address_2'  => $subscription->get_shipping_address_2(),
+            'city'       => $subscription->get_shipping_city(),
+            'postcode'   => $subscription->get_shipping_postcode(),
+            'state'      => $subscription->get_shipping_state(),
+            'country'    => $subscription->get_shipping_country(),
+        );
+
+        if (function_exists('WC') && WC() && isset(WC()->countries) && is_object(WC()->countries)) {
+            $formatted_address = WC()->countries->get_formatted_address($address);
+            if (!empty($formatted_address)) {
+                return trim(wp_strip_all_tags(str_replace('<br/>', ', ', str_replace('<br>', ', ', (string) $formatted_address))));
+            }
+        }
+
+        $parts = array_filter(array(
+            $address['first_name'],
+            $address['last_name'],
+            $address['company'],
+            $address['address_1'],
+            $address['address_2'],
+            $address['postcode'],
+            $address['city'],
+            $address['state'],
+            $address['country'],
+        ));
+
+        $fallback = implode(', ', $parts);
+
+        return '' !== $fallback ? $fallback : $value;
+    }
+
+    add_filter('woe_get_order_value_sub_shipping_address_full', 'on_get_export_value_subscription_shipping_address_full', 10, 2);
 }
 
 if (!function_exists('on_add_common_export_order_type_column')) {
