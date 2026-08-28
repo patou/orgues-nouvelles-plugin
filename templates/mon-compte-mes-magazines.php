@@ -35,7 +35,7 @@ if (!empty($numeros)) {
         while ($magazines_query->have_posts()) {
             $magazines_query->the_post();
             $magazine_id = get_the_ID();
-            $magazine_numero = get_post_meta($magazine_id, 'numero', true);
+            $magazine_numero = intval(get_post_meta($magazine_id, 'numero', true));
 
             if (!in_array($magazine_numero, $numeros)) {
                 continue;

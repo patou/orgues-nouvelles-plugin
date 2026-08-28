@@ -388,6 +388,10 @@ msgstr "Download"
 msgid "Voir l'adhésion"
 msgstr "View membership"
 
+#: includes/subscriptions/gifting-recipient-help.php:17
+msgid "Indiquez ici l'adresse e-mail de la personne à qui vous offrez cet abonnement."
+msgstr "Enter the email address of the person to whom you are gifting this subscription."
+
 #: includes/subscriptions/subscription.php:99
 msgid "N° Début"
 msgstr "Start No."

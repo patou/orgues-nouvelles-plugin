@@ -19,12 +19,15 @@ if (!function_exists('on_display_subscription_shipping_address')) {
             return;
         }
 
+        if (!function_exists('on_can_user_manage_subscription_shipping') || !on_can_user_manage_subscription_shipping($subscription, get_current_user_id())) {
+            return;
+        }
+
         // Vérifier que c'est un abonnement papier (formule ON)
         if (!on_subscription_has_formule_on($subscription)) {
             return;
         }
 
-        $user_id = $subscription->get_customer_id();
         ?>
         <section class="on-account-subscription-shipping-address">
             <h2><?php esc_html_e('Adresse de livraison', 'orgues-nouvelles'); ?></h2>
@@ -145,8 +148,8 @@ if (!function_exists('on_handle_subscription_shipping_form_submission')) {
             wp_die(esc_html__('Abonnement introuvable.', 'orgues-nouvelles'));
         }
 
-        // Vérifier que l'utilisateur courant est bien le propriétaire de cet abonnement
-        if ($subscription->get_customer_id() !== get_current_user_id()) {
+        // Vérifier que l'utilisateur courant peut gérer l'adresse de livraison de cet abonnement
+        if (!function_exists('on_can_user_manage_subscription_shipping') || !on_can_user_manage_subscription_shipping($subscription, get_current_user_id())) {
             wp_die(esc_html__('Vous n\'avez pas l\'autorisation de modifier cet abonnement.', 'orgues-nouvelles'));
         }
 
