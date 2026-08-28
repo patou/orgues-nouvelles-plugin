@@ -1,9 +1,10 @@
 <?php
 /**
- * Intégration AcyMailing : déclencheurs de changement de statut WooCommerce Subscriptions.
+ * Intégration AcyMailing : déclencheurs et variables des abonnements WooCommerce Subscriptions.
  *
- * Ce plugin AcyMailing expose un déclencheur "wcs_subscription_status_change"
- * utilisable dans les Automations et les Scénarios AcyMailing.
+ * Expose :
+ *   - Un déclencheur "wcs_subscription_status_change" pour les Automations/Scénarios.
+ *   - Des variables email {onwcssubscriptions:PLAN_champ} pour chaque plan (ON, ONED, ONEDA).
  */
 
 if (!defined('ABSPATH')) {
@@ -19,6 +20,33 @@ class plgAcymOnwcssubscriptions extends AcymPlugin
 {
     const TRIGGER_KEY = 'wcs_subscription_status_change';
 
+    /** Plans disponibles et leurs labels. */
+    private const PLANS = [
+        'ON'    => 'Magazine papier (ON)',
+        'ONED'  => 'Magazine numérique (ONED)',
+        'ONEDA' => 'English Digital (ONEDA)',
+    ];
+
+    /** Champs disponibles : clé interne => label affiché. */
+    private const FIELDS = [
+        'number_start' => 'Numéro de début',
+        'number_end'   => 'Numéro de fin',
+        'start_date'   => 'Date de début',
+        'end_date'     => 'Date de fin',
+        'next_renewal' => 'Prochain renouvellement',
+        'status'       => 'Statut',
+    ];
+
+    /** Ordre de priorité pour choisir parmi plusieurs abonnements du même plan. */
+    private const STATUS_PRIORITY = [
+        'active'         => 0,
+        'on-hold'        => 1,
+        'pending'        => 2,
+        'pending-cancel' => 3,
+        'expired'        => 4,
+        'cancelled'      => 5,
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -26,9 +54,204 @@ class plgAcymOnwcssubscriptions extends AcymPlugin
         $this->cms       = 'WordPress';
         $this->installed = acym_isExtensionActive('woocommerce-subscriptions/woocommerce-subscriptions.php');
 
-        $this->pluginDescription->name        = 'WooCommerce Subscriptions Status';
+        $this->pluginDescription->name        = 'Abonnements ON (WCS)';
         $this->pluginDescription->category    = 'E-commerce';
-        $this->pluginDescription->description = 'Déclenche des automations/scénarios lors des changements de statut d\'abonnement WooCommerce.';
+        $this->pluginDescription->description = 'Variables et déclencheurs pour les abonnements WooCommerce Subscriptions (ON / ONED / ONEDA).';
+    }
+
+    // -----------------------------------------------------------------------
+    // Variables email (dynamicText / textPopup / replaceUserInformation)
+    // -----------------------------------------------------------------------
+
+    public function dynamicText(?int $mailId): ?object
+    {
+        return $this->pluginDescription;
+    }
+
+    public function textPopup(): void
+    {
+        ?>
+        <script type="text/javascript">
+            function changeOnSubTag(tagname, element) {
+                if (!tagname) return;
+                setTag('{<?php echo esc_js($this->name); ?>:' + tagname + '}', element);
+            }
+        </script>
+        <div class="acym__popup__listing text-center grid-x">
+            <?php foreach (self::PLANS as $planKey => $planLabel) : ?>
+            <h1 class="acym__title acym__title__secondary text-center cell">
+                <?php echo esc_html($planLabel); ?>
+            </h1>
+            <?php foreach (self::FIELDS as $fieldKey => $fieldLabel) :
+                // Pour les champs de date, on suggère le type:date pour faciliter le formatage.
+                $isDate = in_array($fieldKey, ['start_date', 'end_date', 'next_renewal'], true);
+                $tagId  = $planKey . '_' . $fieldKey . ($isDate ? '|type:date' : '');
+            ?>
+            <div style="cursor:pointer"
+                 class="grid-x medium-12 cell acym__row__no-listing acym__listing__row__popup text-left"
+                 onclick="changeOnSubTag('<?php echo esc_js($tagId); ?>', jQuery(this));">
+                <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics">
+                    <?php echo esc_html($fieldLabel); ?>
+                </div>
+                <div class="cell medium-6 small-12 acym__listing__title acym__listing__title__dynamics acym__color__grey">
+                    <code>{<?php echo esc_html($this->name . ':' . $planKey . '_' . $fieldKey); ?>}</code>
+                </div>
+            </div>
+            <?php endforeach; ?>
+            <?php endforeach; ?>
+        </div>
+        <?php
+    }
+
+    public function replaceUserInformation(object &$email, ?object &$user, bool $send = true): void
+    {
+        $extractedTags = $this->pluginHelper->extractTags($email, $this->name);
+        if (empty($extractedTags)) {
+            return;
+        }
+
+        $wpUserId = !empty($user->cms_id) ? intval($user->cms_id) : 0;
+
+        // Construire l'index $byPlan uniquement si nécessaire.
+        $byPlan = $wpUserId > 0 ? $this->on_wcs_get_subscriptions_by_plan($wpUserId) : [];
+
+        $tags = [];
+        foreach ($extractedTags as $tagCode => $tagObj) {
+            // L'id de la balise est au format "PLAN_field" (ex: ON_number_start).
+            $tagId  = $tagObj->id ?? '';
+            $planKey = null;
+            $fieldKey = null;
+
+            foreach (array_keys(self::PLANS) as $plan) {
+                $prefix = $plan . '_';
+                if (strncmp($tagId, $prefix, strlen($prefix)) === 0) {
+                    $planKey  = $plan;
+                    $fieldKey = substr($tagId, strlen($prefix));
+                    break;
+                }
+            }
+
+            if ($planKey === null || !array_key_exists($fieldKey, self::FIELDS)) {
+                $tags[$tagCode] = $tagObj->default ?? '';
+                continue;
+            }
+
+            $subscription = $byPlan[$planKey] ?? null;
+            if ($subscription === null) {
+                $tags[$tagCode] = $tagObj->default ?? '';
+                continue;
+            }
+
+            $value = $this->on_wcs_get_subscription_field_value($subscription, $fieldKey);
+            $this->pluginHelper->formatString($value, $tagObj);
+            $tags[$tagCode] = $value;
+        }
+
+        $this->pluginHelper->replaceTags($email, $tags);
+    }
+
+    // -----------------------------------------------------------------------
+    // Helpers privés – données d'abonnement
+    // -----------------------------------------------------------------------
+
+    /**
+     * Retourne un tableau indexé par plan (ON/ONED/ONEDA) contenant
+     * l'abonnement WCS le plus prioritaire pour chaque plan.
+     *
+     * @param int $wpUserId
+     * @return array<string, WC_Subscription>
+     */
+    private function on_wcs_get_subscriptions_by_plan(int $wpUserId): array
+    {
+        if (!function_exists('wcs_get_subscriptions')) {
+            return [];
+        }
+
+        $subscriptions = wcs_get_subscriptions([
+            'customer_id'         => $wpUserId,
+            'subscription_status' => 'all',
+            'subscriptions_per_page' => -1,
+        ]);
+
+        $byPlan = [];
+
+        foreach ($subscriptions as $subscription) {
+            if (!$subscription instanceof \WC_Subscription) {
+                continue;
+            }
+
+            // Détecter la formule depuis la meta, sinon depuis les produits.
+            $plan = '';
+            if (function_exists('on_sanitize_subscription_formule')) {
+                $plan = on_sanitize_subscription_formule($subscription->get_meta('on_formule', true));
+            }
+            if ('' === $plan && function_exists('on_guess_subscription_formule_from_items')) {
+                $plan = on_guess_subscription_formule_from_items($subscription);
+            }
+
+            if ('' === $plan || !array_key_exists($plan, self::PLANS)) {
+                continue;
+            }
+
+            // Conserver uniquement l'abonnement avec la meilleure priorité de statut.
+            if (!isset($byPlan[$plan])) {
+                $byPlan[$plan] = $subscription;
+                continue;
+            }
+
+            $currentPriority  = self::STATUS_PRIORITY[$byPlan[$plan]->get_status()] ?? 99;
+            $candidatePriority = self::STATUS_PRIORITY[$subscription->get_status()] ?? 99;
+
+            if ($candidatePriority < $currentPriority) {
+                $byPlan[$plan] = $subscription;
+            } elseif ($candidatePriority === $currentPriority && $subscription->get_id() > $byPlan[$plan]->get_id()) {
+                // Même priorité : garder le plus récent.
+                $byPlan[$plan] = $subscription;
+            }
+        }
+
+        return $byPlan;
+    }
+
+    /**
+     * Extrait la valeur d'un champ d'un abonnement WCS.
+     *
+     * @param \WC_Subscription $subscription
+     * @param string           $field  Clé interne (number_start, number_end, start_date, end_date, next_renewal, status)
+     * @return string
+     */
+    private function on_wcs_get_subscription_field_value(\WC_Subscription $subscription, string $field): string
+    {
+        switch ($field) {
+            case 'number_start':
+                return (string) $subscription->get_meta('number-start', true);
+
+            case 'number_end':
+                return (string) $subscription->get_meta('number-end', true);
+
+            case 'start_date':
+                return (string) $subscription->get_date('start');
+
+            case 'end_date':
+                return (string) $subscription->get_date('end');
+
+            case 'next_renewal':
+                return (string) $subscription->get_date('next_payment');
+
+            case 'status':
+                $statusSlug = $subscription->get_status();
+                if (function_exists('wcs_get_subscription_statuses')) {
+                    $statuses = wcs_get_subscription_statuses();
+                    $key      = 'wc-' . $statusSlug;
+                    if (isset($statuses[$key])) {
+                        return (string) $statuses[$key];
+                    }
+                }
+                return $statusSlug;
+
+            default:
+                return '';
+        }
     }
 
     // -----------------------------------------------------------------------
