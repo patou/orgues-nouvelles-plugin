@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-13T13:53:49+00:00\n"
+"POT-Creation-Date: 2026-08-28T10:00:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: orgues-nouvelles\n"
@@ -45,6 +45,30 @@ msgstr ""
 
 #: includes/content/last-post-menu-item.php:59
 msgid "Last"
+msgstr ""
+
+#: includes/core/subscription-formule-choices.php:19
+msgid "ON"
+msgstr ""
+
+#: includes/core/subscription-formule-choices.php:20
+msgid "ONED"
+msgstr ""
+
+#: includes/core/subscription-formule-choices.php:21
+msgid "ONEDA"
+msgstr ""
+
+#: includes/core/subscription-formule-choices.php:36
+msgid "Magazine papier"
+msgstr ""
+
+#: includes/core/subscription-formule-choices.php:37
+msgid "Magazine numérique"
+msgstr ""
+
+#: includes/core/subscription-formule-choices.php:38
+msgid "English Digital magazine"
 msgstr ""
 
 #: includes/elementor/widgets/search-result-content.php:17
@@ -107,89 +131,205 @@ msgstr ""
 msgid "Aucun ID de post spécifié ou post actuel introuvable."
 msgstr ""
 
-#: includes/frontend/mon-compte.php:26
-msgid "Numero début"
+#: includes/frontend/form-login.php:23
+msgid "Mot de passe oublié ? Cliquez ici pour le réinitialiser"
 msgstr ""
 
-#: includes/frontend/mon-compte.php:29
-msgid "Numero fin"
+#: includes/frontend/form-login.php:95
+msgid "commande d'abonnement"
 msgstr ""
 
-#: includes/frontend/mon-compte.php:77
+#. translators: %s: link to subscription category.
+#: includes/frontend/form-login.php:103
+#, php-format
+msgid "Vous n'avez pas besoin de compte si vous ne vous abonnez pas et celui-ci sera créé automatiquement lors de votre %s."
+msgstr ""
+
+#: includes/frontend/mon-compte.php:32
 msgid "Mes magazines"
 msgstr ""
 
-#: includes/frontend/mon-compte.php:121
+#: includes/frontend/mon-compte.php:76
 msgid "Magazine ajouté avec succès !"
 msgstr ""
 
-#: includes/frontend/mon-compte.php:123
+#: includes/frontend/mon-compte.php:78
 msgid "Ce magazine est déjà dans votre liste."
 msgstr ""
 
-#: includes/frontend/mon-compte.php:129
+#: includes/frontend/mon-compte.php:84
 msgid "Code invalide."
 msgstr ""
 
-#: includes/memberships/membership-numero-on.php:101
-#: includes/subscriptions/subscription.php:57
-msgid "Numéros de Orgues-Nouvelles"
+#: includes/frontend/mon-compte.php:128
+#: includes/subscriptions/admin-metabox.php:111
+#: includes/subscriptions/admin-metabox.php:242
+msgid "Formule"
 msgstr ""
 
-#: includes/memberships/membership-numero-on.php:108
-#: includes/subscriptions/subscription.php:61
-msgid "Numéro de début:"
+#: includes/frontend/mon-compte.php:171
+#: includes/subscriptions/admin-metabox.php:232
+msgid "Numéro de début"
 msgstr ""
 
-#: includes/memberships/membership-numero-on.php:116
-#: includes/subscriptions/subscription.php:65
-msgid "Numéro de fin:"
+#: includes/frontend/mon-compte.php:175
+#: includes/subscriptions/admin-metabox.php:237
+msgid "Numéro de fin"
 msgstr ""
 
-#: includes/memberships/membership-numero-on.php:120
-#: includes/subscriptions/subscription.php:69
-msgid "Nombre de numéros:"
+#: includes/frontend/mon-compte.php:179
+msgid "Nombre de numéros"
 msgstr ""
 
-#: includes/memberships/membership-numero-on.php:131
-msgid "Voir l'abonnement"
+#: includes/frontend/mon-compte.php:207
+msgid "Formule:"
 msgstr ""
 
-#: includes/memberships/membership-profile-field-checkout-page.php:62
-msgid "Votre profil"
+#: includes/frontend/mon-compte.php:218
+msgid "Numéros:"
 msgstr ""
 
-#: includes/memberships/membership-profile-field-checkout-page.php:63
-msgid "Merci de remplir ces informations pour mieux vous connaitre"
+#. translators: %d: count of subscriptions
+#: includes/frontend/subscription-address-sync.php:44
+#, php-format
+msgid "Mettre à jour l'adresse de livraison de mes %d abonnement(s) papier"
 msgstr ""
 
-#: includes/subscriptions/subscription.php:223
-msgid "Nombre de numéros par abonnement"
+#: includes/frontend/subscription-address-sync.php:49
+msgid "Si vous cochez cette option, votre nouvelle adresse de livraison sera appliquée à tous vos abonnements papier actifs."
 msgstr ""
 
-#: includes/subscriptions/subscription.php:224
-msgid "Définissez combien de numéros sont inclus avant le prochain paiement."
+#. translators: %s: customer username
+#: includes/frontend/subscription-address-sync.php:109
+#, php-format
+msgid "Adresse de livraison mise à jour par %s depuis les paramètres du compte."
 msgstr ""
 
-#: includes/orders/check-abonnement-france.php:23
+#. translators: %d: count of subscriptions
+#: includes/frontend/subscription-address-sync.php:120
+#, php-format
+msgid "Adresse de livraison mise à jour pour %d abonnement(s)."
+msgstr ""
+
+#: includes/frontend/subscription-shipping.php:30
+msgid "Adresse de livraison"
+msgstr ""
+
+#: includes/frontend/subscription-shipping.php:51
+msgid "Aucune adresse de livraison enregistrée."
+msgstr ""
+
+#: includes/frontend/subscription-shipping.php:113
+msgid "Mettre à jour l'adresse"
+msgstr ""
+
+#: includes/frontend/subscription-shipping.php:136
+msgid "Erreur de sécurité."
+msgstr ""
+
+#: includes/frontend/subscription-shipping.php:140
+msgid "Abonnement non valide."
+msgstr ""
+
+#: includes/frontend/subscription-shipping.php:145
+msgid "Abonnement introuvable."
+msgstr ""
+
+#: includes/frontend/subscription-shipping.php:150
+msgid "Vous n'avez pas l'autorisation de modifier cet abonnement."
+msgstr ""
+
+#: includes/frontend/subscription-shipping.php:168
+msgid "Veuillez remplir tous les champs obligatoires."
+msgstr ""
+
+#: includes/frontend/subscription-shipping.php:182
+msgid "Adresse de livraison mise à jour avec succès."
+msgstr ""
+
+#: includes/orders/check-abonnement-france.php:22
 msgid "Vous devez selectionner la livraison Monde pour une livraison en dehors de la France lors de votre abonnement à Orgues-Nouvelles"
 msgstr ""
 
-#: includes/orders/email-subscription-info.php:42
+#: includes/orders/custom-export-type-filter.php:23
+msgid "Type d'export de données"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:26
+msgid "Choisissez le type d'entité principale à extraire de la base de données :"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:29
+msgid "Commandes standard"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:29
+msgid "(Ventes et renouvellements)"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:33
+msgid "Contrats d'Abonnement"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:33
+msgid "(Profils globaux WooCommerce Subscriptions)"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:137
+msgid "Filtres contrats d'abonnement"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:142
+msgid "Statuts"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:152
+msgid "Plan"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:154
+msgid "Tous les plans"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:163
+msgid "Numéro de magazine"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:165
+msgid "Filtre les contrats où le numéro est compris entre number-start et number-end."
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:436
+msgid "Subscription Plan"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:441
+msgid "Subscription ON Start Number"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:446
+msgid "Subscription ON End Number"
+msgstr ""
+
+#: includes/orders/custom-export-type-filter.php:552
+msgid "Order Entity Type"
+msgstr ""
+
+#: includes/orders/email-subscription-info.php:57
 msgid "Informations sur votre abonnement"
 msgstr ""
 
-#: includes/orders/email-subscription-info.php:45
+#: includes/orders/email-subscription-info.php:60
 #, php-format
 msgid "Numéro de début : ON-%s (%s)"
 msgstr ""
 
-#: includes/orders/email-subscription-info.php:50
+#: includes/orders/email-subscription-info.php:65
 #, php-format
 msgid "Numéro de fin : ON-%s (%s)"
 msgstr ""
 
-#: includes/orders/email-subscription-info.php:55
+#: includes/orders/email-subscription-info.php:70
 #, php-format
 msgid "Nombre de numéros : %s"
 msgstr ""
@@ -228,6 +368,10 @@ msgstr ""
 
 #: includes/orders/justificatif-etudiant.php:248
 msgid "Cochez cette case pour demander un justificatif pour cette variation."
+msgstr ""
+
+#: includes/orders/subscription-link-button.php:45
+msgid "Voir l'abonnement"
 msgstr ""
 
 #: includes/products/direct-download-free.php:16
@@ -283,7 +427,7 @@ msgstr ""
 msgid "Télécharger"
 msgstr ""
 
-#: includes/products/product-free-for-plans.php:82
+#: includes/products/product-free-for-plans.php:87
 msgid "Inclus"
 msgstr ""
 
@@ -323,31 +467,39 @@ msgstr ""
 msgid "Affiche le message de restriction"
 msgstr ""
 
-#: includes/products/restrict-magazines.php:171
-msgid "Vous n'avez pas accès à ce contenu"
+#: includes/products/restrict-magazines.php:49
+msgid "Yes"
 msgstr ""
 
-#: includes/products/restrict-magazines.php:175
-msgid "Vous devez être connecté pour accéder à ce contenu."
-msgstr ""
-
-#: includes/products/restrict-magazines.php:176
-msgid "Se connecter"
-msgstr ""
-
-#: includes/products/restrict-magazines.php:180
-msgid "Vous n'êtes pas abonné à ce magazine."
-msgstr ""
-
-#: includes/products/restrict-magazines.php:181
-msgid "Abonnez-vous"
-msgstr ""
-
-#: includes/products/restrict-magazines.php:182
-msgid "ou saisissez"
+#: includes/products/restrict-magazines.php:50
+msgid "No"
 msgstr ""
 
 #: includes/products/restrict-magazines.php:183
+msgid "Vous n'avez pas accès à ce contenu"
+msgstr ""
+
+#: includes/products/restrict-magazines.php:187
+msgid "Vous devez être connecté pour accéder à ce contenu."
+msgstr ""
+
+#: includes/products/restrict-magazines.php:188
+msgid "Se connecter"
+msgstr ""
+
+#: includes/products/restrict-magazines.php:192
+msgid "Vous n'êtes pas abonné à ce magazine."
+msgstr ""
+
+#: includes/products/restrict-magazines.php:193
+msgid "Abonnez-vous"
+msgstr ""
+
+#: includes/products/restrict-magazines.php:194
+msgid "ou saisissez"
+msgstr ""
+
+#: includes/products/restrict-magazines.php:195
 msgid "le code de l'espace privé"
 msgstr ""
 
@@ -360,46 +512,170 @@ msgid "Indiquez ici l'adresse e-mail de la personne à qui vous offrez cet abonn
 msgstr ""
 
 #: includes/subscriptions/subscription.php:99
+#: includes/subscriptions/admin-columns.php:20
 msgid "N° Début"
 msgstr ""
 
-#: includes/subscriptions/subscription.php:100
+#: includes/subscriptions/admin-columns.php:21
 msgid "N° Fin"
+msgstr ""
+
+#: includes/subscriptions/admin-columns.php:22
+msgid "Exemplaires"
+msgstr ""
+
+#: includes/subscriptions/admin-filters.php:23
+msgid "Filtrer par numéro ON"
+msgstr ""
+
+#: includes/subscriptions/admin-filters.php:32
+msgid "Numéro ON"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:16
+msgid "Orgues-Nouvelles"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:73
+msgid "Numéros de Orgues-Nouvelles"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:77
+msgid "Numéro de début:"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:81
+msgid "Numéro de fin:"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:85
+msgid "Exemplaires à envoyer:"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:89
+msgid "Nombre de numéros:"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:93
+msgid "Renouvellements effectués:"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:97
+msgid "en attente"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:102
+msgid "Numéros par renouvellement:"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:113
+msgid "Sélectionnez une formule"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:120
+msgid "Valeur utilisée pour suivre la formule d'abonnement."
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:123
+msgid "Numéro de début personnalisé"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:125
+msgid "Laissez vide pour utiliser le calcul automatique effectué à partir des dates d'abonnement."
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:128
+msgid "Numéro de fin personnalisé"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:130
+msgid "Laissez vide pour que le numéro de fin soit déterminé automatiquement."
+msgstr ""
+
+#. translators: 1: field label, 2: old value
+#: includes/subscriptions/admin-metabox.php:261
+#: includes/subscriptions/admin-metabox.php:278
+#, php-format
+msgid "%1$s supprimé (ancienne valeur : %2$s)"
+msgstr ""
+
+#. translators: 1: field label, 2: old value, 3: new value
+#: includes/subscriptions/admin-metabox.php:295
+#, php-format
+msgid "%1$s modifié : %2$s → %3$s"
+msgstr ""
+
+#. translators: 1: field label, 2: new value
+#: includes/subscriptions/admin-metabox.php:303
+#, php-format
+msgid "%1$s défini : %2$s"
+msgstr ""
+
+#: includes/subscriptions/admin-metabox.php:320
+msgid "Administrateur"
+msgstr ""
+
+#. translators: %s: admin username
+#: includes/subscriptions/admin-metabox.php:324
+#, php-format
+msgid "Numéros Orgues-Nouvelles mis à jour par %s :"
+msgstr ""
+
+#: includes/subscriptions/issue-count-core.php:44
+#, php-format
+msgid "%s numéro"
+msgid_plural "%s numéros"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/subscriptions/issue-count-hooks.php:29
+msgid "Nombre de numéros par abonnement"
+msgstr ""
+
+#: includes/subscriptions/issue-count-hooks.php:30
+msgid "Définissez combien de numéros sont inclus avant le prochain paiement."
+msgstr ""
+
+#. translators: 1: previous end number, 2: new end number, 3: issue count added.
+#: includes/subscriptions/lifecycle.php:282
+#, php-format
+msgid "Numéro de fin d'abonnement étendu de ON-%1$d à ON-%2$d (+%3$d numéro(s))."
 msgstr ""
 
 #: templates/free-download-button.php:23
 msgid "Télécharger gratuitement"
 msgstr ""
+
 #: templates/mon-compte-mes-magazines.php:13
 msgid "Vos magazines abonnés :"
 msgstr ""
 
-#: templates/mon-compte-mes-magazines.php:57
+#: templates/mon-compte-mes-magazines.php:59
 #, php-format
 msgid "Orgues nouvelles n°%s"
 msgstr ""
 
-#: templates/mon-compte-mes-magazines.php:66
+#: templates/mon-compte-mes-magazines.php:68
 msgid "Aucun magazine publié."
 msgstr ""
 
-#: templates/mon-compte-mes-magazines.php:71
+#: templates/mon-compte-mes-magazines.php:73
 #, php-format
 msgid "Vous n'êtes abonné à aucun magazine pour le moment. %1$sAbonnez-vous à Orgues-nouvelles%2$s ou ajoutez le code de l'espace client dans le formulaire ci-dessous"
 msgstr ""
 
-#: templates/mon-compte-mes-magazines.php:78
+#: templates/mon-compte-mes-magazines.php:81
 msgid "Ajouter un magazine avec un code :"
 msgstr ""
 
-#: templates/mon-compte-mes-magazines.php:79
+#: templates/mon-compte-mes-magazines.php:82
 msgid "Retrouvez le code à saisir dans votre magazine pour accéder à l'espace privé."
 msgstr ""
 
-#: templates/mon-compte-mes-magazines.php:81
+#: templates/mon-compte-mes-magazines.php:84
 msgid "Code du magazine"
 msgstr ""
 
-#: templates/mon-compte-mes-magazines.php:82
+#: templates/mon-compte-mes-magazines.php:85
 msgid "Ajouter"
 msgstr ""

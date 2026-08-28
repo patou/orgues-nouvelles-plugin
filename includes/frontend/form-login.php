@@ -89,11 +89,21 @@ add_action( 'wp_enqueue_scripts', 'on_login_form_inline_css' );
  * pour créer un compte, il faut s'abonner sur le site.
  */
 function on_login_form_subscribe_info() {
-	printf(
-		'<p class="on-login-subscribe-info">%s <a href="%s">%s</a></p>',
-		esc_html__( 'Pas encore de compte ? Pour en créer un,', 'orgues-nouvelles' ),
+	$subscription_order_link = sprintf(
+		'<a href="%s">%s</a>',
 		esc_url( home_url( '/product-category/abonnement/' ) ),
-		esc_html__( 'abonnez-vous sur le site.', 'orgues-nouvelles' )
+		esc_html__( 'commande d\'abonnement', 'orgues-nouvelles' )
+	);
+
+	printf(
+		'<p class="on-login-subscribe-info">%s</p>',
+		wp_kses_post(
+			sprintf(
+				/* translators: %s: link to subscription category. */
+				__( 'Vous n\'avez pas besoin de compte si vous ne vous abonnez pas et celui-ci sera créé automatiquement lors de votre %s.', 'orgues-nouvelles' ),
+				$subscription_order_link
+			)
+		)
 	);
 }
 add_action( 'woocommerce_login_form_end', 'on_login_form_subscribe_info' );
