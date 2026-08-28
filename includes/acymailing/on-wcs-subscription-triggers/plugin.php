@@ -291,25 +291,34 @@ class plgAcymOnwcssubscriptions extends AcymPlugin
     public function onAcymDeclareTriggers(&$triggers, &$defaultValues): void
     {
         $statuses = $this->on_get_subscription_statuses(true);
+        $plans    = array_merge(['0' => acym_translation('ACYM_ANY')], self::PLANS);
 
         $from = empty($defaultValues[self::TRIGGER_KEY]['from']) ? '0' : $defaultValues[self::TRIGGER_KEY]['from'];
         $to   = empty($defaultValues[self::TRIGGER_KEY]['to'])   ? 'wc-expired' : $defaultValues[self::TRIGGER_KEY]['to'];
+        $plan = empty($defaultValues[self::TRIGGER_KEY]['plan']) ? '0' : $defaultValues[self::TRIGGER_KEY]['plan'];
 
         $triggers['user'][self::TRIGGER_KEY]         = new stdClass();
         $triggers['user'][self::TRIGGER_KEY]->name   = __('Changement de statut d\'abonnement WooCommerce', 'orgues-nouvelles');
-        $triggers['user'][self::TRIGGER_KEY]->option  = '<div class="grid-x grid-margin-x" style="height: 40px;">';
+        $triggers['user'][self::TRIGGER_KEY]->option  = '<div class="grid-x grid-margin-x" style="min-height: 40px; flex-wrap: wrap;">';
         $triggers['user'][self::TRIGGER_KEY]->option .= '<div class="cell medium-shrink acym_vcenter">' . acym_translation('ACYM_FROM') . '</div>';
-        $triggers['user'][self::TRIGGER_KEY]->option .= '<div class="cell medium-4">' . acym_select(
+        $triggers['user'][self::TRIGGER_KEY]->option .= '<div class="cell medium-3">' . acym_select(
             $statuses,
             '[triggers][user][' . self::TRIGGER_KEY . '][from]',
             $from,
             ['data-class' => 'acym__select']
         ) . '</div>';
         $triggers['user'][self::TRIGGER_KEY]->option .= '<div class="cell medium-shrink acym_vcenter">' . acym_translation('ACYM_TO') . '</div>';
-        $triggers['user'][self::TRIGGER_KEY]->option .= '<div class="cell medium-4">' . acym_select(
+        $triggers['user'][self::TRIGGER_KEY]->option .= '<div class="cell medium-3">' . acym_select(
             $statuses,
             '[triggers][user][' . self::TRIGGER_KEY . '][to]',
             $to,
+            ['data-class' => 'acym__select']
+        ) . '</div>';
+        $triggers['user'][self::TRIGGER_KEY]->option .= '<div class="cell medium-shrink acym_vcenter">' . __('Formule', 'orgues-nouvelles') . '</div>';
+        $triggers['user'][self::TRIGGER_KEY]->option .= '<div class="cell medium-3">' . acym_select(
+            $plans,
+            '[triggers][user][' . self::TRIGGER_KEY . '][plan]',
+            $plan,
             ['data-class' => 'acym__select']
         ) . '</div>';
         $triggers['user'][self::TRIGGER_KEY]->option .= '</div>';
@@ -333,16 +342,19 @@ class plgAcymOnwcssubscriptions extends AcymPlugin
             return;
         }
 
-        $fromStatus = 'wc-' . (isset($data['statusFrom']) ? $data['statusFrom'] : '');
-        $toStatus   = 'wc-' . (isset($data['statusTo'])   ? $data['statusTo']   : '');
+        $fromStatus  = 'wc-' . (isset($data['statusFrom']) ? $data['statusFrom'] : '');
+        $toStatus    = 'wc-' . (isset($data['statusTo'])   ? $data['statusTo']   : '');
+        $dataPlan    = isset($data['plan']) ? (string) $data['plan'] : '';
 
         $configFrom = $triggers[self::TRIGGER_KEY]['from'] ?? '0';
         $configTo   = $triggers[self::TRIGGER_KEY]['to']   ?? '0';
+        $configPlan = $triggers[self::TRIGGER_KEY]['plan'] ?? '0';
 
         $fromMatch = ($configFrom === '0' || $fromStatus === $configFrom);
         $toMatch   = ($configTo   === '0' || $toStatus   === $configTo);
+        $planMatch = ($configPlan === '0' || $dataPlan === $configPlan);
 
-        if ($fromMatch && $toMatch) {
+        if ($fromMatch && $toMatch && $planMatch) {
             $execute = true;
         }
     }
@@ -362,8 +374,14 @@ class plgAcymOnwcssubscriptions extends AcymPlugin
         $fromLabel = $statuses[$automation->triggers[self::TRIGGER_KEY]['from']] ?? $automation->triggers[self::TRIGGER_KEY]['from'];
         $toLabel   = $statuses[$automation->triggers[self::TRIGGER_KEY]['to']]   ?? $automation->triggers[self::TRIGGER_KEY]['to'];
 
+        $planKey   = $automation->triggers[self::TRIGGER_KEY]['plan'] ?? '0';
+        $planLabel = ($planKey !== '0' && isset(self::PLANS[$planKey]))
+            ? ' (' . self::PLANS[$planKey] . ')'
+            : '';
+
         $automation->triggers[self::TRIGGER_KEY] = sprintf(
-            __('Abonnement passe de « %s » à « %s »', 'orgues-nouvelles'),
+            __('Abonnement%s passe de « %s » à « %s »', 'orgues-nouvelles'),
+            $planLabel,
             $fromLabel,
             $toLabel
         );
@@ -414,10 +432,22 @@ class plgAcymOnwcssubscriptions extends AcymPlugin
             return;
         }
 
+        // Détecter la formule de l'abonnement concerné.
+        $plan = '';
+        if ($subscription instanceof \WC_Subscription) {
+            if (function_exists('on_sanitize_subscription_formule')) {
+                $plan = on_sanitize_subscription_formule($subscription->get_meta('on_formule', true));
+            }
+            if ('' === $plan && function_exists('on_guess_subscription_formule_from_items')) {
+                $plan = on_guess_subscription_formule_from_items($subscription);
+            }
+        }
+
         $triggerData = [
             'userId'     => $acyUser->id,
             'statusFrom' => $old_status,
             'statusTo'   => $new_status,
+            'plan'       => $plan,
         ];
 
         try {
