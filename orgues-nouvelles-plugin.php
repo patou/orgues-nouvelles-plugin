@@ -72,6 +72,9 @@ function on_load_plugin() {
     
     // Charger les modules frontend
     require_once(__DIR__ . '/includes/frontend/shortcode.php');
+    if (is_plugin_active('woocommerce/woocommerce.php')) {
+        require_once(__DIR__ . '/includes/frontend/form-login.php');
+    }
     if (is_plugin_active('woocommerce/woocommerce.php') && is_plugin_active('pods/init.php')) {
         require_once(__DIR__ . '/includes/frontend/mon-compte.php');
         require_once(__DIR__ . '/includes/frontend/subscription-shipping.php');
